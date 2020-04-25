@@ -1,0 +1,91 @@
+html,body {
+	width: 100%;
+	height: 100%;
+	margin: 0;
+	padding: 0;
+}
+
+.colorPrimary{
+	background-color: #37464f;
+}
+
+.colorSecondary{
+	position: absolute;
+	background-color: #babdbe;
+	height: 100%;
+	width: 100%;
+}
+
+.buttonSecondary{
+	background-color: #455a64;
+	color: #eceff1; 
+	border-style: none;
+	font-size: 30px;
+}
+
+.buttonSecondary:hover{
+	background-color: #eceff1;
+	color: #455a64; 
+}
+
+.horitzList{
+	list-style-type: none;
+	padding: 0px;
+	margin: 0px;
+	overflow: hidden;
+}
+
+.horitzList li{
+	float: left; 
+}
+
+.listDividor{
+	color: #eceff1;
+	font-size: 30px;
+	margin-left: 20px;
+	margin-right: 20px;
+}
+
+.iconMargin{
+	margin-right: 5px;
+}
+
+#main{
+	width: 100%;
+ 	height: 100%;
+}
+
+.root{
+	width: 100%;
+ 	height: 100%;
+ 	margin: 0;
+ 	padding: 0;
+ 	position: relative;
+}
+
+#graph-container{
+	position: absolute;
+	min-width: 500px;
+	overflow: hidden;
+}
+
+#particlecontainer{
+	position: absolute;
+	display: none;
+	top: 63px;
+	right: 0px;
+}
+
+.upload-btn-wrapper {
+  position: relative;
+  overflow: hidden;
+  display: inline-block;
+}
+
+.upload-btn-wrapper input[type=file] {
+  font-size: 100px;
+  position: absolute;
+  left: 0;
+  top: 0;
+  opacity: 0;
+}
