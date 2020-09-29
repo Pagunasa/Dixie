@@ -594,7 +594,7 @@ gl.ondraw = function() {
 		u_mvp: mvp,
 		u_color: [1,1,1,1],
 		u_model: mat4.create(),
-		u_texture: texture()
+		u_texture: texture
 	};
 
 	for(x in system_list){
