@@ -38,12 +38,12 @@ var particles_list = [];
 var meshes_list = [];
 var vortex_list = [];
 var system_list = [];
-var texture = GL.Texture.fromURL("texture.png");
 
 var DEG2RAD = Math.PI/180;
 
 var gl = GL.create({width:742, height:608});
 
+var texture = GL.Texture.fromURL("texture.png");
 var particleContainer = document.getElementById("particlecontainer");
 particleContainer.appendChild( gl.canvas );
 particleContainer.style.display = "none";
