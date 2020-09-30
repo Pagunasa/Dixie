@@ -552,9 +552,7 @@ var fragment_shader_code = '\
 					\
 					void main() {\
 						vec4 color = u_color * texture2D(u_texture, v_coord);\
-						if(color.a < 0.01);\
-							discard;\
-						gl_FragColor = color;\
+						gl_FragColor = vec4(color.a);\
 					}';
 
 var vertex_shader_code_vortex = '\
