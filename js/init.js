@@ -552,7 +552,7 @@ var fragment_shader_code = '\
 					\
 					void main() {\
 						vec4 color = u_color * texture2D(u_texture, v_coord);\
-						if(color.a < 0.1);\
+						if(color.a < 0.01);\
 							discard;\
 						gl_FragColor = color;\
 					}';
