@@ -128,7 +128,7 @@ function createMesh(particles){
 
 	var default_vertices  = [-0.5,-0.5,0, 0.5,-0.5,0, -0.5,0.5,0, 0.5,0.5,0, -0.5,0.5,0, 0.5,-0.5,0];
 	var default_color     = [1,1,1,1];
-	var default_coords    = [1,1, 0,1, 1,0, 0,1, 0,0, 1,0];
+	var default_coords    = [1,1, 0,1, 1,0, 0,1, 1,0, 0,0];
 
 	for(var i = 0; i < particles; i ++)
 	{
