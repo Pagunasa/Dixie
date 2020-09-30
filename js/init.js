@@ -43,7 +43,7 @@ var DEG2RAD = Math.PI/180;
 
 var gl = GL.create({width:742, height:608});
 
-var texture = GL.Texture.fromURL("texture.png",{temp_color:[80,120,40,255], minFilter: gl.LINEAR_MIPMAP_LINEAR});
+var texture = GL.Texture.fromURL("texture.png");
 texture.bind(0);
 var particleContainer = document.getElementById("particlecontainer");
 particleContainer.appendChild( gl.canvas );
