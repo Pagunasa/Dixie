@@ -552,6 +552,8 @@ var fragment_shader_code = '\
 					\
 					void main() {\
 						vec4 color = u_color * texture2D(u_texture, v_coord);\
+						if(color.a < 0.1);\
+							discard;\
 						gl_FragColor = color;\
 					}';
 
@@ -598,8 +600,6 @@ gl.ondraw = function() {
 		u_model: mat4.create(),
 		u_texture: 0
 	};
-
-	shader_part.uniforms( my_uniforms ).draw( mesh );
 
 	for(x in system_list){
 		shader_part.uniforms( my_uniforms ).draw( meshes_list[system_list[x].mesh_id] );
