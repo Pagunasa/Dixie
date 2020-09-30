@@ -599,9 +599,9 @@ gl.ondraw = function() {
 	
 	texture.bind(0);
 	
-	Vector3 lookPoint = transform.position - target.position;
- 	lookPoint.y = target.position.y;
- 	transform.LookAt(lookPoint);
+	//Vector3 lookPoint = transform.position - target.position;
+ 	//lookPoint.y = target.position.y;
+ 	//transform.LookAt(lookPoint);
 
 	var my_uniforms = { 
 		u_viewprojection: vp,
