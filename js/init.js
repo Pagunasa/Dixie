@@ -551,7 +551,7 @@ var fragment_shader_code = '\
 					varying vec2 v_coord;\
 					\
 					void main() {\
-						vec4 color = u_color * texture2D( u_texture, v_coord);\
+						vec4 color = texture2D( u_texture, v_coord);\
 						gl_FragColor = color;\
 					}';
 
