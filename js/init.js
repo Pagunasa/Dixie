@@ -43,7 +43,7 @@ var DEG2RAD = Math.PI/180;
 
 var gl = GL.create({width:742, height:608});
 
-var texture = GL.Texture.fromURL("texture.png");
+var texture = GL.Texture.fromURL("texture1.png");
 var particleContainer = document.getElementById("particlecontainer");
 particleContainer.appendChild( gl.canvas );
 particleContainer.style.display = "none";
@@ -551,7 +551,7 @@ var fragment_shader_code = '\
 					varying vec2 v_coord;\
 					\
 					void main() {\
-						vec4 color = texture2D( u_texture, v_coord);\
+						vec4 color = u_color * texture2D(u_texture, v_coord);\
 						gl_FragColor = color;\
 					}';
 
