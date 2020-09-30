@@ -44,7 +44,6 @@ var DEG2RAD = Math.PI/180;
 var gl = GL.create({width:742, height:608});
 
 var texture = GL.Texture.fromURL("texture.png");
-texture.bind(0);
 var particleContainer = document.getElementById("particlecontainer");
 particleContainer.appendChild( gl.canvas );
 particleContainer.style.display = "none";
@@ -589,6 +588,8 @@ gl.ondraw = function() {
 
 	var vp = mat4.create();
 	mat4.multiply(vp, view, proj);
+
+	texture.bind(0);
 
 	var my_uniforms = { 
 		u_viewprojection: vp,
