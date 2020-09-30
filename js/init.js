@@ -43,7 +43,8 @@ var DEG2RAD = Math.PI/180;
 
 var gl = GL.create({width:742, height:608});
 
-var texture = GL.Texture.fromURL("texture1.png",{temp_color:[80,120,40,255], minFilter: gl.LINEAR_MIPMAP_LINEAR});
+var texture = GL.Texture.fromURL("texture.png",{temp_color:[80,120,40,255], minFilter: gl.LINEAR_MIPMAP_LINEAR});
+texture.bind(0);
 var particleContainer = document.getElementById("particlecontainer");
 particleContainer.appendChild( gl.canvas );
 particleContainer.style.display = "none";
@@ -594,7 +595,7 @@ gl.ondraw = function() {
 		u_mvp: mvp,
 		u_color: [1,1,1,1],
 		u_model: mat4.create(),
-		u_texture: texture
+		u_texture: 0
 	};
 
 	shader_part.uniforms( my_uniforms ).draw( mesh );
