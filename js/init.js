@@ -231,7 +231,7 @@ function InitSystemNode() {
 
 InitSystemNode.prototype.onAdded = function() {
 	this.properties.id = this.id;
-	createMesh(id, this.properties.maxParticles);
+	createMesh(this.id, this.properties.maxParticles);
 	system_list.push(new SystemInfo(this.id));
 }
 
@@ -611,7 +611,7 @@ gl.ondraw = function() {
 	};
 
 	for(x in system_list){
-		shader_part.uniforms( my_uniforms ).draw( meshes_list[system_list[x].mesh_id] );
+		shader_part.uniforms( my_uniforms ).draw( meshes_list[system_list[x].mesh_id].mesh );
 	}
 
 	var my_uniforms2 = { 
