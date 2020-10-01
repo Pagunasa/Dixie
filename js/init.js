@@ -246,7 +246,7 @@ function InitSystemNode() {
 	this.particlenumber = this.addWidget("number", "Particle Number",
 		this.properties.maxParticles, function(v) {
 			that.properties.maxParticles = v;
-			resizeBufferArray(meshes_list[this.properties.mesh_id], "vertices", v, default_vertices)
+			resizeBufferArray(meshes_list[that.properties.mesh_id], "vertices", v, default_vertices)
 		},{ min: 0, max: 1000000, step: 10});
 
 	this.addInput("Position","vec3");
