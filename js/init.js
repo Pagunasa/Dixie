@@ -121,14 +121,15 @@ gl.onkey = function(e){
 /************************************************/
 /********Definition of important classes*********/
 /************************************************/
+
+var default_vertices  = [-0.5,-0.5,0, 0.5,-0.5,0, -0.5,0.5,0, 0.5,0.5,0, -0.5,0.5,0, 0.5,-0.5,0];
+var default_coords    = [1,1, 0,1, 1,0, 0,0, 1,0, 0,1];
+var default_color     = [1,1,1,1];
+
 function createMesh(id, particles){
 	var vertices  = new Float32Array(particles * 6 * 3);
 	var coords    = new Float32Array(particles * 6 * 2);
 	var colors    = new Float32Array(particles * 6);
-
-	var default_vertices  = [-0.5,-0.5,0, 0.5,-0.5,0, -0.5,0.5,0, 0.5,0.5,0, -0.5,0.5,0, 0.5,-0.5,0];
-	var default_color     = [1,1,1,1];
-	var default_coords    = [1,1, 0,1, 1,0, 0,0, 1,0, 0,1];
 
 	for(var i = 0; i < particles; i ++)
 	{
@@ -143,20 +144,27 @@ function createMesh(id, particles){
 	meshes_list.push({id: id, mesh: mesh})
 }
 
-function resizeBufferArray(mesh, bufferName, newSize) {
-	var default_vertices  = [-0.5,-0.5,0, 0.5,-0.5,0, -0.5,0.5,0, 0.5,0.5,0, -0.5,0.5,0, 0.5,-0.5,0];
-	var buffer = mesh.getBuffer(bufferName).data;
+function resizeBufferArray(mesh, bufferName, newSize, default_data) {
+	var data = mesh.getBuffer(bufferName).data;
 
-    if (newSize < buffer.length)
-    	buffer = buffer.slice(0,newSize);
-	else
-	    var i = 0;
-		while(newSize > buffer.length){
-		    buffer.push(default_vertices[i%18]);
-		    i += 1;
-		}
+	if (newSize == data.length)
+		return;
 
-    mesh.getBuffer(bufferName).data = buffer
+    if (newSize < data.length){
+       	data = data.slice(0,newSize);
+        mesh.getBuffer(bufferName).data = data
+    } else {
+		var i = 0;
+		var nBuff = new Float32Array(newSize);
+
+        for (var i = 0; i < data.length; i++)
+            nBuff[i] = data[i];
+            
+		for(var i = data.length; i < nBuff.length; i ++)
+		    nBuff.set(default_data, i*6*3);
+
+        mesh.getBuffer(bufferName).data = nBuff
+	}	
 }
 
 function updateVertexs(mesh, particle_id, particle){
@@ -238,6 +246,7 @@ function InitSystemNode() {
 	this.particlenumber = this.addWidget("number", "Particle Number",
 		this.properties.maxParticles, function(v) {
 			that.properties.maxParticles = v;
+			resizeBufferArray(meshes_list[this.properties.mesh_id], "vertices", v, default_vertices)
 		},{ min: 0, max: 1000000, step: 10});
 
 	this.addInput("Position","vec3");
@@ -246,8 +255,9 @@ function InitSystemNode() {
 }
 
 InitSystemNode.prototype.onAdded = function() {
-	this.properties.id = this.id;
+	this.properties.id 		= this.id;
 	createMesh(this.id, this.properties.maxParticles);
+	this.properties.mesh_id = meshes_list.length - 1;
 	system_list.push(new SystemInfo(this.id));
 }
 
@@ -270,12 +280,6 @@ InitSystemNode.prototype.onRemoved = function(){
 		}
 	}
 }
-
-/*InitSystemNode.prototype.onPropertyChanged = function(n, v){
-	console.log("Hola")
-	console.log(n)
-	console.log(v)
-}*/
 
 InitSystemNode.title = "Init Particle System";
 LiteGraph.registerNodeType("particles/Init System", InitSystemNode);
