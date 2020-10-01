@@ -229,8 +229,6 @@ function InitSystemNode() {
 	this.addOutput("Particle System", "ParticleSystem");
 }
 
-InitSystemNode.title = "Init Particle System";
-
 InitSystemNode.prototype.onAdded = function() {
 	this.properties.id = this.id;
 	createMesh(this.properties.maxParticles);
@@ -249,15 +247,15 @@ InitSystemNode.prototype.onExecute = function() {
 	this.setOutputData(0, this.properties);	
 }
 
-/*
 InitSystemNode.prototype.onRemoved = function(){
 	for(x in meshes_list){
 		if (meshes_list[x].id == this.id){
 			meshes_list.splice(x, 1);
 		}
 	}
-}*/
+}
 
+InitSystemNode.title = "Init Particle System";
 LiteGraph.registerNodeType("particles/Init System", InitSystemNode);
 
 //*********************************************//
