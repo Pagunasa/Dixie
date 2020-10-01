@@ -227,7 +227,7 @@ Particle.prototype.fill = function(system, properties) {
 class SystemInfo {
 	constructor(id_) {
 		this.id = id_;
-		this.mesh_id = meshes_list.length - 1;
+		this.mesh_id = id_;
 		this.particles_list = [];
 	}
 }
@@ -246,7 +246,7 @@ function InitSystemNode() {
 	this.particlenumber = this.addWidget("number", "Particle Number",
 		this.properties.maxParticles, function(v) {
 			that.properties.maxParticles = v;
-			resizeBufferArray(meshes_list[that.properties.mesh_id], "vertices", v, default_vertices)
+			resizeBufferArray(meshes_list[that.properties.id].mesh, "vertices", v*6*3, default_vertices)
 		},{ min: 0, max: 1000000, step: 10});
 
 	this.addInput("Position","vec3");
@@ -257,7 +257,6 @@ function InitSystemNode() {
 InitSystemNode.prototype.onAdded = function() {
 	this.properties.id 		= this.id;
 	createMesh(this.id, this.properties.maxParticles);
-	this.properties.mesh_id = meshes_list.length - 1;
 	system_list.push(new SystemInfo(this.id));
 }
 
@@ -279,6 +278,8 @@ InitSystemNode.prototype.onRemoved = function(){
 			meshes_list.splice(x, 1);
 		}
 	}
+
+	system_list.splice(this.id, 1);
 }
 
 InitSystemNode.title = "Init Particle System";
