@@ -121,6 +121,18 @@ gl.onkey = function(e){
 /************************************************/
 /********Definition of important classes*********/
 /************************************************/
+function resizeVertexArray(arr, newSize) {
+	var default_vertices  = [-0.5,-0.5,0, 0.5,-0.5,0, -0.5,0.5,0, 0.5,0.5,0, -0.5,0.5,0, 0.5,-0.5,0];
+	var i = 0;
+
+    while(newSize > arr.length){
+        arr.set(default_vertices, i*6*3);
+        i += 1;
+    }
+    
+    arr.length = newSize;
+}
+
 function createMesh(id, particles){
 	var vertices  = new Float32Array(particles * 6 * 3);
 	var coords    = new Float32Array(particles * 6 * 2);
@@ -255,11 +267,11 @@ InitSystemNode.prototype.onRemoved = function(){
 	}
 }
 
-InitSystemNode.prototype.onPropertyChanged = function(n, v){
+/*InitSystemNode.prototype.onPropertyChanged = function(n, v){
 	console.log("Hola")
 	console.log(n)
 	console.log(v)
-}
+}*/
 
 InitSystemNode.title = "Init Particle System";
 LiteGraph.registerNodeType("particles/Init System", InitSystemNode);
