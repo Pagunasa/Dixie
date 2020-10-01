@@ -593,15 +593,14 @@ gl.ondraw = function() {
 	mat4.multiply(vp, view, proj);
 	
 	var model    = mat4.create();
-	var rotation = []
+	/*var rotation = []
 	mat4.getRotation(rotation, view)
 	for (var i = 0; i < 4; i++)
 		rotation[i] *= -1
 	
-	mat4.fromRotationTranslation(model, rotation, [])
-
+	mat4.fromRotationTranslation(model, rotation, [])*/
 	
-	mat4.lookAt(model, cam_pos, center, [0,1,0]);
+	//mat4.lookAt(model, [0,0,0], center, [0,1,0]);
 	
 	texture.bind(0);
 
