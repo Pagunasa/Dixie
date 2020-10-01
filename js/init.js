@@ -188,9 +188,9 @@ Particle.prototype.fill = function(system, properties) {
 	//Radom definition of the lifetime
 	lifetime = Math.random() * properties.max_lifetime_value + properties.min_lifetime_value;
 
-	this.x = system.x;
-	this.y = system.y;
-	this.z = system.z;
+	this.x = 0;
+	this.y = 0;
+	this.z = 0;
 
 	this.vx = vx;
 	this.vy = vy;
@@ -431,15 +431,6 @@ VortexNoiseNode.prototype.onExecute = function() {
 VortexNoiseNode.title = "Vortex Noise";
 LiteGraph.registerNodeType("particles/Vortex Noise", VortexNoiseNode);
 
-/********************************************/
-/********************************************/
-/********************************************/
-
-function BasicMoveNode() {
-	this.addInput("Particle System","ParticleSystem");
-	this.addInput("Vortex Noise", "VortexNoise");
-}
-
 function ApplyVertexNoise(noise, particle){
 	var r = {x:0, y:0, z:0};
 
@@ -468,6 +459,15 @@ function ApplyVertexNoise(noise, particle){
 	particle.vz += (v.z)*factor;
 
 	return particle;
+}
+
+/********************************************/
+/********************************************/
+/********************************************/
+
+function BasicMoveNode() {
+	this.addInput("Particle System","ParticleSystem");
+	this.addInput("Vortex Noise", "VortexNoise");
 }
 
 BasicMoveNode.prototype.onExecute = function () {
@@ -606,11 +606,11 @@ gl.ondraw = function() {
 		u_viewprojection: vp,
 		u_mvp: mvp,
 		u_color: [1,1,1,1],
-		u_model: model,
 		u_texture: 0
 	};
 
 	for(x in system_list){
+		mat4.translate(my_uniforms.model, model, [0,0,0])
 		shader_part.uniforms( my_uniforms ).draw( meshes_list[system_list[x].mesh_id].mesh );
 	}
 
