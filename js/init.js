@@ -123,12 +123,12 @@ gl.onkey = function(e){
 /************************************************/
 function resizeVertexArray(arr, newSize) {
 	var default_vertices  = [-0.5,-0.5,0, 0.5,-0.5,0, -0.5,0.5,0, 0.5,0.5,0, -0.5,0.5,0, 0.5,-0.5,0];
-	var i = 0;
 
-    while(newSize > arr.length){
-        arr.set(default_vertices, i*6*3);
-        i += 1;
-    }
+    if (newSize < arr.length)
+    	arr.slice(0,newSize)
+	else
+		while(newSize > arr.length)
+        	arr.set(default_vertices, i*6*3);
     
     arr.length = newSize;
 }
