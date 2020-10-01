@@ -121,17 +121,6 @@ gl.onkey = function(e){
 /************************************************/
 /********Definition of important classes*********/
 /************************************************/
-function resizeBufferArray(mesh, bufferName, newSize) {
-	var default_vertices  = [-0.5,-0.5,0, 0.5,-0.5,0, -0.5,0.5,0, 0.5,0.5,0, -0.5,0.5,0, 0.5,-0.5,0];
-	var buffer = mesh.vertexBuffers[bufferName].data;
-
-    if (newSize < buffer.length)
-    	buffer = buffer.slice(0,newSize);
-	else
-		while(newSize > buffer.length)
-        	buffer.set(default_vertices, (buffer.length+1)*6*3);
-}
-
 function createMesh(id, particles){
 	var vertices  = new Float32Array(particles * 6 * 3);
 	var coords    = new Float32Array(particles * 6 * 2);
@@ -152,6 +141,22 @@ function createMesh(id, particles){
 	mesh.addBuffers({vertices : vertices, coords: coords, colors : colors}, null, gl.STREAM_DRAW);
 
 	meshes_list.push({id: id, mesh: mesh})
+}
+
+function resizeBufferArray(mesh, bufferName, newSize) {
+	var default_vertices  = [-0.5,-0.5,0, 0.5,-0.5,0, -0.5,0.5,0, 0.5,0.5,0, -0.5,0.5,0, 0.5,-0.5,0];
+	var buffer = mesh.getBuffer(bufferName).data;
+
+    if (newSize < buffer.length)
+    	buffer = buffer.slice(0,newSize);
+	else
+	    var i = 0;
+		while(newSize > buffer.length){
+		    buffer.push(default_vertices[i%18]);
+		    i += 1;
+		}
+
+    mesh.getBuffer(bufferName).data = buffer
 }
 
 function updateVertexs(mesh, particle_id, particle){
