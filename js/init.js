@@ -121,7 +121,7 @@ gl.onkey = function(e){
 /************************************************/
 /********Definition of important classes*********/
 /************************************************/
-function createMesh(particles){
+function createMesh(id, particles){
 	var vertices  = new Float32Array(particles * 6 * 3);
 	var coords    = new Float32Array(particles * 6 * 2);
 	var colors    = new Float32Array(particles * 6);
@@ -140,7 +140,7 @@ function createMesh(particles){
 	var mesh = new GL.Mesh();
 	mesh.addBuffers({vertices : vertices, coords: coords, colors : colors}, null, gl.STREAM_DRAW);
 
-	meshes_list.push(mesh)
+	meshes_list.push({id: id, mesh: mesh})
 }
 
 function updateVertexs(mesh, particle_id, particle){
@@ -231,7 +231,7 @@ function InitSystemNode() {
 
 InitSystemNode.prototype.onAdded = function() {
 	this.properties.id = this.id;
-	createMesh(this.properties.maxParticles);
+	createMesh(id, this.properties.maxParticles);
 	system_list.push(new SystemInfo(this.id));
 }
 
@@ -481,7 +481,7 @@ BasicMoveNode.prototype.onExecute = function () {
 	if(system != undefined && properties != undefined){
 		for(x in system_list){
 			if (system_list[x].id == system.id){
-				var mesh = meshes_list[system_list[x].mesh_id];
+				var mesh = meshes_list[system_list[x].mesh_id].mesh;
 				var particles = system_list[x].particles_list;
 
 				for (var i = 0; i < particles.length; i++) {
