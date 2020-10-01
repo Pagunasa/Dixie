@@ -125,7 +125,7 @@ function resizeVertexArray(arr, newSize) {
 	var default_vertices  = [-0.5,-0.5,0, 0.5,-0.5,0, -0.5,0.5,0, 0.5,0.5,0, -0.5,0.5,0, 0.5,-0.5,0];
 
     if (newSize < arr.length)
-    	arr.slice(0,newSize)
+    	arr = arr.slice(0,newSize);
 	else
 		while(newSize > arr.length)
         	arr.set(default_vertices, i*6*3);
