@@ -255,6 +255,12 @@ InitSystemNode.prototype.onRemoved = function(){
 	}
 }
 
+InitSystemNode.prototype.onPropertyChanged = function(n, v){
+	console.log("Hola")
+	console.log(n)
+	console.log(v)
+}
+
 InitSystemNode.title = "Init Particle System";
 LiteGraph.registerNodeType("particles/Init System", InitSystemNode);
 
