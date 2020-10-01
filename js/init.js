@@ -594,7 +594,7 @@ gl.ondraw = function() {
 	
 	var model    = mat4.create();
 	var rotation = []
-	mat4.getRotation(t, view)
+	mat4.getRotation(rotation, view)
 	for (var i = 0; i < 4; i++)
 		rotation[i] *= -1
 	
