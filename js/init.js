@@ -121,16 +121,15 @@ gl.onkey = function(e){
 /************************************************/
 /********Definition of important classes*********/
 /************************************************/
-function resizeVertexArray(arr, newSize) {
+function resizeBufferArray(mesh, bufferName, newSize) {
 	var default_vertices  = [-0.5,-0.5,0, 0.5,-0.5,0, -0.5,0.5,0, 0.5,0.5,0, -0.5,0.5,0, 0.5,-0.5,0];
+	var buffer = mesh.vertexBuffers[bufferName].data;
 
-    if (newSize < arr.length)
-    	arr = arr.slice(0,newSize);
+    if (newSize < buffer.length)
+    	buffer = buffer.slice(0,newSize);
 	else
-		while(newSize > arr.length)
-        	arr.set(default_vertices, i*6*3);
-    
-    arr.length = newSize;
+		while(newSize > buffer.length)
+        	buffer.set(default_vertices, (buffer.length+1)*6*3);
 }
 
 function createMesh(id, particles){
