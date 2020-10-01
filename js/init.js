@@ -606,11 +606,12 @@ gl.ondraw = function() {
 		u_viewprojection: vp,
 		u_mvp: mvp,
 		u_color: [1,1,1,1],
+		u_model: [],
 		u_texture: 0
 	};
 
 	for(x in system_list){
-		mat4.translate(my_uniforms.model, model, [0,0,0])
+		mat4.translate(my_uniforms.u_model, model, [0,0,0])
 		shader_part.uniforms( my_uniforms ).draw( meshes_list[system_list[x].mesh_id].mesh );
 	}
 
