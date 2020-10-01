@@ -591,18 +591,19 @@ gl.ondraw = function() {
 
 	var vp = mat4.create();
 	mat4.multiply(vp, view, proj);
-
-	//var CameraRight_worldspace = {ViewMatrix[0], ViewMatrix[4], ViewMatrix[8]}
-	//var CameraUp_worldspace = {ViewMatrix[1], ViewMatrix[5], ViewMatrix[9]}
 	
-	var model = mat4.create();
+	var model    = mat4.create();
+	var rotation = []
+	mat4.getRotation(t, view)
+	for (var i = 0; i < 4; i++)
+		rotation[i] *= -1
+	
+	mat4.fromRotationTranslation(model, rotation, [])
+
+	
 	mat4.lookAt(model, cam_pos, center, [0,1,0]);
 	
 	texture.bind(0);
-	
-	//Vector3 lookPoint = transform.position - target.position;
- 	//lookPoint.y = target.position.y;
- 	//transform.LookAt(lookPoint);
 
 	var my_uniforms = { 
 		u_viewprojection: vp,
