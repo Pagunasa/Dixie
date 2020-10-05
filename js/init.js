@@ -213,8 +213,8 @@ function resizeBufferArray(system_id, mesh, newSize) {
 	        for (var i = 0; i < data.length; i++)
 	            nBuff[i] = data[i];
 	            
-			for(var i = data.length; i < nBuff.length / data_size; i ++)
-			    nBuff.set(default_vertices, i*data_size);
+			for(var i = data.length / data_size; i < nBuff.length / data_size; i ++)
+			    nBuff.set(default_data, i*data_size);
 
 	        mesh.getBuffer(x).data = nBuff
     	}
