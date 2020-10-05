@@ -157,6 +157,7 @@ function resizeBufferArray(system_id, mesh, newSize) {
 	var size;
 	var data;
 	var data_size;
+	var default_data;
 
 	if (vertexSize == data_Vertex.length)
 		return;
@@ -192,16 +193,19 @@ function resizeBufferArray(system_id, mesh, newSize) {
     			size = vertexSize;
     			data_size = 6 * 3;
     			data = data_Vertex;
+    			default_data = default_vertices;
     		}
     		else if (x == "coords") {
     			size = coordsSize;   
     			data_size = 6 * 2;
-    			data = data_Coords; 		
+    			data = data_Coords; 	
+    			default_data = default_coords;	
     		}
     		else if (x == "colors") {
     			size = colorsSize;
     			data_size = 4;
     			data = data_Colors;
+    			default_data = default_color;
     		}
 
         	var nBuff = new Float32Array(size);
