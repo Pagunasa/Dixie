@@ -144,32 +144,77 @@ function createMesh(id, particles){
 	meshes_list.push({id: id, mesh: mesh})
 }
 
-function resizeBufferArray(mesh, bufferName, newSize, system_id, default_data) {
-	var data = mesh.getBuffer(bufferName).data;
+function resizeBufferArray(system_id, mesh, newSize) {
+	var data_Vertex = mesh.getBuffer("vertices").data;
+	var data_Coords = mesh.getBuffer("coords").data;
+	var data_Colors = mesh.getBuffer("colors").data;
 
-	if (newSize == data.length)
+	//The -1 is because in JS the arrays start in 0
+	var vertexSize = newSize * 6 * 3;
+	var coordsSize = newSize * 6 * 2;
+	var colorsSize = newSize * 4;
+
+	var size;
+	var data;
+	var data_size;
+
+	if (vertexSize == data_Vertex.length)
 		return;
 
     if (newSize < data.length){
-       	data = data.slice(0,newSize*6*3);
-        mesh.getBuffer(bufferName).data = data;
-        
+
+    	for (x in meshes_list[0].mesh.vertexBuffers) { 
+    		if (x == "vertices") {
+    			size = vertexSize;
+    			data = data_Vertex;
+    		}
+    		else if (x == "coords") {
+    			size = coordsSize;   
+    			data = data_Coords; 		
+    		}
+    		else if (x == "colors") {
+    			size = colorsSize;
+    			data = data_Colors;
+    		}
+
+    		data = data.slice(0, size);
+        	mesh.getBuffer(x).data = data;
+    	}
+
        for(x in system_list)
 	       if (system_list[x].id == system_id)
 				system_list[x].particles_list.splice(0, newSize);
-	        
-       
+	   
     } else {
-		var i = 0;
-		var nBuff = new Float32Array(newSize*6*3);
 
-        for (var i = 0; i < data.length; i++)
-            nBuff[i] = data[i];
-            
-		for(var i = data.length; i < nBuff.length; i ++)
-		    nBuff.set(default_data, i*6*3);
+    	for (x in meshes_list[0].mesh.vertexBuffers) { 
+    		if (x == "vertices") {
+    			size = vertexSize;
+    			data_size = 6 * 3;
+    			data = data_Vertex;
+    		}
+    		else if (x == "coords") {
+    			size = coordsSize;   
+    			data_size = 6 * 2;
+    			data = data_Coords; 		
+    		}
+    		else if (x == "colors") {
+    			size = colorsSize;
+    			data_size = 4;
+    			data = data_Colors;
+    		}
 
-        mesh.getBuffer(bufferName).data = nBuff
+        	var nBuff = new Float32Array(size);
+
+	        for (var i = 0; i < data.length; i++)
+	            nBuff[i] = data[i];
+	            
+			for(var i = data.length; i < nBuff.length; i ++)
+			    nBuff.set(default_vertices, i*data_size);
+
+	        mesh.getBuffer(x).data = nBuff
+    	}
+
 	}	
 }
 
