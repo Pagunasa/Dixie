@@ -144,18 +144,24 @@ function createMesh(id, particles){
 	meshes_list.push({id: id, mesh: mesh})
 }
 
-function resizeBufferArray(mesh, bufferName, newSize, default_data) {
+function resizeBufferArray(mesh, bufferName, newSize, system_id, default_data) {
 	var data = mesh.getBuffer(bufferName).data;
 
 	if (newSize == data.length)
 		return;
 
     if (newSize < data.length){
-       	data = data.slice(0,newSize);
-        mesh.getBuffer(bufferName).data = data
+       	data = data.slice(0,newSize*6*3);
+        mesh.getBuffer(bufferName).data = data;
+        
+       for(x in system_list)
+	       if (system_list[x].id == system_id)
+				system_list[x].particles_list.splice(0, newSize);
+	        
+       
     } else {
 		var i = 0;
-		var nBuff = new Float32Array(newSize);
+		var nBuff = new Float32Array(newSize*6*3);
 
         for (var i = 0; i < data.length; i++)
             nBuff[i] = data[i];
@@ -246,7 +252,7 @@ function InitSystemNode() {
 	this.particlenumber = this.addWidget("number", "Particle Number",
 		this.properties.maxParticles, function(v) {
 			that.properties.maxParticles = v;
-			resizeBufferArray(meshes_list[that.properties.mesh_id].mesh, "vertices", v*6*3, default_vertices)
+			resizeBufferArray(meshes_list[that.properties.mesh_id].mesh, "vertices", v, that.properties.id, default_vertices)
 		},{ min: 0, max: 1000000, step: 10});
 
 	this.addInput("Position","vec3");
@@ -255,9 +261,9 @@ function InitSystemNode() {
 }
 
 InitSystemNode.prototype.onAdded = function() {
-	this.properties.id 		= this.id;
+	this.properties.id = this.id;
 	createMesh(this.id, this.properties.maxParticles);
-	this.properties.mesh_id         = meshes_list.length - 1;
+	this.properties.mesh_id = meshes_list.length - 1;
 	system_list.push(new SystemInfo(this.id));
 }
 
@@ -279,8 +285,12 @@ InitSystemNode.prototype.onRemoved = function(){
 			meshes_list.splice(x, 1);
 		}
 	}
-
-	system_list.splice(this.id, 1);
+    
+    for(x in system_list){
+	   	if (system_list[x].id == this.properties.id){
+	        system_list.splice(x, 1);
+	   	}
+    }
 }
 
 InitSystemNode.title = "Init Particle System";
