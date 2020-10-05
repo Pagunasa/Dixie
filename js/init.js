@@ -161,7 +161,7 @@ function resizeBufferArray(system_id, mesh, newSize) {
 	if (vertexSize == data_Vertex.length)
 		return;
 
-    if (newSize < data.length){
+    if (vertexSize < data_Vertex.length){
 
     	for (x in meshes_list[0].mesh.vertexBuffers) { 
     		if (x == "vertices") {
