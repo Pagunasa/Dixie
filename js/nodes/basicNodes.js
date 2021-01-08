@@ -76,7 +76,6 @@ vector2Node.prototype.onExecute = function() {
 	this.data[0] = this.properties.x;
 	this.data[1] = this.properties.y;
 
-	console.log(this.data);
 	this.setOutputData(0, this.data);
 }
 
@@ -91,10 +90,33 @@ vector2Node.title_selected_color = basicSelectedTitleColor;
 *	@method textureLoadNode
 */
 function vector3Node() {
+	this.properties = { x: 0.0, y: 0.0, z: 0.0 }
+
+	this.data = new Float32Array(3);
+
+	this.addInput("X", "number");
+	this.addInput("Y", "number");
+	this.addInput("Z", "number");
+
+	this.addOutput("Vec3", "vec3");
+}
+
+vector2Node.prototype.onExecute = function() {
+	this.properties.x = this.getInputData(0) || 0.0;
+	this.properties.y = this.getInputData(1) || 0.0;
+	this.properties.z = this.getInputData(2) || 0.0;
+
+	this.data[0] = this.properties.x;
+	this.data[1] = this.properties.y;
+	this.data[2] = this.properties.z;
+
+	this.setOutputData(0, this.data);
 }
 
 vector3Node.title = "Vector 3";
 vector3Node.title_color = basicNodeColor;
+vector3Node.title_text_color = basicTitleColor;
+vector3Node.title_selected_color = basicSelectedTitleColor;
 
 
 /*
@@ -102,10 +124,36 @@ vector3Node.title_color = basicNodeColor;
 *	@method textureLoadNode
 */
 function vector4Node() {
+	this.properties = { x: 0.0, y: 0.0, z: 0.0, w: 0.0 }
+
+	this.data = new Float32Array(4);
+
+	this.addInput("X", "number");
+	this.addInput("Y", "number");
+	this.addInput("Z", "number");
+	this.addInput("W", "number");
+
+	this.addOutput("Vec4", "vec4");
+}
+
+vector4Node.prototype.onExecute = function() {
+	this.properties.x = this.getInputData(0) || 0.0;
+	this.properties.y = this.getInputData(1) || 0.0;
+	this.properties.z = this.getInputData(2) || 0.0;
+	this.properties.w = this.getInputData(3) || 0.0;
+
+	this.data[0] = this.properties.x;
+	this.data[1] = this.properties.y;
+	this.data[2] = this.properties.z;
+	this.data[3] = this.properties.w;
+
+	this.setOutputData(0, this.data);
 }
 
 vector4Node.title = "Vector 4";
 vector4Node.title_color = basicNodeColor;
+vector4Node.title_text_color = basicTitleColor;
+vector4Node.title_selected_color = basicSelectedTitleColor;
 
 
 /*
