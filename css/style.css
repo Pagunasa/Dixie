@@ -1,0 +1,223 @@
+html,body {
+	width: 100%;
+	height: 100%;
+	margin: 0;
+	padding: 0;
+}
+
+/**************************************/
+/* Interface color palette definition */
+/**************************************/
+:root {
+	--primary-color: #37464F;
+	--secondary-color: #455A64;
+	--ternary-color: #ECEFF1;
+	--quaternary-color: #BABDBE;
+	--quinary-color: #353535;
+}
+
+.primary-bg-color {
+	background-color: var(--primary-color);
+}
+
+.primary-color {
+	color: var(--primary-color);
+}
+
+.secondary-bg-color {
+	background-color: var(--secondary-color);
+}
+
+.secondary-color {
+	color: var(--secondary-color);
+}
+
+.ternary-bg-color {
+	background-color: var(--ternary-color);
+}
+
+.ternary-color {
+	color: var(--ternary-color);
+}
+
+.quaternary-bg-color {
+	background-color: var(--quaternary-color);
+}
+
+.quaternary-color {
+	color: var(--quaternary-color);
+}
+
+.quinary-bg-color {
+	background-color: var(--quinary-color);
+}
+
+.quinary-color {
+	color: var(--quinary-color);
+}
+/**************************************/
+/**************************************/
+/**************************************/
+
+/**************************************/
+/******Horitzontal list definition*****/
+/**************************************/
+.horitz-list{
+	list-style-type: none;
+	padding: 0px;
+	margin: 0px;
+	overflow: hidden;
+}
+
+.horitz-list li{
+	float: left; 
+}
+
+.horitz-list-canvas{
+	height: 100%;
+	width: 100%;
+}
+
+.horitz-list-canvas li{
+	float: left; 
+	width: 50%;
+	height: 100%;
+}
+
+.list-divisor{
+	color: var(--ternary-color);
+	font-size: 25px;
+	margin-left: 20px;
+	margin-right: 20px;
+}
+/**************************************/
+/**************************************/
+/**************************************/
+
+/**************************************/
+/***********Buttons definition*********/
+/**************************************/
+.button-secondary{
+	background-color: var(--secondary-color);
+	color: var(--ternary-color); 
+	border-style: none;
+	font-size: 25px;
+}
+
+.button-secondary:hover{
+	background-color: var(--ternary-color);
+	color: var(--secondary-color); 
+}
+
+.upload-btn-wrapper {
+  position: relative;
+  overflow: hidden;
+  display: inline-block;
+}
+
+.upload-btn-wrapper input[type=file] {
+  font-size: 100px;
+  position: absolute;
+  left: 0;
+  top: 0;
+  opacity: 0;
+}
+
+#divisionButton{
+	position: absolute;
+	top: 50%;
+	width: 32px; /*This is because the size of the icon inside it*/
+  	font-size: 20px !important;
+}
+/**************************************/
+/**************************************/
+/**************************************/
+
+
+
+/**************************************/
+/*********Buttons Media Querys*********/
+/**************************************/
+@media only screen and (max-width: 1050px) {
+  .button-secondary{
+  	font-size: 20px;
+  }
+
+  .list-divisor{
+	font-size: 20px;
+	margin-left: 15px;
+	margin-right: 15px;
+  }
+}
+
+@media only screen and (max-width: 750px) {
+  .button-secondary{
+  	font-size: 15px;
+  }
+
+  .list-divisor{
+	font-size: 15px;
+	margin-left: 10px;
+	margin-right: 10px;
+  }
+
+  #divisionButton{
+  	font-size: 20px !important;
+  }
+}
+
+@media only screen and (max-width: 598px) {
+  .list-divisor{
+	margin-left:  5px;
+	margin-right: 5px;
+  }
+}
+
+/**************************************/
+/**************************************/
+/**************************************/
+
+
+
+/**************************************/
+/**************Containers**************/
+/**************************************/
+#root{
+	overflow: hidden;
+	position: absolute;
+	height: 100%;
+	width: 100%;
+	margin: 0;
+ 	padding: 0;
+}
+
+.gl-canvas{
+	width: 100%;
+	height: 100%;
+}
+
+#particleContainer{
+	height: 100%;
+	width: 100%;
+}
+/**************************************/
+/**************************************/
+/**************************************/
+
+/**************************************/
+/****************Utils*****************/
+/**************************************/
+.icon-margin{
+	margin-right: 5px;
+}
+
+.no-padding {
+	padding: 0px !important;
+}
+
+.no-padding-right {
+	padding-right: 0px !important;
+}
+/**************************************/
+/**************************************/
+/**************************************/

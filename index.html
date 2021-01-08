@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8" name="viewport" content="width=device-width, initial-scale=1.0">
+
+		<title>Dixie</title>
+		
+		<link rel="stylesheet" type="text/css" href="css/litegraph.css">
+		<link rel="stylesheet" type="text/css" href="css/litegraph-editor.css">
+		<script type="text/javascript" src="js/extern/litegraph.js"></script>
+		<script type="text/javascript" src="js/extern/gl-matrix.js"></script>
+		<script type="text/javascript" src="js/extern/litegl.js"></script>
+
+		<!-- Bootstrap -->
+		<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+
+		<link rel="stylesheet" type="text/css" href="css/style.css">
+
+		<script src="https://kit.fontawesome.com/231612722b.js" crossorigin="anonymous"></script>
+
+	</head>
+
+	<body>
+		<div id="root" class="secondary-color">
+			<nav id="menu" class="navbar primary-bg-color justify-content-center"> 
+				<ul class="horitz-list">
+					<li class="upload-btn-wrapper">
+						<input type="file" id="graphLoader" />
+						<button id="load" class="button-secondary">Load</button>
+					</li>
+					<li><button id="save" class="button-secondary">Save</button></li>
+					<li><button id="export" class="button-secondary">Export</button></li>
+					
+					<li class="list-divisor"><b>|</b></li>
+					<li><button id="play" class="button-secondary"><i class="fas fa-play icon-margin"></i>Play</button></li>
+					<li><button id="reset" class="button-secondary"><i class="fas fa-redo icon-margin"></i>Reset</button></li>
+					<li><button id="stop" class="button-secondary"><i class="fas fa-stop icon-margin"></i>Stop</button></li>
+					
+					<li class="list-divisor"><b>|</b></li>
+					<li><button id="demos" class="button-secondary" data-toggle="modal" data-target="#demosModal">Demos</button></li>
+					<li><button id="help" class="button-secondary">Help</button></li>
+					<!--<li><button id="glOptionButton" class="button-secondary" data-toggle="modal" data-target="#optionModal"><i class="fas fa-cog icon-margin"></i>Options</button></li>-->
+				</ul>
+			</nav>
+
+			<ul class="horitz-list horitz-list-canvas">
+				<li id="graphLi"><canvas id='graphCanvas'></canvas></li>
+				<li id="particleLi"><div id='particleContainer'></div></li>
+			</ul>
+
+			<button id="divisionButton" class="button-secondary rounded-circle"><i class="fas fa-arrows-alt-h"></i></button>
+			
+		</div>
+	</body>
+
+	<!----------------->
+	<!-- Demos modal -->
+	<!----------------->
+	<div class="modal fade" id="demosModal" tabindex="-1" role="dialog" aria-labelledby="demoModalLabel" aria-hidden="true">
+	  <div class="modal-dialog" role="document">
+	    <div class="modal-content">
+	      <div class="modal-header primary-bg-color">
+	        <h5 class="modal-title ternary-color" id="demoModalLabel">Demos</h5>
+	        <button type="button" class="close button-secondary" data-dismiss="modal" aria-label="Close">
+	          <span aria-hidden="true">&times;</span>
+	        </button>
+	      </div>
+	      <div class="modal-body quaternary-bg-color">
+	   		<ul class="list-group list-group-flush">
+			  <li class="list-group-item quaternary-bg-color">Demo 1</li>
+			  <li class="list-group-item quaternary-bg-color">Demo 2</li>
+			  <li class="list-group-item quaternary-bg-color">Demo 3</li>
+			</ul>
+	      </div>
+	    </div>
+	  </div>
+	</div>
+
+	<!----------------->
+	<!-- Demos modal -->
+	<!----------------->
+	<div class="modal fade" id="optionModal" tabindex="-1" role="dialog" aria-labelledby="demoModalLabel" aria-hidden="true">
+	  <div class="modal-dialog" role="document">
+	    <div class="modal-content">
+	      <div class="modal-header primary-bg-color">
+	        <h5 class="modal-title ternary-color" id="demoModalLabel">Canvas options</h5>
+	        <button type="button" class="close button-secondary" data-dismiss="modal" aria-label="Close">
+	          <span aria-hidden="true">&times;</span>
+	        </button>
+	      </div>
+	      <div class="modal-body quaternary-bg-color">
+	   		<ul class="list-group list-group-flush">
+			  <li class="list-group-item quaternary-bg-color">Demo 1</li>
+			</ul>
+	      </div>
+	    </div>
+	  </div>
+	</div>
+
+	<script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
+	<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+	<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+
+	<script type="text/javascript" src="js/nodes/nodeGlobals.js"></script>
+	<script type="text/javascript" src="js/nodes/basicNodes.js"></script>
+	<script type="text/javascript" src="js/nodes/spawnNode.js"></script>
+	<script type="text/javascript" src="js/camera.js"></script>
+	<script type="text/javascript" src="js/main.js"></script>
+
+</html>
