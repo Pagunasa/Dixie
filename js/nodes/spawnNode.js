@@ -12,7 +12,9 @@ function mySpawnNode()
     	max_particles: 100
     };
 
-	this.addWidget("combo", "Mode", "Point", function(){}, { values:["Point", "Mesh", "2D Geometry"] });
+	this.addWidget("combo", "Mode", "Point", function(){
+		console.log(this);
+	}, { values:["Point", "Mesh", "2D Geometry"] });
 
 	this.addInput("Max particles", "number");
 	this.addInput("Spawn rate"   , "number");
