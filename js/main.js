@@ -164,7 +164,7 @@ function addNodes ()
 	LiteGraph.registerNodeType("basic/vector 4"      , vector4Node);
 	LiteGraph.registerNodeType("basic/color picker"  , colorPickerNode);
 	
-	LiteGraph.registerNodeType("particles/spawn", mySpawnNode);
+	LiteGraph.registerNodeType("spawn/spawn", mySpawnNode);
 }
 
 /*

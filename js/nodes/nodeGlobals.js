@@ -1,15 +1,34 @@
+/********************************/
+/************Colors**************/
+/********************************/
 var basicNodeColor  		= "#FFFC99";
 var basicTitleColor 		= "#000000";
 var basicSelectedTitleColor = "#000000";
+var spawnNodeColor         = "#8385C3";
 
+
+/********************************/
+/*************Lists**************/
+/********************************/
 var meshes_list = [];
 var vortex_list = [];
 var system_list = [];
 
+
+/********************************/
+/***********Mesh Stuff***********/
+/********************************/
 var default_vertices  = [-0.25,-0.25,0, 0.25,-0.25,0, -0.25,0.25,0, 0.25,0.25,0, -0.25,0.25,0, 0.25,-0.25,0];
 var default_coords    = [1,1, 0,1, 1,0, 0,0, 1,0, 0,1];
 var default_color     = [1,1,1,1];
 
+
+/*
+* 	This method is for search a mesh in the meshes list
+*	@method searchMesh
+*	@params {Number}  the id of the mesh
+*	@params {Boolean} if is true the mesh will be deleted
+*/
 function searchMesh(id, remove = false)
 {
     for(x in meshes_list){
@@ -21,6 +40,13 @@ function searchMesh(id, remove = false)
 	}
 }
 
+
+/*
+* 	This method is for search a system in the system list
+*	@method searchSystem
+*	@params {Number}  the id of the system
+*	@params {Boolean} if is true the system will be deleted
+*/
 function searchSystem(id, remove = false)
 {
 	for(x in system_list){
@@ -40,6 +66,12 @@ class SystemInfo {
 	}
 }
 
+/*
+* 	This method is for create a mesh
+*	@method createMesh
+*	@params {Number} the id of the mesh
+*	@params {Number} the maximum number of particles
+*/
 function createMesh(id, particles){
 	var vertices  = new Float32Array(particles * 6 * 3);
 	var coords    = new Float32Array(particles * 6 * 2);
@@ -58,12 +90,18 @@ function createMesh(id, particles){
 	meshes_list.push({id: id, mesh: mesh})
 }
 
-function resizeBufferArray(system_id, mesh, newSize) {
+
+/*
+* 	This method is for change the maximum number of particles of a system
+*	@method createMesh
+*	@params {Mesh} the mesh
+*	@params {Number} the new maximum 
+*/
+function resizeBufferArray(mesh, newSize) {
 	var data_Vertex = mesh.getBuffer("vertices").data;
 	var data_Coords = mesh.getBuffer("coords").data;
 	var data_Colors = mesh.getBuffer("colors").data;
 
-	//The -1 is because in JS the arrays start in 0
 	var vertexSize = newSize * 6 * 3;
 	var coordsSize = newSize * 6 * 2;
 	var colorsSize = newSize * 4;
@@ -132,6 +170,14 @@ function resizeBufferArray(system_id, mesh, newSize) {
 	}	
 }
 
+
+/*
+* 	This method is for update the position of a particles
+*	@method updateVertex
+*	@params {Mesh} the mesh
+*	@params {Number} the id of the particle
+*	@params {Number} the particle
+*/
 function updateVertexs(mesh, particle_id, particle){
 	var vertex_data = mesh.vertexBuffers.vertices.data;
 
