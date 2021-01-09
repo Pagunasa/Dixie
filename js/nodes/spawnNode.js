@@ -80,7 +80,7 @@ mySpawnNode.prototype.onExecute = function()
 	//When is executed the inputs are gotten and if they are undefined a default value is setted
 	this.properties.max_particles = Math.round(this.getInputData(0)) || 100;
 	this.properties.spawn_rate    = Math.round(this.getInputData(1)) || 10;
-	this.properties.position      = this.getInputData(2) || new Float32Array(3);
+	this.properties.position      = this.getInputData(2) || vector_3;
 
 	//Check if the maximum number of particles change, if is true then the array of the particles have to be resized
 	if (this.properties.max_particles != this.last_status.max_particles)

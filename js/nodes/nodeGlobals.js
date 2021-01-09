@@ -6,6 +6,12 @@ var basicTitleColor 		= "#000000";
 var basicSelectedTitleColor = "#000000";
 var spawnNodeColor         = "#8385C3";
 
+/********************************/
+/************Vectors*************/
+/********************************/
+var vector_2 = new Float32Array(2);
+var vector_3 = new Float32Array(3);
+var vector_4 = new Float32Array(4);
 
 /********************************/
 /*************Lists**************/
@@ -13,7 +19,6 @@ var spawnNodeColor         = "#8385C3";
 var meshes_list = [];
 var vortex_list = [];
 var system_list = [];
-
 
 /********************************/
 /***********Mesh Stuff***********/
@@ -61,10 +66,31 @@ function searchSystem(id, remove = false)
 //Information that we want to assign to an identifier
 class SystemInfo {
 	constructor(id_) {
-		this.id      = id_;
-		this.mesh_id = id_;
+		this.id             = id_;
+		this.mesh_id        = id_;
+		this.particles_list = [];
 	}
 }
+
+class Particle {
+	constructor() {
+		this.size = 0.4;
+	}
+}
+
+Particle.prototype.fill = function(properties) {
+	var speed = new Float32Array();
+	speed[0]  = Math.random() * properties.max_speed[0] + properties.min_speed[0];
+	speed[1]  = Math.random() * properties.max_speed[1] + properties.min_speed[1];
+	speed[2]  = Math.random() * properties.max_speed[2] + properties.min_speed[2];
+
+	//Radom definition of the lifetime
+	lifetime = Math.random() * properties.max_life_time + properties.min_life_time;
+
+	this.position = new Float32Array();
+	this.speed    = speed;
+	this.lifetime = lifetime;
+};
 
 /*
 * 	This method is for create a mesh

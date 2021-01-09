@@ -205,6 +205,24 @@ equationNode.title_color = basicNodeColor;
 *	@method textureLoadNode
 */
 function colorPickerNode() {
+	this.properties = { x: 0.0, y: 0.0, z: 0.0, w: 0.0 }
+
+	var colorw = {
+		type: "custom",
+		name: "color",
+		value: 0,
+		callback: function(){},
+		options: {},
+	} 
+
+	colorw.draw = function (ctx, node, widget_width, y, H) {
+		
+	    ctx.fillRect(15, y, widget_width - 15 * 2, H);
+
+	}
+
+	this.addCustomWidget(colorw);
+	this.addOutput("Color", "color");
 }
 
 colorPickerNode.title = "Color Picker";
