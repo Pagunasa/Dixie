@@ -1,5 +1,5 @@
-var basicNodeColor  		    = "#FFFC99";
-var basicTitleColor 		    = "#000000";
+var basicNodeColor  		= "#FFFC99";
+var basicTitleColor 		= "#000000";
 var basicSelectedTitleColor = "#000000";
 
 var meshes_list = [];
@@ -96,10 +96,6 @@ function resizeBufferArray(system_id, mesh, newSize) {
         	mesh.getBuffer(x).data = data;
     	}
 
-       for(x in system_list)
-	       if (system_list[x].id == system_id)
-				system_list[x].particles_list.splice(0, newSize);
-	   
     } else {
 
     	for (x in meshes_list[0].mesh.vertexBuffers) { 
