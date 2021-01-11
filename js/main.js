@@ -153,19 +153,33 @@ function initMenuButtons ()
 */
 function addNodes () 
 {
-	LiteGraph.registerNodeType("basic/contant number", constantNumberNode);
-	LiteGraph.registerNodeType("basic/random number" , randomNumberNode);
-	LiteGraph.registerNodeType("basic/load texture"  , textureLoadNode);
-	LiteGraph.registerNodeType("basic/load mesh"     , meshLoadNode);
-	LiteGraph.registerNodeType("basic/2D geometry"   , geometry2DNode);
-	LiteGraph.registerNodeType("basic/equation"      , equationNode);
-	LiteGraph.registerNodeType("basic/vector 2"      , vector2Node);
-	LiteGraph.registerNodeType("basic/vector 3"      , vector3Node);
-	LiteGraph.registerNodeType("basic/vector 4"      , vector4Node);
-	LiteGraph.registerNodeType("basic/color picker"  , colorPickerNode);
+	LiteGraph.registerNodeType("basic/constant number", constantNumberNode);
+	LiteGraph.registerNodeType("basic/random number"  , randomNumberNode);
+	LiteGraph.registerNodeType("basic/load texture"   , textureLoadNode);
+	LiteGraph.registerNodeType("basic/load mesh"      , meshLoadNode);
+	LiteGraph.registerNodeType("basic/2D geometry"    , geometry2DNode);
+	LiteGraph.registerNodeType("basic/equation"       , equationNode);
+	LiteGraph.registerNodeType("basic/vector 2"       , vector2Node);
+	LiteGraph.registerNodeType("basic/vector 3"       , vector3Node);
+	LiteGraph.registerNodeType("basic/vector 4"       , vector4Node);
+	LiteGraph.registerNodeType("basic/color picker"   , colorPickerNode);
 	
-	LiteGraph.registerNodeType("spawn/spawn"         , mySpawnNode);
-	LiteGraph.registerNodeType("init/init"           , initParticlesNode);
+	LiteGraph.registerNodeType("spawn/spawn"          , mySpawnNode);
+	LiteGraph.registerNodeType("init/init"            , initParticlesNode);
+
+	LiteGraph.registerNodeType("forces/gravity"       , gravityNode);
+	LiteGraph.registerNodeType("forces/vortex"        , vortexNode);
+	LiteGraph.registerNodeType("forces/magnet point"  , magnetNode);
+	LiteGraph.registerNodeType("forces/noise"         , noiseNode);
+	LiteGraph.registerNodeType("forces/path"          , pathNode);
+
+	LiteGraph.registerNodeType("conditions/create condition", createConditionNode);
+	LiteGraph.registerNodeType("conditions/merge conditions", mergeConditionsNode);
+
+	LiteGraph.registerNodeType("modify/modify property", modifyPropertyNode);
+	
+	LiteGraph.registerNodeType("collisions/collisions"            , collisionsNode);
+	LiteGraph.registerNodeType("collisions/collidable object list", collidableObjectsListNode);
 }
 
 /*

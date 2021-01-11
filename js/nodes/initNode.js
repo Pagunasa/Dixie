@@ -8,15 +8,15 @@ function initParticlesNode()
 	/***********Node properties************/
 	/**************************************/
 	this.properties = {
-		max_speed: new Float32Array(3),
+		max_speed: vector_3,
 		max_size: 10,
 		max_life_time: 10,
 		
-		min_speed: new Float32Array(3),
+		min_speed: vector_3,
 		min_size: 10,
 		min_life_time: 10,
 		
-		color: new Float32Array(4),	
+		color: vector_4,	
 		texture: undefined	
 	};
 

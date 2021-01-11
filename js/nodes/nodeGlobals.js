@@ -1,10 +1,15 @@
 /********************************/
 /************Colors**************/
 /********************************/
-var basicNodeColor  		= "#FFFC99";
-var basicTitleColor 		= "#000000";
-var basicSelectedTitleColor = "#000000";
-var spawnNodeColor         = "#8385C3";
+var basicNodeColor  		  = "#FFFC99";
+var basicTitleColor 		  = "#000000";
+var basicSelectedTitleColor   = "#000000";
+var spawnNodeColor            = "#8385C3";
+var initNodeColor             = "#87C09F";
+var forcesNodeColor           = "#FF7070";
+var conditionsNodeColor       = "#FFAB5C";
+var modifyPropertiesNodeColor = "#DE85FF";
+var collisionsNodeColor       = "#A3B082";
 
 /********************************/
 /************Vectors*************/
