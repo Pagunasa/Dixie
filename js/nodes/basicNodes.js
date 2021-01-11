@@ -161,10 +161,45 @@ vector4Node.title_selected_color = basicSelectedTitleColor;
 *	@method textureLoadNode
 */
 function textureLoadNode() {
+	this.properties = { 
+		file: undefined,
+		subtextures: false,
+		subtextures_size: vector_2
+	}
+
+	var that = this;
+
+	this.addWidget("button", "Select texture", "", 
+		function()
+		{
+		// LOAD TEXTURE BEHAVIOUR
+		}
+	);
+
+	this.addWidget("toggle", "Sub textures", false, 
+		function() {
+			that.subtextures = !that.subtextures;
+			if (that.subtextures) {
+				that.addWidget("number", "Sub textures size x", 0, function(){}, {min: 0, max: 10000000, step: 10});
+				that.addWidget("number", "Sub textures size y", 0, function(){}, {min: 0, max: 10000000, step: 10});
+				that.size[0] = 260;
+			} else {
+				that.widgets.splice(3,1);
+				that.widgets.splice(2,1);
+				that.size[0] = 210;
+				that.size[1] = 80;
+			}
+		}
+	);
+
+
+	this.addOutput("Texture", "texture");
 }
 
 textureLoadNode.title = "Load Texture";
 textureLoadNode.title_color = basicNodeColor;
+textureLoadNode.title_text_color = basicTitleColor;
+textureLoadNode.title_selected_color = basicSelectedTitleColor;
 
 
 /*
@@ -172,10 +207,32 @@ textureLoadNode.title_color = basicNodeColor;
 *	@method textureLoadNode
 */
 function meshLoadNode() {
+	this.properties = { 
+		file: undefined,
+		position: vector_3,
+		scale: vector_3,
+		rotation: vector_3
+	}
+
+	this.addWidget("button", "Select mesh", "", 
+		function()
+		{
+		// LOAD TEXTURE BEHAVIOUR
+		}
+	);
+
+	this.addInput("Position", "vec3");
+	this.addInput("Scale"   , "vec3");
+	this.addInput("Rotation", "vec3");
+	
+	this.addOutput("Mesh"  , "mesh");
+	this.addOutput("Object", "object");
 }
 
 meshLoadNode.title = "Load Mesh";
 meshLoadNode.title_color = basicNodeColor;
+meshLoadNode.title_text_color = basicTitleColor;
+meshLoadNode.title_selected_color = basicSelectedTitleColor;
 
 
 /*
@@ -183,10 +240,35 @@ meshLoadNode.title_color = basicNodeColor;
 *	@method textureLoadNode
 */
 function geometry2DNode() {
+	this.properties = { 
+		type: "Rectangle",
+		position: vector_3,
+		rotation: vector_3,
+		size: vector_2,
+	}
+
+	var that = this;
+
+	this.addWidget("combo", "Geometry", "Rectangle", 
+		function() {
+			that.properties.type = this.value;
+
+			//TO DO
+		}, 
+		{ values:["Rectangle", "Triangle", "Circle", "Plane"] });
+
+	this.addInput("Position", "vec3");
+	this.addInput("Rotation", "vec3");
+	this.addInput("Size"    , "vec2");
+	
+	this.addOutput("Geometry", "geometry");
+	this.addOutput("Object"  , "object");
 }
 
 geometry2DNode.title = "2D Geometry";
 geometry2DNode.title_color = basicNodeColor;
+geometry2DNode.title_text_color = basicTitleColor;
+geometry2DNode.title_selected_color = basicSelectedTitleColor;
 
 
 /*
@@ -194,16 +276,45 @@ geometry2DNode.title_color = basicNodeColor;
 *	@method textureLoadNode
 */
 function equationNode() {
+	this.properties = { 
+		type: "Lineal"
+	}
+
+	var that = this;
+
+	this.addWidget("combo", "Equation type", "Lineal", 
+		function() {
+			that.properties.type = this.value;
+
+			//TO DO
+		}, 
+		{ values:["Lineal", "Exponential"] });
+
+	this.addOutput("Equation", "equation");
 }
 
 equationNode.title = "Equation";
 equationNode.title_color = basicNodeColor;
+equationNode.title_text_color = basicTitleColor;
+equationNode.title_selected_color = basicSelectedTitleColor;
 
 
 /*
 * 	This node is for load a texture.
 *	@method textureLoadNode
 */
+
+function colorPickerMouse (event, [x,y], node){
+	if (event.type === "mousemove")
+        return false;
+    
+    setTimeout(function() { node.widgets[0].callback(); }, 20);
+}
+
+function colorPickerCallBack (){
+	return true;
+}
+
 function colorPickerNode() {
 	this.properties = { x: 0.0, y: 0.0, z: 0.0, w: 0.0 }
 
@@ -211,7 +322,8 @@ function colorPickerNode() {
 		type: "custom",
 		name: "color",
 		value: 0,
-		callback: function(){},
+		mouse:    colorPickerMouse,
+		callback: colorPickerCallBack,
 		options: {},
 	} 
 
@@ -227,3 +339,5 @@ function colorPickerNode() {
 
 colorPickerNode.title = "Color Picker";
 colorPickerNode.title_color = basicNodeColor;
+colorPickerNode.title_text_color = basicTitleColor;
+colorPickerNode.title_selected_color = basicSelectedTitleColor;
