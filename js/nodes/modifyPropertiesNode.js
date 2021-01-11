@@ -57,6 +57,6 @@ modifyPropertyNode.prototype.onExecute = function()
 }
 
 modifyPropertyNode.title = "Modify Property";
-modifyPropertyNode.title_color = spawnNodeColor;
+modifyPropertyNode.title_color = modifyPropertiesNodeColor;
 modifyPropertyNode.title_text_color = basicTitleColor;
 modifyPropertyNode.title_selected_color = basicSelectedTitleColor;
