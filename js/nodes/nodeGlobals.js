@@ -30,7 +30,8 @@ var system_list = [];
 /********************************/
 var default_vertices  = [-0.25,-0.25,0, 0.25,-0.25,0, -0.25,0.25,0, 0.25,0.25,0, -0.25,0.25,0, 0.25,-0.25,0];
 var default_coords    = [1,1, 0,1, 1,0, 0,0, 1,0, 0,1];
-var default_color     = [1,1,1,1];
+var default_color     = [1,1,1,1, 1,1,1,1, 1,1,1,1, 1,1,1,1, 1,1,1,1, 1,1,1,1];
+var default_init      = [0, 0, 0, 0, 0, 0];
 
 
 /*
@@ -84,7 +85,7 @@ class Particle {
 }
 
 Particle.prototype.fill = function(properties) {
-	var speed = new Float32Array();
+	var speed = new Float32Array(3);
 	speed[0]  = Math.random() * properties.max_speed[0] + properties.min_speed[0];
 	speed[1]  = Math.random() * properties.max_speed[1] + properties.min_speed[1];
 	speed[2]  = Math.random() * properties.max_speed[2] + properties.min_speed[2];
@@ -92,7 +93,7 @@ Particle.prototype.fill = function(properties) {
 	//Radom definition of the lifetime
 	lifetime = Math.random() * properties.max_life_time + properties.min_life_time;
 
-	this.position = new Float32Array();
+	this.position = new Float32Array(3);
 	this.speed    = speed;
 	this.lifetime = lifetime;
 };
@@ -106,17 +107,19 @@ Particle.prototype.fill = function(properties) {
 function createMesh(id, particles){
 	var vertices  = new Float32Array(particles * 6 * 3);
 	var coords    = new Float32Array(particles * 6 * 2);
-	var colors    = new Float32Array(particles * 6);
+	var colors    = new Float32Array(particles * 6 * 4);
+	var visible   = new Float32Array(particles * 6); //This array is for know with particles are not initialized
 
 	for(var i = 0; i < particles; i ++)
 	{
-		colors.set(default_color, i*4);
+		colors.set(default_color, i*6*4);
 		vertices.set(default_vertices, i*6*3)
 		coords.set(default_coords, i*6*2);
+		visible.set(default_init, i*6);
 	}
 
 	var mesh = new GL.Mesh();
-	mesh.addBuffers({vertices : vertices, coords: coords, colors : colors}, null, gl.STREAM_DRAW);
+	mesh.addBuffers({vertices : vertices, coords: coords, colors : colors, visible : visible}, null, gl.STREAM_DRAW);
 
 	meshes_list.push({id: id, mesh: mesh})
 }
@@ -129,13 +132,15 @@ function createMesh(id, particles){
 *	@params {Number} the new maximum 
 */
 function resizeBufferArray(mesh, newSize) {
-	var data_Vertex = mesh.getBuffer("vertices").data;
-	var data_Coords = mesh.getBuffer("coords").data;
-	var data_Colors = mesh.getBuffer("colors").data;
+	var data_Vertex  = mesh.getBuffer("vertices").data;
+	var data_Coords  = mesh.getBuffer("coords").data;
+	var data_Colors  = mesh.getBuffer("colors").data;
+	var data_Visible = mesh.getBuffer("visible").data;
 
-	var vertexSize = newSize * 6 * 3;
-	var coordsSize = newSize * 6 * 2;
-	var colorsSize = newSize * 4;
+	var vertexSize  = newSize * 6 * 3;
+	var coordsSize  = newSize * 6 * 2;
+	var colorsSize  = newSize * 6 * 4;
+	var visibleSize = newSize * 6;
 
 	var size;
 	var data;
@@ -160,6 +165,10 @@ function resizeBufferArray(mesh, newSize) {
     			size = colorsSize;
     			data = data_Colors;
     		}
+    		else if (x == "visible") {
+    			size = visibleSize;
+    			data = data_Visible;
+    		}
 
     		data = data.slice(0, size);
         	mesh.getBuffer(x).data = data;
@@ -182,9 +191,15 @@ function resizeBufferArray(mesh, newSize) {
     		}
     		else if (x == "colors") {
     			size = colorsSize;
-    			data_size = 4;
+    			data_size = 6 * 4;
     			data = data_Colors;
     			default_data = default_color;
+    		}
+    		else if (x == "visible") {
+    			size = visibleSize;
+    			data_size = 6;
+    			data = data_Visible;
+    			default_data = [0.0];
     		}
 
         	var nBuff = new Float32Array(size);
@@ -213,28 +228,35 @@ function updateVertexs(mesh, particle_id, particle){
 	var vertex_data = mesh.vertexBuffers.vertices.data;
 
 	particle_id *= 18
+	var j = 0;
 
-	vertex_data[particle_id]   = particle.x
-	vertex_data[particle_id+1] = particle.y
-	vertex_data[particle_id+2] = particle.z
+	for(var i = 0; i < 18; i++)
+	{
+		vertex_data[particle_id + i] = particle.position[j] 
+		+ ( i == 3 ? 0.25 
+			: i == 7 ? 0.25 
+			: i == 9 ? 0.25 
+			: i == 10 ? 0.25 
+			: i == 13 ? 0.25 
+			: i == 15 ? 0.25 
+			: 0 );
 
-	vertex_data[particle_id+3] = particle.x + 0.25
-	vertex_data[particle_id+4] = particle.y 
-	vertex_data[particle_id+5] = particle.z
+		j = (j + 1 ) % 3;
+	}
+} 
 
-	vertex_data[particle_id+6] = particle.x 
-	vertex_data[particle_id+7] = particle.y + 0.25
-	vertex_data[particle_id+8] = particle.z
 
-	vertex_data[particle_id+9]  = particle.x + 0.25 
-	vertex_data[particle_id+10] = particle.y + 0.25
-	vertex_data[particle_id+11] = particle.z
+/*
+* 	This method is for update the position of a particles
+*	@method updateVertex
+*	@params {Mesh} the mesh
+*	@params {Number} the id of the particle
+*	@params {Number} the particle
+*/
+function updateVisibility(mesh, particle_id, visible = 0.0){
+	var visibility_data = mesh.vertexBuffers.visible.data;
+	particle_id *= 6
 
-	vertex_data[particle_id+12] = particle.x
-	vertex_data[particle_id+13] = particle.y + 0.25
-	vertex_data[particle_id+14] = particle.z
-
-	vertex_data[particle_id+15] = particle.x + 0.25
-	vertex_data[particle_id+16] = particle.y
-	vertex_data[particle_id+17] = particle.z
-}
+	for(var i = 0; i < 6; i++)
+		visibility_data[particle_id + i] = visible;		
+} 

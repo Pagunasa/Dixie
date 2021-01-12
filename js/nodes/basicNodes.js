@@ -101,7 +101,7 @@ function vector3Node() {
 	this.addOutput("Vec3", "vec3");
 }
 
-vector2Node.prototype.onExecute = function() {
+vector3Node.prototype.onExecute = function() {
 	this.properties.x = this.getInputData(0) || 0.0;
 	this.properties.y = this.getInputData(1) || 0.0;
 	this.properties.z = this.getInputData(2) || 0.0;

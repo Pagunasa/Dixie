@@ -23,6 +23,7 @@ var widthCanvasContainer;
 var navbar;
 
 var camera;
+var time_interval;
 
 /*
 * 	Change the width of both canvases depending of the division button position.
@@ -158,6 +159,24 @@ function initMenuButtons ()
 		loadInput.value = "";
 	};
 
+	saveButton.onclick = function() {
+		var jsonGraph = graph.serialize();
+		jsonGraph = JSON.stringify(jsonGraph);
+		jsonGraph = [jsonGraph];
+
+		var blobl = new Blob(jsonGraph, {type: "text/plain;charset=utf-8"});
+		
+		var url = window.URL || window.webkitURL;
+		link = url.createObjectURL(blobl);
+
+		var savedGraph = document.createElement("a");
+		savedGraph.download = "Graph.txt";
+		savedGraph.href = link;
+
+		document.body.appendChild(savedGraph);
+		savedGraph.click();
+		document.body.removeChild(savedGraph);
+	}
 
 	playButton.onclick = function() {
 		graph.start();
@@ -254,7 +273,7 @@ var flatShader     =  new GL.Shader( vs_basic, fs_flat );
 var texturedShader =  new GL.Shader( vs_basic, fs_texture );
 
 var particleShaderTextured =  new GL.Shader( vs_particles, fs_texture );
-var particleShaderFlat     =  new GL.Shader( vs_particles, fs_flat );
+var particleShaderFlat     =  new GL.Shader( vs_particles, fs_flat_p  );
 
 /*************************************************/
 /********************RENDER***********************/
@@ -267,14 +286,34 @@ gl.ondraw = function() {
 	gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
 	gl.disable(gl.DEPTH_TEST);
 
-	var my_uniforms2 = { 
+	var particles_uniforms = { 
+		u_viewprojection: camera.vp,
 		u_mvp: camera.mvp,
-		u_color: [0,1,0,1]
+		u_color: [1,1,1,1],
+		u_model: mat4.create()
 	};
 
-	flatShader.uniforms( my_uniforms2 ).draw( GL.Mesh.cube() );
+	for(x in system_list){
+		var mesh = searchMesh(system_list[x].mesh_id);
+		if (mesh.vertexBuffers.vertices.data.length > 0) //If there wasn't vertices no render the mesh
+			particleShaderFlat.uniforms( particles_uniforms ).draw( mesh );
+	}
 
 	gl.disable(gl.BLEND);
 }
 
+gl.onupdate = function( dt ) {
+	time_interval = dt;
+	if(graph.status == LGraph.STATUS_RUNNING)
+	graph.runStep();
+}
+
 gl.animate(); //calls the requestAnimFrame constantly, which will call ondraw
+
+
+/*var my_uniforms2 = { 
+	u_mvp: camera.mvp,
+	u_color: [0,1,0,1]
+};
+
+flatShader.uniforms( my_uniforms2 ).draw( GL.Mesh.cube() );*/

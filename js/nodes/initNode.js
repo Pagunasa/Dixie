@@ -17,8 +17,12 @@ function initParticlesNode()
 		min_life_time: 10,
 		
 		color: vector_4,	
-		texture: undefined	
+		texture: undefined
 	};
+
+	this.internal = {
+		init_time_pased: 0.0
+	}
 
 	/**************************************/
 	/***********Inputs & Outputs***********/
@@ -44,13 +48,13 @@ initParticlesNode.prototype.onExecute = function()
 	var system = this.getInputData(0);
 
 	//When is executed the inputs are gotten and if they are undefined a default value is setted
-	this.properties.max_speed = Math.round(this.getInputData(1)) || vector_3;
-	this.properties.min_speed = Math.round(this.getInputData(2)) || vector_3;
-	var max_life_time         = Math.round(this.getInputData(3)) || vector_3;
-	var min_life_time         = Math.round(this.getInputData(4)) || vector_3;
+	this.properties.max_speed = this.getInputData(1) || vector_3;
+	this.properties.min_speed = this.getInputData(2) || vector_3;
+	var max_life_time         = Math.round(this.getInputData(3)) || 10;
+	var min_life_time         = Math.round(this.getInputData(4)) || 5;
 	var max_size              = Math.round(this.getInputData(5)) || 10;
 	var min_size              = Math.round(this.getInputData(6)) || 10;
-	this.properties.color     = Math.round(this.getInputData(7)) || vector_4;
+	this.properties.color     = this.getInputData(7) || vector_4;
 	this.properties.texture   = this.getInputData(8) || undefined;
 
 	this.properties.max_life_time = Math.max(min_life_time, max_life_time);
@@ -63,13 +67,64 @@ initParticlesNode.prototype.onExecute = function()
 	{
 		var particles_spawned = 0;
 		var particles = searchSystem(system.id).particles_list;
+		var mesh = searchMesh(system.id);
+		
+		this.internal.init_time_pased += time_interval;
+		this.internal.spawn_period = 1.0 / system.spawn_rate;
 
-		if(system.max_particles > particles.length && particles_spawned < system.spawn_rate)
+		//Spawn in normal mode
+		if(system.max_particles > particles.length && this.internal.init_time_pased >= this.internal.spawn_period)
 		{
-			particles_spawned += 1;
+			console.log(this.internal.init_time_pased);
+
+			this.internal.init_time_pased = 0.0;
+			
 			var particle = new Particle();
 			particle.fill(this.properties);
+			particles.push(particle);
+			updateVisibility(mesh, particles.length - 1, 1.0);
 		}
+
+		//Spawn in waves mode
+		/*if(system.max_particles > particles.length && this.internal.init_time_pased >= 1.0)
+		{
+			this.internal.init_time_pased = 0.0;
+			
+			for (particles_spawned; particles_spawned <= system.spawn_rate; particles_spawned++)
+			{
+				var particle = new Particle();
+				particle.fill(this.properties);
+				particles.push(particle);
+				updateVisibility(mesh, particles.length - 1, 1.0);
+			}
+		}*/
+
+		if (particles_spawned > 0)
+			mesh.upload();
+
+		//Default movement of the particles
+		var particle;
+		var particles_to_delete = [];
+
+		for (var i = 0; i < particles.length; i++)
+		{
+			particle = particles[i];
+
+			particle.lifetime -= time_interval;
+
+			if(particle.lifetime <= 0){
+				updateVisibility(mesh, i);
+			}
+			else
+			{
+				for(var j = 0; j < 3; j++)
+					particle.position[j] += particle.speed[j] * time_interval;
+
+				updateVertexs(mesh, i, particle);
+			}
+		}
+
+		mesh.upload()
 	}
 
 	//The porperties of the node are the output

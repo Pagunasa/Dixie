@@ -29,12 +29,14 @@ var vs_particles = '\
 					attribute vec3 a_vertex;\
 					attribute vec3 a_normal;\
 					attribute vec2 a_coord;\
+					attribute float a_visible;\
 					\
 					varying vec4 v_color;\
 					varying vec3 v_normal;\
 					varying vec3 v_world_position;\
 					varying vec3 v_pos;\
 					varying vec2 v_coord;\
+					varying float v_visible;\
 					\
 					uniform mat4 u_model;\
 					uniform mat4 u_viewprojection;\
@@ -42,11 +44,22 @@ var vs_particles = '\
 					\
 					\
 					void main() {\
-						v_coord = a_coord;\
-						v_normal = (u_model * vec4(a_normal, 0.0)).xyz;\
+						v_visible = a_visible;\
+						v_coord   = a_coord;\
+						v_normal  = (u_model * vec4(a_normal, 0.0)).xyz;\
 						v_world_position = (u_model * vec4(a_vertex, 1.0)).xyz;\
 						gl_Position = u_mvp * vec4(v_world_position, 1.0);\
 					}';
+
+var fs_flat_p = '\
+				precision highp float;\
+				uniform vec4 u_color;\
+				varying float v_visible;\
+				\
+				void main() {\
+					if (v_visible == 0.0) discard;\
+					gl_FragColor = u_color;\
+				}';
 
 var fs_texture = '\
 					precision highp float;\

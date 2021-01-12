@@ -14,6 +14,7 @@ class Camera
 		this.proj   = mat4.create();
 		this.view   = mat4.create();
 		this.mvp    = mat4.create();
+		this.vp     = mat4.create();
 
 		this.center = center || vec3.fromValues( 0, 0, 0 );  //If no center provided the value will be vec3(0,0,0)
 		this.eye    = eye    || vec3.fromValues( 0, 0, 10 ); //If no eye provided the value will be vec3(0,0,10)
@@ -99,6 +100,7 @@ class Camera
 	{
 		mat4.lookAt(this.view, this.eye, this.center, [0,1,0]);
 		mat4.multiply(this.mvp, this.proj, this.view);
+		mat4.multiply(this.vp , this.view, this.proj);
 	}
 
 	/*
