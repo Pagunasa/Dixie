@@ -138,6 +138,27 @@ function initMenuButtons ()
 		loadInput.style.cursor      = "default";
 	};
 
+	loadInput.addEventListener("change", loadGraph, false);
+
+	function loadGraph(e){
+		var file = e.target.files[0];
+		  if (!file) {
+		    return;
+		  }
+		
+		var reader = new FileReader();
+		reader.onload = function(e) {
+		    var contents = e.target.result;
+		    var ok = graph.configure(JSON.parse(contents));
+		    console.log(ok);
+		};
+		reader.readAsText(file);
+
+	    //Permite volver a cargar el mismo documento sin reiniciar
+		loadInput.value = "";
+	};
+
+
 	playButton.onclick = function() {
 		graph.start();
 	}
@@ -226,33 +247,18 @@ function init ()
 
 init();
 
-/**************************************************/
-/**************************************************/
-/**************************************************/
-/**************************************************/
-/**************************************************/
-var vertex_shader_code_vortex = '\
-					precision highp float;\
-					attribute vec3 a_vertex;\
-					varying vec4 v_color;\
-					uniform mat4 u_mvp;\
-					\
-					void main() {\
-						gl_Position = u_mvp * vec4(a_vertex, 1.0);\
-						gl_PointSize = 200.0 / gl_Position.z;\
-					}';
+/*************************************************/
+/****************SHADER DEFINITION****************/
+/*************************************************/
+var flatShader     =  new GL.Shader( vs_basic, fs_flat );
+var texturedShader =  new GL.Shader( vs_basic, fs_texture );
 
-var fragment_shader_code_vortex = '\
-					precision highp float;\
-					uniform vec4 u_color;\
-					\
-					void main() {\
-						gl_FragColor = u_color;\
-					}';
+var particleShaderTextured =  new GL.Shader( vs_particles, fs_texture );
+var particleShaderFlat     =  new GL.Shader( vs_particles, fs_flat );
 
-//Creating the shader
-var shader = new GL.Shader( vertex_shader_code_vortex, fragment_shader_code_vortex );
-
+/*************************************************/
+/********************RENDER***********************/
+/*************************************************/
 gl.ondraw = function() {
 
 	gl.clear(gl.COLOR_BUFFER_BIT);
@@ -266,7 +272,7 @@ gl.ondraw = function() {
 		u_color: [0,1,0,1]
 	};
 
-	shader.uniforms( my_uniforms2 ).draw( GL.Mesh.cube() );
+	flatShader.uniforms( my_uniforms2 ).draw( GL.Mesh.cube() );
 
 	gl.disable(gl.BLEND);
 }
