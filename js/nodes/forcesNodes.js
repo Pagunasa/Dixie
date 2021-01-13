@@ -32,7 +32,33 @@ gravityNode.prototype.onExecute = function()
 
 	if (system != undefined)
 	{
-		//TO DO
+		var particles = searchSystem(system.id).particles_list;
+		
+		if(particles.length > 0)
+		{
+			var mesh = searchMesh(system.id);
+			
+			var particle;
+			var direction = this.properties.direction;
+			var strength  = this.properties.strength;
+
+			direction[0] = direction[0] * strength;
+			direction[1] = direction[1] * strength;
+			direction[2] = direction[2] * strength;
+
+			for (var i = 0; i < particles.length; i++)
+			{
+				particle = particles[i];
+				
+				for(var j = 0; j < 3; j++)
+						particle.position[j] += direction[j] * time_interval;
+				
+				updateVertexs(mesh, i, particle);
+			}
+
+			mesh.upload()
+		}
+
 	}
 
 	//The porperties of the node are the output

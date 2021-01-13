@@ -83,15 +83,14 @@ initParticlesNode.prototype.onExecute = function()
 				var particle = new Particle();
 				particle.fill(this.properties);
 				particles.push(particle);
-				updateVisibility(mesh, particles.length - 1, 1.0);
+				updateVisibility(mesh, particle, particles.length - 1, 1.0);
 			}
 			else if (particles_to_reset.length > 0)
 			{
 				var i = particles_to_reset[0];
 				
 				particles[i].fill(this.properties);
-				updateVisibility(mesh, i, 1.0);				
-				particles[i].to_reset = false;
+				updateVisibility(mesh, particles[i], i, 1.0);				
 
 				particles_to_reset.splice(0,1);
 			}

@@ -255,10 +255,11 @@ function updateVertexs(mesh, particle_id, particle){
 *	@params {Number} the id of the particle
 *	@params {Number} the particle
 */
-function updateVisibility(mesh, particle_id, visible = 0.0){
+function updateVisibility(mesh, particle, particle_id, visible = 0.0){
 	var visibility_data = mesh.vertexBuffers.visible.data;
 	particle_id *= 6
-
+	particle.to_reset = false;
+	
 	for(var i = 0; i < 6; i++)
 		visibility_data[particle_id + i] = visible;		
 } 
