@@ -67,24 +67,38 @@ initParticlesNode.prototype.onExecute = function()
 	{
 		var particles_spawned = 0;
 		var particles = searchSystem(system.id).particles_list;
+		var particles_to_reset = searchSystem(system.id).particles_to_reset;
 		var mesh = searchMesh(system.id);
 		
 		this.internal.init_time_pased += time_interval;
 		this.internal.spawn_period = 1.0 / system.spawn_rate;
 
 		//Spawn in normal mode
-		if(system.max_particles > particles.length && this.internal.init_time_pased >= this.internal.spawn_period)
+		if (this.internal.init_time_pased >= this.internal.spawn_period)
 		{
-			console.log(this.internal.init_time_pased);
+			if( system.max_particles > particles.length )
+			{
+				this.internal.init_time_pased = 0.0;
+				
+				var particle = new Particle();
+				particle.fill(this.properties);
+				particles.push(particle);
+				updateVisibility(mesh, particles.length - 1, 1.0);
+			}
+			else if (particles_to_reset.length > 0)
+			{
+				var i = particles_to_reset[0];
+				
+				particles[i].fill(this.properties);
+				updateVisibility(mesh, i, 1.0);				
+				particles[i].to_reset = false;
 
-			this.internal.init_time_pased = 0.0;
-			
-			var particle = new Particle();
-			particle.fill(this.properties);
-			particles.push(particle);
-			updateVisibility(mesh, particles.length - 1, 1.0);
+				particles_to_reset.splice(0,1);
+			}
+
 		}
 
+		
 		//Spawn in waves mode
 		/*if(system.max_particles > particles.length && this.internal.init_time_pased >= 1.0)
 		{
@@ -104,7 +118,6 @@ initParticlesNode.prototype.onExecute = function()
 
 		//Default movement of the particles
 		var particle;
-		var particles_to_delete = [];
 
 		for (var i = 0; i < particles.length; i++)
 		{
@@ -112,8 +125,11 @@ initParticlesNode.prototype.onExecute = function()
 
 			particle.lifetime -= time_interval;
 
-			if(particle.lifetime <= 0){
+			if(particle.lifetime <= 0 && !particle.to_reset)
+			{
 				updateVisibility(mesh, i);
+				particle.to_reset = true;
+				particles_to_reset.push(i);
 			}
 			else
 			{

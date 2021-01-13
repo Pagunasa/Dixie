@@ -72,9 +72,10 @@ function searchSystem(id, remove = false)
 //Information that we want to assign to an identifier
 class SystemInfo {
 	constructor(id_) {
-		this.id             = id_;
-		this.mesh_id        = id_;
-		this.particles_list = [];
+		this.id                 = id_;
+		this.mesh_id            = id_;
+		this.particles_list     = [];
+		this.particles_to_reset = [];
 	}
 }
 
@@ -96,6 +97,7 @@ Particle.prototype.fill = function(properties) {
 	this.position = new Float32Array(3);
 	this.speed    = speed;
 	this.lifetime = lifetime;
+	this.to_reset = false;
 };
 
 /*

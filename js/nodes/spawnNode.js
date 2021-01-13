@@ -22,40 +22,11 @@ function mySpawnNode()
     	max_particles: 100             //Which was the max_particles in the last change
     };
 
-    var that = this;
-
 	/**************************************/
 	/***************Widgets****************/
 	/**************************************/
 	//This widget allows to change the mode for spawning the particles of the system 
-	this.addWidget("combo", "Mode", "Point",  
-		function()
-		{
-			that.mode = this.value;
-			//The first two inputs will be always the same, so we have to disconect and delete the third
-			that.disconnectInput(2);
-			that.inputs.splice(2,1);
-
-			if (that.mode == "Point")
-			{
-				that.addInput("Position", "vec3"); //if the mode is point the new input must be a vector 3
-			}
-			else if (that.mode == "Mesh")
-			{
-				that.addInput("Mesh", "mesh"); //if the mode is mesh the new input must be a mesh
-				//This widget allow to change the spawn mode of the mesh
-				that.addWidget("combo", "Mesh Spawn Mode", "Surface", function(){}, { values:["Surface", "Volume"] });
-				return; //The return is for avoid ti delete the new widget
-			}
-			else if (that.mode == "2D Geometry")
-			{
-				that.addInput("Geometry", "2dGeometry"); //if the mode is 2D geometry  the new input must be that geometry
-			}
-
-			that.widgets.splice(1,1); //if a change is maked and a seconf widget exist in the node, it must be deleted
-		}, 
-		{ values:["Point", "Mesh", "2D Geometry"] });
-
+	this.addWidget("combo", "Mode", "Point", this.setValue.bind(this), { values:["Point", "Mesh", "2D Geometry"] });
 
 	/**************************************/
 	/***********Inputs & Outputs***********/
@@ -66,6 +37,42 @@ function mySpawnNode()
 
 	this.addOutput("Particle system", "particle_system");
 }
+
+mySpawnNode.prototype.setValue = function(v) {
+	this.mode = v;
+	//The first two inputs will be always the same, so we have to disconect and delete the third
+	this.disconnectInput(2);
+	this.inputs.splice(2,1);
+
+	if (v == "Point")
+	{
+		this.addInput("Position", "vec3"); //if the mode is point the new input must be a vector 3
+	}
+	else if (v == "Mesh")
+	{
+		this.addInput("Mesh", "mesh"); //if the mode is mesh the new input must be a mesh
+		//This widget allow to change the spawn mode of the mesh
+		this.addWidget("combo", "Mesh Spawn Mode", "Surface", function(){}, { values:["Surface", "Volume"] });
+		return; //The return is for avoid ti delete the new widget
+	}
+	else if (v == "2D Geometry")
+	{
+		this.addInput("Geometry", "2dGeometry"); //if the mode is 2D geometry  the new input must be that geometry
+	}
+
+	this.widgets.splice(1,1); //if a change is maked and a seconf widget exist in the node, it must be deleted
+}
+
+
+//For recover (in a visual way) the value when a graph is loaded
+mySpawnNode.prototype.onPropertyChanged = function()
+{
+	this.widgets[0].value = this.properties.mode;
+
+	if (this.properties.mode == "Mesh")
+		this.widgets[1].value = this.properties.origin_mesh_mode;		
+}
+
 
 mySpawnNode.prototype.onAdded = function() 
 {

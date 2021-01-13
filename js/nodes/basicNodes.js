@@ -1,20 +1,24 @@
 /*
 * 	This node is for define a constant number.
-*	@method constantNumberNode
+*	@method constantNumberNode     this.widgets_up = true;
 */
 function constantNumberNode() {
-	this.properties = { number: 0.0 }
-    
-    var that = this;
+	this.properties = { number: 1.0 }
 
-	this.value = this.addWidget("number", "Number",
-		this.properties.number, 
-		function(v) {
-			that.properties.number = v;
-		}
-	);
+	this.widget = this.addWidget("number", "Number", this.properties.number, this.setValue.bind(this));
 
 	this.addOutput("Number", "number");
+}
+
+//For recover (in a visual way) the value when a graph is loaded
+constantNumberNode.prototype.onPropertyChanged = function()
+{
+	this.widget.value = this.properties.number;
+}
+
+constantNumberNode.prototype.setValue = function(v)
+{
+	this.properties.number = v;
 }
 
 constantNumberNode.prototype.onExecute = function() {
