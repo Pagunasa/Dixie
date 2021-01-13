@@ -117,7 +117,38 @@ vortexNode.prototype.onExecute = function()
 
 	if (system != undefined)
 	{
-		//TO DO
+		var particles = searchSystem(system.id).particles_list;
+		
+		if(particles.length > 0)
+		{
+			var mesh = searchMesh(system.id);
+
+			var particle;
+			var position = this.properties.position;
+			var angular_speed = this.properties.angular_speed;
+			var scale = this.properties.scale;
+			var distance = new Float32Array(3);
+			var v_vortex;
+			var distance_factor;
+
+			for (var i = 0; i < particles.length; i++)
+			{
+				particle = particles[i];
+				
+				for(var j = 0; j < 3; j++)
+					distance[j] = particle.position[j] - position[j];
+
+				v_vortex = cross(angular_speed, distance);
+				distance_factor =1/(1+(distance[0]*distance[0]+distance[1]*distance[1]+distance[2]*distance[2])/scale);
+
+				for(var j = 0; j < 3; j++)
+						particle.position[j] += v_vortex[j] * distance_factor * time_interval;
+				
+				updateVertexs(mesh, i, particle);
+			}
+
+			mesh.upload()
+		}
 	}
 
 	//The porperties of the node are the output

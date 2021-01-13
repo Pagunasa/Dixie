@@ -259,7 +259,27 @@ function updateVisibility(mesh, particle, particle_id, visible = 0.0){
 	var visibility_data = mesh.vertexBuffers.visible.data;
 	particle_id *= 6
 	particle.to_reset = false;
-	
+
 	for(var i = 0; i < 6; i++)
 		visibility_data[particle_id + i] = visible;		
 } 
+
+function cross(a, b){
+    var c = new Float32Array(3);
+    
+    c[0] = a[1]*b[2] - a[2]*b[1];
+    c[1] = a[2]*b[0] - a[0]*b[2];
+    c[2] = a[0]*b[1] - a[1]*b[0];
+
+    return c;
+}
+
+function mult(a, b){
+	var c = new Float32Array(3);
+	
+	c[0] = a[0] * b[0];
+	c[1] = a[1] * b[1];
+	c[2] = a[2] * b[2];
+
+	return c;
+}
