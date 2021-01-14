@@ -21,17 +21,95 @@ var vector_4 = new Float32Array(4);
 /********************************/
 /*************Lists**************/
 /********************************/
-var meshes_list = [];
-var vortex_list = [];
-var system_list = [];
+var meshes_list  = [];
+var forces_list  = [];
+var system_list  = [];
 
 /********************************/
 /***********Mesh Stuff***********/
 /********************************/
-var default_vertices  = [-0.25,-0.25,0, 0.25,-0.25,0, -0.25,0.25,0, 0.25,0.25,0, -0.25,0.25,0, 0.25,-0.25,0];
-var default_coords    = [1,1, 0,1, 1,0, 0,0, 1,0, 0,1];
-var default_color     = [1,1,1,1, 1,1,1,1, 1,1,1,1, 1,1,1,1, 1,1,1,1, 1,1,1,1];
-var default_init      = [0, 0, 0, 0, 0, 0];
+var default_vertices    = [-0.25,-0.25,0, 0.25,-0.25,0, -0.25,0.25,0, 0.25,0.25,0, -0.25,0.25,0, 0.25,-0.25,0];
+var default_coords      = [1,1, 0,1, 1,0, 0,0, 1,0, 0,1];
+var default_color       = [1,1,1,1, 1,1,1,1, 1,1,1,1, 1,1,1,1, 1,1,1,1, 1,1,1,1];
+var default_init        = [0, 0, 0, 0, 0, 0];
+var default_forces_mesh;
+
+
+/*
+* 	This method returns the cross product of two vectors
+*	@method cross
+*	@params {vector3} the first vector
+*	@params {vector3} the second vector
+*/
+function cross(a, b){
+    var c = new Float32Array(3);
+    
+    c[0] = a[1]*b[2] - a[2]*b[1];
+    c[1] = a[2]*b[0] - a[0]*b[2];
+    c[2] = a[0]*b[1] - a[1]*b[0];
+
+    return c;
+}
+
+
+/*
+* 	This method returns the multiplication of two vectors
+*	@method mult
+*	@params {vector3} the first vector
+*	@params {vector3} the second vector
+*/
+function mult(a, b){
+	var c = new Float32Array(3);
+	
+	c[0] = a[0] * b[0];
+	c[1] = a[1] * b[1];
+	c[2] = a[2] * b[2];
+
+	return c;
+}
+
+
+/*
+* 	This method is for search a force in the force list
+*	@method searchForce
+*	@params {Number}  the id of the force
+*	@params {Boolean} if is true the force will be deleted
+*/
+function searchForce(id, remove = false)
+{
+	for(x in forces_list){
+	   	if (forces_list[x].id == id){
+			if(!remove)
+	        	return forces_list[x];
+	        forces_list.splice(x, 1);
+	   	}
+    }
+}
+
+
+/*
+* 	This method is for add a force to the force list
+*	@method addForce
+*	@params {Number}  the id of the force
+*	@params {position} the position of the force
+*	@params {type} the type of the force
+*/
+function addForce(id, position, type){
+	var model = mat4.create();
+	mat4.setTranslation(model, position);
+
+	var force = {
+			id    : id,
+			type  : type,
+			model : model,
+			position : position,
+			visible : true
+		};
+
+	forces_list.push( force );
+
+	return force;
+}
 
 
 /*
@@ -69,16 +147,26 @@ function searchSystem(id, remove = false)
     }
 }
 
-//Information that we want to assign to an identifier
+
+/*
+* 	This class is for save information about every system
+*	@class SystemInfo
+*/
 class SystemInfo {
-	constructor(id_) {
+	constructor(id_, position_) {
 		this.id                 = id_;
 		this.mesh_id            = id_;
 		this.particles_list     = [];
 		this.particles_to_reset = [];
+		this.position           = position_;
+		this.model              = mat4.create();
 	}
 }
 
+/*
+* 	This class is for save information about every particle
+*	@class SystemInfo
+*/
 class Particle {
 	constructor() {
 		this.size = 0.4;
@@ -95,10 +183,15 @@ Particle.prototype.fill = function(properties) {
 	lifetime = Math.random() * properties.max_life_time + properties.min_life_time;
 
 	this.position = new Float32Array(3);
+	this.position[0] = properties.position[0];
+	this.position[1] = properties.position[1];
+	this.position[2] = properties.position[2];
+
 	this.speed    = speed;
 	this.lifetime = lifetime;
 	this.to_reset = false;
 };
+
 
 /*
 * 	This method is for create a mesh
@@ -249,11 +342,12 @@ function updateVertexs(mesh, particle_id, particle){
 
 
 /*
-* 	This method is for update the position of a particles
-*	@method updateVertex
+* 	This method is for update the visibility of a particle
+*	@method updateVisibility
 *	@params {Mesh} the mesh
+*	@params {particle} the particle
 *	@params {Number} the id of the particle
-*	@params {Number} the particle
+*	@params {Number} enable or disable the visibility
 */
 function updateVisibility(mesh, particle, particle_id, visible = 0.0){
 	var visibility_data = mesh.vertexBuffers.visible.data;
@@ -263,23 +357,3 @@ function updateVisibility(mesh, particle, particle_id, visible = 0.0){
 	for(var i = 0; i < 6; i++)
 		visibility_data[particle_id + i] = visible;		
 } 
-
-function cross(a, b){
-    var c = new Float32Array(3);
-    
-    c[0] = a[1]*b[2] - a[2]*b[1];
-    c[1] = a[2]*b[0] - a[0]*b[2];
-    c[2] = a[0]*b[1] - a[1]*b[0];
-
-    return c;
-}
-
-function mult(a, b){
-	var c = new Float32Array(3);
-	
-	c[0] = a[0] * b[0];
-	c[1] = a[1] * b[1];
-	c[2] = a[2] * b[2];
-
-	return c;
-}

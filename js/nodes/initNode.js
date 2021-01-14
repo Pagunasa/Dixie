@@ -71,7 +71,11 @@ initParticlesNode.prototype.onExecute = function()
 		var mesh = searchMesh(system.id);
 		
 		this.internal.init_time_pased += time_interval;
-		this.internal.spawn_period = 1.0 / system.spawn_rate;
+		//The inverse of the spawn rate is how many ms we have to wait until spawn the next particle
+		this.internal.spawn_period = 1.0 / system.spawn_rate; 
+
+		//Updating the position (Render finality)
+		this.properties.position = system.position;
 
 		//Spawn in normal mode
 		if (this.internal.init_time_pased >= this.internal.spawn_period)
@@ -96,7 +100,6 @@ initParticlesNode.prototype.onExecute = function()
 			}
 
 		}
-
 		
 		//Spawn in waves mode
 		/*if(system.max_particles > particles.length && this.internal.init_time_pased >= 1.0)

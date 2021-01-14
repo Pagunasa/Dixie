@@ -79,7 +79,8 @@ mySpawnNode.prototype.onAdded = function()
 	//Every time that a spawn node is created a new mesh and information about the system have to be added to the list in order to work properly
 	this.properties.id = this.id; //the id of this node will be the id of the mesh and the system information 
 	createMesh(this.id, this.properties.max_particles);
-	system_list.push(new SystemInfo(this.id));
+	this.system = new SystemInfo(this.id, this.properties.position);
+	system_list.push(this.system);
 };
 
 mySpawnNode.prototype.onExecute = function() 
@@ -92,6 +93,8 @@ mySpawnNode.prototype.onExecute = function()
 	this.properties.spawn_rate    = spawn_rate    == undefined ? 10  : Math.abs(Math.round(spawn_rate));
 	this.properties.position      = this.getInputData(2) || vector_3;
 
+	this.system.position = this.properties.position;
+	
 	//Check if the maximum number of particles change, if is true then the array of the particles have to be resized
 	if (this.properties.max_particles != this.last_status.max_particles)
 	{

@@ -221,3 +221,24 @@ html,body {
 /**************************************/
 /**************************************/
 /**************************************/
+
+/**************************************/
+/****************Demos*****************/
+/**************************************/
+#defaultDemo:hover{
+	background-color: var(--ternary-color);
+	color: var(--secondary-color); 
+}
+
+#vortexDemo:hover{
+	background-color: var(--ternary-color);
+	color: var(--secondary-color); 
+}
+
+#magnetDemo:hover{
+	background-color: var(--ternary-color);
+	color: var(--secondary-color); 
+}
+/**************************************/
+/**************************************/
+/**************************************/

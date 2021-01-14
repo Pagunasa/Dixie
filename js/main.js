@@ -11,7 +11,6 @@
 var graph;
 var graphCanvas;
 var gl;
-var demo;
 
 var divisionButton;
 var glCanvasOptionsButton;
@@ -24,6 +23,11 @@ var navbar;
 
 var camera;
 var time_interval;
+
+/* Demos */
+var demo1 = {"last_node_id":10,"last_link_id":13,"nodes":[{"id":2,"type":"basic/constant number","pos":[3,89],"size":[210,58],"flags":{},"order":0,"mode":0,"outputs":[{"name":"Number","type":"number","links":[1]}],"properties":{"number":32.09999999999999}},{"id":3,"type":"basic/constant number","pos":[2,185],"size":[210,58],"flags":{},"order":1,"mode":0,"outputs":[{"name":"Number","type":"number","links":[2]}],"properties":{"number":9.999999999999986}},{"id":4,"type":"init/init","pos":[261,374],"size":[262,186],"flags":{},"order":9,"mode":0,"inputs":[{"name":"Particle system","type":"particle_system","link":3},{"name":"Max speed","type":"vec3","link":6},{"name":"Min speed","type":"vec3","link":7},{"name":"Max life time","type":"number","link":4},{"name":"Min life time","type":"number","link":5},{"name":"Max size","type":"number","link":null},{"name":"Min size","type":"number","link":null},{"name":"Color","type":"color","link":null},{"name":"Texture","type":"texture","link":null}],"outputs":[{"name":"Particle system","type":"particle_system","links":null}],"properties":{"max_speed":[0,0,0],"max_size":10,"max_life_time":10,"min_speed":[0,0,0],"min_size":10,"min_life_time":10,"color":[0,0,0,0]}},{"id":1,"type":"spawn/spawn","pos":[265,147],"size":[245.1999969482422,98],"flags":{},"order":6,"mode":0,"inputs":[{"name":"Max particles","type":"number","link":1},{"name":"Spawn rate","type":"number","link":2},{"name":"Position","type":"vec3","link":null}],"outputs":[{"name":"Particle system","type":"particle_system","links":[3]}],"properties":{"id":1,"max_particles":100,"spawn_rate":10,"position":[0,0,0],"mode":"Point","origin_mesh_mode":"Surface"}},{"id":8,"type":"basic/vector 3","pos":[11,391],"size":[140,66],"flags":{},"order":8,"mode":0,"inputs":[{"name":"X","type":"number","link":11},{"name":"Y","type":"number","link":12},{"name":"Z","type":"number","link":13}],"outputs":[{"name":"Vec3","type":"vec3","links":[7]}],"properties":{"x":0,"y":0,"z":0}},{"id":7,"type":"basic/vector 3","pos":[66,290],"size":[140,66],"flags":{},"order":7,"mode":0,"inputs":[{"name":"X","type":"number","link":8},{"name":"Y","type":"number","link":9},{"name":"Z","type":"number","link":10}],"outputs":[{"name":"Vec3","type":"vec3","links":[6]}],"properties":{"x":0,"y":0,"z":0}},{"id":5,"type":"basic/constant number","pos":[-21,533],"size":[210,58],"flags":{},"order":2,"mode":0,"outputs":[{"name":"Number","type":"number","links":[4]}],"properties":{"number":9.999999999999993}},{"id":6,"type":"basic/constant number","pos":[-25,632],"size":[210,58],"flags":{},"order":3,"mode":0,"outputs":[{"name":"Number","type":"number","links":[5]}],"properties":{"number":4.000000000000002}},{"id":9,"type":"basic/constant number","pos":[-188,296],"size":[210,58],"flags":{},"order":4,"mode":0,"outputs":[{"name":"Number","type":"number","links":[8,9,10]}],"properties":{"number":4.000000000000001}},{"id":10,"type":"basic/constant number","pos":[-215,420],"size":[210,58],"flags":{},"order":5,"mode":0,"outputs":[{"name":"Number","type":"number","links":[11,12,13]}],"properties":{"number":-4.000000000000002}}],"links":[[1,2,0,1,0,"number"],[2,3,0,1,1,"number"],[3,1,0,4,0,"particle_system"],[4,5,0,4,3,"number"],[5,6,0,4,4,"number"],[6,7,0,4,1,"vec3"],[7,8,0,4,2,"vec3"],[8,9,0,7,0,"number"],[9,9,0,7,1,"number"],[10,9,0,7,2,"number"],[11,10,0,8,0,"number"],[12,10,0,8,1,"number"],[13,10,0,8,2,"number"]],"groups":[],"config":{},"extra":{},"version":0.4};
+var demo2 = {"last_node_id":16,"last_link_id":25,"nodes":[{"id":1,"type":"spawn/spawn","pos":[265,147],"size":[245.1999969482422,98],"flags":{},"order":10,"mode":0,"inputs":[{"name":"Max particles","type":"number","link":1},{"name":"Spawn rate","type":"number","link":2},{"name":"Position","type":"vec3","link":null}],"outputs":[{"name":"Particle system","type":"particle_system","links":[3]}],"properties":{"id":1,"max_particles":98,"spawn_rate":16,"position":[0,0,0],"mode":"Point","origin_mesh_mode":"Surface"}},{"id":8,"type":"basic/vector 3","pos":[11,391],"size":[140,66],"flags":{},"order":13,"mode":0,"inputs":[{"name":"X","type":"number","link":25},{"name":"Y","type":"number","link":12},{"name":"Z","type":"number","link":13}],"outputs":[{"name":"Vec3","type":"vec3","links":[7]}],"properties":{"x":4.000000000000001,"y":-4.000000000000002,"z":-4.000000000000002}},{"id":7,"type":"basic/vector 3","pos":[66,290],"size":[140,66],"flags":{},"order":12,"mode":0,"inputs":[{"name":"X","type":"number","link":8},{"name":"Y","type":"number","link":9},{"name":"Z","type":"number","link":10}],"outputs":[{"name":"Vec3","type":"vec3","links":[6]}],"properties":{"x":4.000000000000001,"y":4.000000000000001,"z":4.000000000000001}},{"id":5,"type":"basic/constant number","pos":[-21,533],"size":[210,58],"flags":{},"order":0,"mode":0,"outputs":[{"name":"Number","type":"number","links":[4]}],"properties":{"number":9.999999999999993}},{"id":6,"type":"basic/constant number","pos":[-25,632],"size":[210,58],"flags":{},"order":1,"mode":0,"outputs":[{"name":"Number","type":"number","links":[5]}],"properties":{"number":4.000000000000002}},{"id":4,"type":"init/init","pos":[364,377],"size":[262,186],"flags":{},"order":14,"mode":0,"inputs":[{"name":"Particle system","type":"particle_system","link":3},{"name":"Max speed","type":"vec3","link":6},{"name":"Min speed","type":"vec3","link":7},{"name":"Max life time","type":"number","link":4},{"name":"Min life time","type":"number","link":5},{"name":"Max size","type":"number","link":null},{"name":"Min size","type":"number","link":null},{"name":"Color","type":"color","link":null},{"name":"Texture","type":"texture","link":null}],"outputs":[{"name":"Particle system","type":"particle_system","links":[14]}],"properties":{"max_speed":[4,4,4],"max_size":10,"max_life_time":10,"min_speed":[4,-4,-4],"min_size":10,"min_life_time":4,"color":[0,0,0,0]}},{"id":11,"type":"forces/vortex","pos":[385,741],"size":[262,138],"flags":{},"order":15,"mode":0,"inputs":[{"name":"Particle system","type":"particle_system","link":14},{"name":"Position","type":"vec3","link":15},{"name":"Angular speed","type":"vec3","link":17},{"name":"Scale","type":"number","link":21},{"name":"Color","type":"color","link":null}],"outputs":[{"name":"Particle system","type":"particle_system","links":null}],"properties":{"position":[5.900000095367432,0,0],"angular_speed":[19.299999237060547,0,0],"scale":26.09999999999998,"color":[0,0,0,0]}},{"id":12,"type":"basic/vector 3","pos":[83,772],"size":[140,66],"flags":{},"order":9,"mode":0,"inputs":[{"name":"X","type":"number","link":23},{"name":"Y","type":"number","link":null},{"name":"Z","type":"number","link":null}],"outputs":[{"name":"Vec3","type":"vec3","links":[15]}],"properties":{"x":5.900000000000002,"y":0,"z":0}},{"id":16,"type":"basic/constant number","pos":[-212,1053],"size":[210,58],"flags":{},"order":2,"mode":0,"outputs":[{"name":"Number","type":"number","links":[21]}],"properties":{"number":26.09999999999998}},{"id":13,"type":"basic/constant number","pos":[-203,758],"size":[210,58],"flags":{},"order":3,"mode":0,"outputs":[{"name":"Number","type":"number","links":[23]}],"properties":{"number":5.900000000000002}},{"id":3,"type":"basic/constant number","pos":[2,185],"size":[210,58],"flags":{},"order":4,"mode":0,"outputs":[{"name":"Number","type":"number","links":[2]}],"properties":{"number":15.699999999999973}},{"id":2,"type":"basic/constant number","pos":[3,89],"size":[210,58],"flags":{},"order":5,"mode":0,"outputs":[{"name":"Number","type":"number","links":[1]}],"properties":{"number":97.80000000000001}},{"id":14,"type":"basic/vector 3","pos":[71,875],"size":[140,66],"flags":{},"order":11,"mode":0,"inputs":[{"name":"X","type":"number","link":24},{"name":"Y","type":"number","link":null},{"name":"Z","type":"number","link":null}],"outputs":[{"name":"Vec3","type":"vec3","links":[17]}],"properties":{"x":19.29999999999995,"y":0,"z":0}},{"id":15,"type":"basic/constant number","pos":[-220,912],"size":[210,58],"flags":{},"order":6,"mode":0,"outputs":[{"name":"Number","type":"number","links":[24]}],"properties":{"number":19.29999999999995}},{"id":10,"type":"basic/constant number","pos":[-285,426],"size":[210,58],"flags":{},"order":7,"mode":0,"outputs":[{"name":"Number","type":"number","links":[12,13]}],"properties":{"number":-4.000000000000002}},{"id":9,"type":"basic/constant number","pos":[-296,291],"size":[210,58],"flags":{},"order":8,"mode":0,"outputs":[{"name":"Number","type":"number","links":[8,9,10,25]}],"properties":{"number":4.000000000000001}}],"links":[[1,2,0,1,0,"number"],[2,3,0,1,1,"number"],[3,1,0,4,0,"particle_system"],[4,5,0,4,3,"number"],[5,6,0,4,4,"number"],[6,7,0,4,1,"vec3"],[7,8,0,4,2,"vec3"],[8,9,0,7,0,"number"],[9,9,0,7,1,"number"],[10,9,0,7,2,"number"],[12,10,0,8,1,"number"],[13,10,0,8,2,"number"],[14,4,0,11,0,"particle_system"],[15,12,0,11,1,"vec3"],[17,14,0,11,2,"vec3"],[21,16,0,11,3,"number"],[23,13,0,12,0,"number"],[24,15,0,14,0,"number"],[25,9,0,8,0,"number"]],"groups":[],"config":{},"extra":{},"version":0.4};
+var demo3 = {"last_node_id":18,"last_link_id":28,"nodes":[{"id":2,"type":"basic/constant number","pos":[3,89],"size":[210,58],"flags":{},"order":0,"mode":0,"outputs":[{"name":"Number","type":"number","links":[1]}],"properties":{"number":32.09999999999999}},{"id":3,"type":"basic/constant number","pos":[2,185],"size":[210,58],"flags":{},"order":1,"mode":0,"outputs":[{"name":"Number","type":"number","links":[2]}],"properties":{"number":9.999999999999986}},{"id":8,"type":"basic/vector 3","pos":[11,391],"size":[140,66],"flags":{},"order":14,"mode":0,"inputs":[{"name":"X","type":"number","link":28},{"name":"Y","type":"number","link":12},{"name":"Z","type":"number","link":null}],"outputs":[{"name":"Vec3","type":"vec3","links":[7]}],"properties":{"x":0.5000000000000004,"y":-4.000000000000002,"z":0}},{"id":7,"type":"basic/vector 3","pos":[66,290],"size":[140,66],"flags":{},"order":13,"mode":0,"inputs":[{"name":"X","type":"number","link":27},{"name":"Y","type":"number","link":9},{"name":"Z","type":"number","link":null}],"outputs":[{"name":"Vec3","type":"vec3","links":[6]}],"properties":{"x":0.5000000000000004,"y":4.000000000000001,"z":0}},{"id":5,"type":"basic/constant number","pos":[-21,533],"size":[210,58],"flags":{},"order":2,"mode":0,"outputs":[{"name":"Number","type":"number","links":[4]}],"properties":{"number":9.999999999999993}},{"id":6,"type":"basic/constant number","pos":[-25,632],"size":[210,58],"flags":{},"order":3,"mode":0,"outputs":[{"name":"Number","type":"number","links":[5]}],"properties":{"number":4.000000000000002}},{"id":17,"type":"forces/magnet point","pos":[374.5019897460934,856.1559078216551],"size":[262,138],"flags":{},"order":16,"mode":0,"inputs":[{"name":"Particle system","type":"particle_system","link":26},{"name":"Position","type":"vec3","link":21},{"name":"Strength","type":"number","link":22},{"name":"Scale","type":"number","link":23},{"name":"Color","type":"color","link":null}],"outputs":[{"name":"Particle system","type":"particle_system","links":null}],"properties":{"position":[9.699999809265137,3.9000000953674316,0],"strength":-7.399999999999954,"scale":18.29999999999998,"color":[0,0,0,0]}},{"id":12,"type":"basic/vector 3","pos":[79,828],"size":[140,66],"flags":{},"order":12,"mode":0,"inputs":[{"name":"X","type":"number","link":19},{"name":"Y","type":"number","link":16},{"name":"Z","type":"number","link":null}],"outputs":[{"name":"Vec3","type":"vec3","links":[21]}],"properties":{"x":9.7,"y":3.900000000000001,"z":0}},{"id":14,"type":"basic/constant number","pos":[-191,936],"size":[210,58],"flags":{},"order":5,"mode":0,"outputs":[{"name":"Number","type":"number","links":[22]}],"properties":{"number":-7.399999999999954}},{"id":16,"type":"basic/constant number","pos":[-210,738],"size":[210,58],"flags":{},"order":6,"mode":0,"outputs":[{"name":"Number","type":"number","links":[19]}],"properties":{"number":9.7}},{"id":13,"type":"basic/constant number","pos":[-209,829],"size":[210,58],"flags":{},"order":7,"mode":0,"outputs":[{"name":"Number","type":"number","links":[16]}],"properties":{"number":3.900000000000001}},{"id":10,"type":"basic/constant number","pos":[-247,443],"size":[210,58],"flags":{},"order":8,"mode":0,"outputs":[{"name":"Number","type":"number","links":[12]}],"properties":{"number":-4.000000000000002}},{"id":9,"type":"basic/constant number","pos":[-252,331],"size":[210,58],"flags":{},"order":9,"mode":0,"outputs":[{"name":"Number","type":"number","links":[9]}],"properties":{"number":4.000000000000001}},{"id":1,"type":"spawn/spawn","pos":[265,147],"size":[245.1999969482422,98],"flags":{},"order":11,"mode":0,"inputs":[{"name":"Max particles","type":"number","link":1},{"name":"Spawn rate","type":"number","link":2},{"name":"Position","type":"vec3","link":null}],"outputs":[{"name":"Particle system","type":"particle_system","links":[3]}],"properties":{"id":1,"max_particles":32,"spawn_rate":10,"position":[0,0,0],"mode":"Point","origin_mesh_mode":"Surface"}},{"id":4,"type":"init/init","pos":[317,425],"size":[262,186],"flags":{},"order":15,"mode":0,"inputs":[{"name":"Particle system","type":"particle_system","link":3},{"name":"Max speed","type":"vec3","link":6},{"name":"Min speed","type":"vec3","link":7},{"name":"Max life time","type":"number","link":4},{"name":"Min life time","type":"number","link":5},{"name":"Max size","type":"number","link":null},{"name":"Min size","type":"number","link":null},{"name":"Color","type":"color","link":null},{"name":"Texture","type":"texture","link":null}],"outputs":[{"name":"Particle system","type":"particle_system","links":[26]}],"properties":{"max_speed":[0.5,4,0],"max_size":10,"max_life_time":10,"min_speed":[0.5,-4,0],"min_size":10,"min_life_time":4,"color":[0,0,0,0]}},{"id":18,"type":"basic/constant number","pos":[-259,229],"size":[210,58],"flags":{},"order":10,"mode":0,"outputs":[{"name":"Number","type":"number","links":[27,28]}],"properties":{"number":0.5000000000000004}},{"id":15,"type":"basic/constant number","pos":[-160,1029],"size":[210,58],"flags":{},"order":4,"mode":0,"outputs":[{"name":"Number","type":"number","links":[23]}],"properties":{"number":18.29999999999998}}],"links":[[1,2,0,1,0,"number"],[2,3,0,1,1,"number"],[3,1,0,4,0,"particle_system"],[4,5,0,4,3,"number"],[5,6,0,4,4,"number"],[6,7,0,4,1,"vec3"],[7,8,0,4,2,"vec3"],[9,9,0,7,1,"number"],[12,10,0,8,1,"number"],[16,13,0,12,1,"number"],[19,16,0,12,0,"number"],[21,12,0,17,1,"vec3"],[22,14,0,17,2,"number"],[23,15,0,17,3,"number"],[26,4,0,17,0,"particle_system"],[27,18,0,7,0,"number"],[28,18,0,8,0,"number"]],"groups":[],"config":{},"extra":{},"version":0.4};
 
 /*
 * 	Change the width of both canvases depending of the division button position.
@@ -127,6 +131,10 @@ function initMenuButtons ()
 	var demoButton   = document.getElementById("demos");
 	var helpButton   = document.getElementById("help");
 
+	var showDemo1Button = document.getElementById("defaultDemo");
+	var showDemo2Button = document.getElementById("vortexDemo");
+	var showDemo3Button = document.getElementById("magnetDemo");
+
 	loadInput.onmouseover = function() {
 		loadButton.style.background = "#eceff1";
 		loadButton.style.color      = "#455a64";
@@ -184,6 +192,21 @@ function initMenuButtons ()
 
 	stopButton.onclick = function() {
 		graph.stop();
+	}
+
+	showDemo1Button.onclick =function() {
+		graph.configure( demo1 ); 
+		$('#demosModal').modal('hide');
+	}
+
+	showDemo2Button.onclick =function() {
+		graph.configure( demo2 ); 
+		$('#demosModal').modal('hide');
+	}
+
+	showDemo3Button.onclick =function() {
+		graph.configure( demo3 ); 
+		$('#demosModal').modal('hide');
 	}
 }
 
@@ -254,6 +277,9 @@ function init ()
 
 	camera = new Camera( gl ); /**************************************************/
 
+	//Set the default mesh for the forces
+	default_forces_mesh = new GL.Mesh({vertices: [0,0,0]});
+
 	//Loading of the default demos 
 	demo = {};
 	graph.configure( demo ); //by default charging the first demo
@@ -286,17 +312,44 @@ gl.ondraw = function() {
 	gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
 	gl.disable(gl.DEPTH_TEST);
 
+	//default particles uniforms
 	var particles_uniforms = { 
 		u_viewprojection: camera.vp,
 		u_mvp: camera.mvp,
-		u_color: [1,1,1,1],
-		u_model: mat4.create()
+		u_color: [1,1,1,1]
 	};
 
+	//default sytem uniforms
+	var system_uniforms = { 
+		u_mvp: camera.mvp,
+		u_color: [0,1,0,1],
+		model: undefined
+	};
+
+	//Render the particles
 	for(x in system_list){
 		var mesh = searchMesh(system_list[x].mesh_id);
+
 		if (mesh.vertexBuffers.vertices.data.length > 0) //If there wasn't vertices no render the mesh
 			particleShaderFlat.uniforms( particles_uniforms ).draw( mesh );
+		
+		system_uniforms.u_model = system_list[x].model;
+		flatShader.uniforms( system_uniforms ).draw( default_forces_mesh, GL.POINTS );
+	}
+
+	//default forces uniforms
+	var forces_uniforms = {
+		u_mvp: camera.mvp,
+		u_color: [1,0,0,1],
+		u_model: undefined
+	}
+
+	for (x in forces_list){
+		if(!forces_list[x].visible)
+			continue;
+
+		forces_uniforms.u_model = forces_list[x].model;
+		flatShader.uniforms( forces_uniforms ).draw( default_forces_mesh, GL.POINTS );
 	}
 
 	gl.disable(gl.BLEND);
@@ -304,6 +357,13 @@ gl.ondraw = function() {
 
 gl.onupdate = function( dt ) {
 	time_interval = dt;
+
+	for (x in forces_list)
+		mat4.setTranslation(forces_list[x].model, forces_list[x].position);
+
+	for (x in system_list)
+		mat4.setTranslation(system_list[x].model, system_list[x].position);
+
 	if(graph.status == LGraph.STATUS_RUNNING)
 	graph.runStep();
 }
