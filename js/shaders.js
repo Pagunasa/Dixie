@@ -27,13 +27,14 @@ var fs_flat = '\
 					gl_FragColor = u_color;\
 				}';
 
-
+//http://www.opengl-tutorial.org/intermediate-tutorials/billboards-particles/billboards/
 var vs_particles = '\
 					precision highp float;\
 					\
 					attribute vec3 a_vertex;\
 					attribute vec3 a_normal;\
 					attribute vec2 a_coord;\
+					attribute vec2 a_size;\
 					attribute float a_visible;\
 					\
 					varying vec4 v_color;\
@@ -45,17 +46,17 @@ var vs_particles = '\
 					uniform mat4 u_viewprojection;\
 					uniform mat4 u_mvp;\
 					uniform mat4 u_model;\
+					uniform vec3 u_up;\
+					uniform vec3 u_right;\
 					\
 					\
 					void main() {\
 						v_visible = a_visible;\
 						v_coord   = a_coord;\
 						v_normal  = (u_model * vec4(a_normal, 0.0)).xyz;\
-						gl_Position = u_mvp * vec4(a_vertex, 1.0);\
+						v_pos = a_vertex + u_right * v_coord.x * a_size.x + u_up * v_coord.y * a_size.y;\
+						gl_Position = u_mvp * vec4(v_pos, 1.0);\
 					}';
-
-//	v_world_position = (u_model * vec4(a_vertex, 1.0)).xyz;\
-//  varying vec3 v_world_position;\
 
 
 var fs_flat_p = '\

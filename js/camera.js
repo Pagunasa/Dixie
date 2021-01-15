@@ -26,6 +26,7 @@ class Camera
 		this.initCamera( );
 	}
 
+
 	/*
 	*	Initialize the camera and set mouse and keys events
 	*	@method initCamera
@@ -81,6 +82,7 @@ class Camera
 		}
 	}
 
+
 	/*
 	*	Set the behaviour when the screen is resized
 	*	@method resize
@@ -92,6 +94,7 @@ class Camera
 		this.gl.reset();
 	}
 
+
 	/*
 	*	Updates the view matrix of the camera
 	*	@method updateViewMatrix
@@ -102,6 +105,7 @@ class Camera
 		mat4.multiply(this.mvp, this.proj, this.view);
 		mat4.multiply(this.vp , this.view, this.proj);
 	}
+
 
 	/*
 	*	Given a vector transform it in the local space of the camera
@@ -116,6 +120,7 @@ class Camera
 		vec4.transformMat4(lv, lv, iView);
 		return vec3.fromValues(lv[0], lv[1], lv[2]); 
 	}
+
 
 	/*
 	*	Given a delta moves the camera
@@ -135,5 +140,29 @@ class Camera
 		this.center[2] = this.center[2] - lv[2] * 0.1;
 
 		this.updateViewMatrix();
+	}
+
+
+	/*
+	*	Returns the right vector in worldspace of the camera
+	*   http://www.opengl-tutorial.org/intermediate-tutorials/billboards-particles/billboards/
+	*	@method getRightVector
+	*/
+	getRightVector ()
+	{
+		var v = this.view;
+		return [v[0], v[4], v[8]];
+	}
+
+
+	/*
+	*	Returns the up vector in worldspace of the camera
+	*   http://www.opengl-tutorial.org/intermediate-tutorials/billboards-particles/billboards/
+	*	@method getUpVector
+	*/
+	getUpVector ()
+	{
+		var v = this.view;
+		return [v[1], v[5], v[9]];
 	}
 }

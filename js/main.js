@@ -314,9 +314,11 @@ gl.ondraw = function() {
 
 	//default particles uniforms
 	var particles_uniforms = { 
-		u_viewprojection: camera.vp,
-		u_mvp: camera.mvp,
-		u_color: [1,1,1,1]
+		u_viewprojection : camera.vp,
+		u_mvp            : camera.mvp,
+		u_right          : camera.getRightVector(),
+		u_up             : camera.getUpVector(),
+		u_color          : [1,1,1,1]
 	};
 
 	//default sytem uniforms
@@ -330,7 +332,7 @@ gl.ondraw = function() {
 	for(x in system_list){
 		var mesh = searchMesh(system_list[x].mesh_id);
 
-		if (mesh.vertexBuffers.vertices.data.length > 0) //If there wasn't vertices no render the mesh
+		//if (mesh.vertexBuffers.vertices.data.length > 0) //If there wasn't vertices no render the mesh
 			particleShaderFlat.uniforms( particles_uniforms ).draw( mesh );
 		
 		system_uniforms.u_model = system_list[x].model;

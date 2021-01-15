@@ -28,10 +28,11 @@ var system_list  = [];
 /********************************/
 /***********Mesh Stuff***********/
 /********************************/
-var default_vertices    = [-0.25,-0.25,0, 0.25,-0.25,0, -0.25,0.25,0, 0.25,0.25,0, -0.25,0.25,0, 0.25,-0.25,0];
-var default_coords      = [1,1, 0,1, 1,0, 0,0, 1,0, 0,1];
-var default_color       = [1,1,1,1, 1,1,1,1, 1,1,1,1, 1,1,1,1, 1,1,1,1, 1,1,1,1];
-var default_init        = [0, 0, 0, 0, 0, 0];
+var default_centers    = [0,0,0, 0,0,0, 0,0,0, 0,0,0, 0,0,0, 0,0,0];
+var default_coords     = [1,1, 0,1, 1,0, 0,0, 1,0, 0,1];
+var default_color      = [1,1,1,1, 1,1,1,1, 1,1,1,1, 1,1,1,1, 1,1,1,1, 1,1,1,1];
+var default_sizes      = [0.25,0.25, 0.25,0.25, 0.25,0.25, 0.25,0.25, 0.25,0.25, 0.25,0.25];
+var default_visibility = [0, 0, 0, 0, 0, 0];
 var default_forces_mesh;
 
 
@@ -200,21 +201,29 @@ Particle.prototype.fill = function(properties) {
 *	@params {Number} the maximum number of particles
 */
 function createMesh(id, particles){
-	var vertices  = new Float32Array(particles * 6 * 3);
-	var coords    = new Float32Array(particles * 6 * 2);
-	var colors    = new Float32Array(particles * 6 * 4);
-	var visible   = new Float32Array(particles * 6); //This array is for know with particles are not initialized
+	var vertices = new Float32Array(particles * 6 * 3); //Save information about the center of the particle
+	var coords   = new Float32Array(particles * 6 * 2);
+	var sizes    = new Float32Array(particles * 6 * 2);
+	var colors   = new Float32Array(particles * 6 * 4);
+	var visible  = new Float32Array(particles * 6); //This array is for know with particles are not initialized
 
 	for(var i = 0; i < particles; i ++)
 	{
-		colors.set(default_color, i*6*4);
-		vertices.set(default_vertices, i*6*3)
+		visible.set(default_visibility, i*6);
+		vertices.set(default_centers, i*6*3);
 		coords.set(default_coords, i*6*2);
-		visible.set(default_init, i*6);
+		colors.set(default_color, i*6*4);
+		sizes.set(default_sizes, i*6*2);
 	}
 
 	var mesh = new GL.Mesh();
-	mesh.addBuffers({vertices : vertices, coords: coords, colors : colors, visible : visible}, null, gl.STREAM_DRAW);
+	mesh.addBuffers({ 
+					  vertices : vertices, 
+					  coords   : coords, 
+		              colors   : colors, 
+		              visible  : visible,
+		              size     : sizes
+		            }, null, gl.STREAM_DRAW);
 
 	meshes_list.push({id: id, mesh: mesh})
 }
@@ -228,9 +237,10 @@ function createMesh(id, particles){
 */
 function resizeBufferArray(mesh, newSize) {
 	var data_Vertex  = mesh.getBuffer("vertices").data;
+	var data_Visible = mesh.getBuffer("visible").data;
 	var data_Coords  = mesh.getBuffer("coords").data;
 	var data_Colors  = mesh.getBuffer("colors").data;
-	var data_Visible = mesh.getBuffer("visible").data;
+	var data_Size    = mesh.getBuffer("size").data;
 
 	var vertexSize  = newSize * 6 * 3;
 	var coordsSize  = newSize * 6 * 2;
@@ -263,6 +273,10 @@ function resizeBufferArray(mesh, newSize) {
     		else if (x == "visible") {
     			size = visibleSize;
     			data = data_Visible;
+    		} 
+    		else if (x == "size") {
+    			size = coordsSize;
+    			data = data_Size;
     		}
 
     		data = data.slice(0, size);
@@ -296,6 +310,12 @@ function resizeBufferArray(mesh, newSize) {
     			data = data_Visible;
     			default_data = [0.0];
     		}
+			else if (x == "size") {
+    			size = coordsSize;   
+    			data_size = 6 * 2;
+    			data = data_Size; 	
+    			default_data = default_sizes;	
+    		}
 
         	var nBuff = new Float32Array(size);
 
@@ -327,17 +347,10 @@ function updateVertexs(mesh, particle_id, particle){
 
 	for(var i = 0; i < 18; i++)
 	{
-		vertex_data[particle_id + i] = particle.position[j] 
-		+ ( i == 3 ? 0.25 
-			: i == 7 ? 0.25 
-			: i == 9 ? 0.25 
-			: i == 10 ? 0.25 
-			: i == 13 ? 0.25 
-			: i == 15 ? 0.25 
-			: 0 );
-
+		vertex_data[particle_id + i] = particle.position[j]
 		j = (j + 1 ) % 3;
 	}
+
 } 
 
 
