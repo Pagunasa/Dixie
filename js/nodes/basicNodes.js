@@ -307,38 +307,49 @@ equationNode.title_selected_color = basicSelectedTitleColor;
 * 	This node is for load a texture.
 *	@method textureLoadNode
 */
-
-function colorPickerMouse (event, [x,y], node){
-	if (event.type === "mousemove")
-        return false;
-    
-    setTimeout(function() { node.widgets[0].callback(); }, 20);
-}
-
-function colorPickerCallBack (){
-	return true;
-}
-
 function colorPickerNode() {
-	this.properties = { x: 0.0, y: 0.0, z: 0.0, w: 0.0 }
+	this.properties = { color : new Float32Array(4) }
 
-	var colorw = {
-		type: "custom",
-		name: "color",
-		value: 0,
-		mouse:    colorPickerMouse,
-		callback: colorPickerCallBack,
-		options: {},
-	} 
+	this.addWidget("number", "Red",   0, this.setRed.bind(this), {min: 0, max: 1, step: 1});
+	this.addWidget("number", "Gren",  0, this.setBlue.bind(this), {min: 0, max: 1, step:  1});
+	this.addWidget("number", "Blue",  0, this.setGreen.bind(this), {min: 0, max: 1, step: 1});
+	this.addWidget("number", "Alpha", 0, this.setAlpha.bind(this), {min: 0, max: 1, step: 1});
 
-	colorw.draw = function (ctx, node, widget_width, y, H) {
-		
-	    ctx.fillRect(15, y, widget_width - 15 * 2, H);
-
-	}
-
-	this.addCustomWidget(colorw);
 	this.addOutput("Color", "color");
+}
+
+colorPickerNode.prototype.onDrawBackground = function(ctx) 
+{
+        ctx.fillStyle =
+            "rgb(" + (this.properties.color[0] * 255) + "," +
+            (this.properties.color[1] * 255) + "," +
+            (this.properties.color[2] * 255) +
+            ")";
+
+        if (this.flags.collapsed) 
+            this.boxcolor = ctx.fillStyle;
+        else
+            ctx.fillRect(0, 0, this.size[0], this.size[1]);
+};
+
+colorPickerNode.prototype.setRed = function(v)
+{
+	this.properties.color[0] = v;
+}
+
+colorPickerNode.prototype.setBlue = function(v)
+{
+	this.properties.color[1] = v;
+}
+
+colorPickerNode.prototype.setGreen = function(v)
+{
+	this.properties.color[2] = v;
+}
+
+colorPickerNode.prototype.setAlpha = function(v)
+{
+	this.properties.color[3] = v;
 }
 
 colorPickerNode.title = "Color Picker";
