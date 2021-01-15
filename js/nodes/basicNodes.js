@@ -5,7 +5,7 @@
 function constantNumberNode() {
 	this.properties = { number: 1.0 }
 
-	this.widget = this.addWidget("number", "Number", this.properties.number, this.setValue.bind(this));
+	this.widget = this.addWidget("number", "Number", this.properties.number, this.setValue.bind(this), {step: 0.01});
 
 	this.addOutput("Number", "number");
 }
@@ -308,12 +308,12 @@ equationNode.title_selected_color = basicSelectedTitleColor;
 *	@method textureLoadNode
 */
 function colorPickerNode() {
-	this.properties = { color : new Float32Array(4) }
+	this.properties = { color : [1,1,1,1] }
 
-	this.addWidget("number", "Red",   0, this.setRed.bind(this), {min: 0, max: 1, step: 1});
-	this.addWidget("number", "Gren",  0, this.setBlue.bind(this), {min: 0, max: 1, step:  1});
-	this.addWidget("number", "Blue",  0, this.setGreen.bind(this), {min: 0, max: 1, step: 1});
-	this.addWidget("number", "Alpha", 0, this.setAlpha.bind(this), {min: 0, max: 1, step: 1});
+	var rw = this.addWidget("number", "Red",   1, this.setRed.bind(this), {min: 0, max: 1, step: 1});
+	var gw = this.addWidget("number", "Gren",  1, this.setBlue.bind(this), {min: 0, max: 1, step:  1});
+	var bw = this.addWidget("number", "Blue",  1, this.setGreen.bind(this), {min: 0, max: 1, step: 1});
+	var aw = this.addWidget("number", "Alpha", 1, this.setAlpha.bind(this), {min: 0, max: 1, step: 1});
 
 	this.addOutput("Color", "color");
 }
@@ -331,6 +331,19 @@ colorPickerNode.prototype.onDrawBackground = function(ctx)
         else
             ctx.fillRect(0, 0, this.size[0], this.size[1]);
 };
+
+//For recover (in a visual way) the value when a graph is loaded
+colorPickerNode.prototype.onPropertyChanged = function()
+{
+	this.rw.value = this.properties.color[0];
+	this.gw.value = this.properties.color[1];
+	this.bw.value = this.properties.color[2];
+	this.aw.value = this.properties.color[3];
+}
+
+colorPickerNode.prototype.onExecute = function() {
+	this.setOutputData(0, this.properties.color);
+}
 
 colorPickerNode.prototype.setRed = function(v)
 {

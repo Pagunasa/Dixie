@@ -9,11 +9,11 @@ function initParticlesNode()
 	/**************************************/
 	this.properties = {
 		max_speed: vector_3,
-		max_size: 10,
+		max_size: 0.25,
 		max_life_time: 10,
 		
 		min_speed: vector_3,
-		min_size: 10,
+		min_size: 0.25,
 		min_life_time: 10,
 		
 		color: vector_4,	
@@ -50,18 +50,18 @@ initParticlesNode.prototype.onExecute = function()
 	//When is executed the inputs are gotten and if they are undefined a default value is setted
 	this.properties.max_speed = this.getInputData(1) || vector_3;
 	this.properties.min_speed = this.getInputData(2) || vector_3;
-	var max_life_time         = Math.round(this.getInputData(3)) || 10;
-	var min_life_time         = Math.round(this.getInputData(4)) || 5;
-	var max_size              = Math.round(this.getInputData(5)) || 10;
-	var min_size              = Math.round(this.getInputData(6)) || 10;
-	this.properties.color     = this.getInputData(7) || vector_4;
+	var max_life_time         = (this.getInputData(3)) || 10;
+	var min_life_time         = (this.getInputData(4)) || 5;
+	var max_size              = (this.getInputData(5)) || 0.25;
+	var min_size              = (this.getInputData(6)) || 0.25;
+	this.properties.color     = this.getInputData(7) || default_particle_color;
 	this.properties.texture   = this.getInputData(8) || undefined;
 
 	this.properties.max_life_time = Math.max(min_life_time, max_life_time);
 	this.properties.min_life_time = Math.min(min_life_time, max_life_time);
 
-	this.properties.max_size      = Math.max(max_size, min_size);
-	this.properties.min_size      = Math.min(max_size, min_size);
+	this.properties.max_size      = Math.abs(Math.max(max_size, min_size));
+	this.properties.min_size      = Math.abs(Math.min(max_size, min_size));
 
 	if (system != undefined)
 	{
@@ -87,7 +87,10 @@ initParticlesNode.prototype.onExecute = function()
 				var particle = new Particle();
 				particle.fill(this.properties);
 				particles.push(particle);
+
 				updateVisibility(mesh, particle, particles.length - 1, 1.0);
+				updateColor(mesh, particle, particles.length - 1);
+				updateSize(mesh, particle, particles.length - 1);
 			}
 			else if (particles_to_reset.length > 0)
 			{
@@ -95,6 +98,8 @@ initParticlesNode.prototype.onExecute = function()
 				
 				particles[i].fill(this.properties);
 				updateVisibility(mesh, particles[i], i, 1.0);				
+				updateColor(mesh, particles[i], i);
+				updateSize(mesh, particles[i], i);
 
 				particles_to_reset.splice(0,1);
 			}

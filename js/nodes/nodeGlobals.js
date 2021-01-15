@@ -17,6 +17,7 @@ var collisionsNodeColor       = "#A3B082";
 var vector_2 = new Float32Array(2);
 var vector_3 = new Float32Array(3);
 var vector_4 = new Float32Array(4);
+var default_particle_color = [1,1,1,1];
 
 /********************************/
 /*************Lists**************/
@@ -164,29 +165,39 @@ class SystemInfo {
 	}
 }
 
+
+function randomNumber(min, max){
+  return Math.random() * (max - min) + min;
+}
+
 /*
 * 	This class is for save information about every particle
 *	@class SystemInfo
 */
 class Particle {
 	constructor() {
-		this.size = 0.4;
+		this.size = 0.25;
 	}
 }
 
 Particle.prototype.fill = function(properties) {
 	var speed = new Float32Array(3);
-	speed[0]  = Math.random() * properties.max_speed[0] + properties.min_speed[0];
-	speed[1]  = Math.random() * properties.max_speed[1] + properties.min_speed[1];
-	speed[2]  = Math.random() * properties.max_speed[2] + properties.min_speed[2];
+	speed[0]  = randomNumber(properties.min_speed[0], properties.max_speed[0]);
+	speed[1]  = randomNumber(properties.min_speed[1], properties.max_speed[1]);
+	speed[2]  = randomNumber(properties.min_speed[2], properties.max_speed[2]);
 
 	//Radom definition of the lifetime
-	lifetime = Math.random() * properties.max_life_time + properties.min_life_time;
+	lifetime = randomNumber(properties.min_life_time, properties.max_life_time);
 
 	this.position = new Float32Array(3);
 	this.position[0] = properties.position[0];
 	this.position[1] = properties.position[1];
 	this.position[2] = properties.position[2];
+
+	this.color = new Float32Array(4);
+	this.color = properties.color;
+
+	this.size = randomNumber(properties.min_size, properties.max_size);
 
 	this.speed    = speed;
 	this.lifetime = lifetime;
@@ -348,7 +359,7 @@ function updateVertexs(mesh, particle_id, particle){
 	for(var i = 0; i < 18; i++)
 	{
 		vertex_data[particle_id + i] = particle.position[j]
-		j = (j + 1 ) % 3;
+		j = (j + 1) % 3;
 	}
 
 } 
@@ -369,4 +380,46 @@ function updateVisibility(mesh, particle, particle_id, visible = 0.0){
 
 	for(var i = 0; i < 6; i++)
 		visibility_data[particle_id + i] = visible;		
+} 
+
+
+/*
+* 	This method is for update the color of a particle
+*	@method updateColor
+*	@params {Mesh} the mesh
+*	@params {particle} the particle
+*	@params {Number} the id of the particle
+*/
+function updateColor(mesh, particle, particle_id){
+	var color_data = mesh.vertexBuffers.colors.data;
+	particle_id *= 24
+
+	var j = 0;
+
+	for(var i = 0; i < 24; i++)
+	{
+		color_data[particle_id + i] = particle.color[j];		
+		j = (j + 1) % 4;
+	}
+} 
+
+
+/*
+* 	This method is for update the size of a particle
+*	@method updateColor
+*	@params {Mesh} the mesh
+*	@params {particle} the particle
+*	@params {Number} the id of the particle
+*/
+function updateSize(mesh, particle, particle_id){
+	var size_data = mesh.vertexBuffers.size.data;
+	particle_id *= 12
+
+	var j = 0;
+
+	for(var i = 0; i < 12; i++)
+	{
+		size_data[particle_id + i] = particle.size;		
+		j = (j + 1) % 2;
+	}
 } 
