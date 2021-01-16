@@ -194,6 +194,8 @@ function textureLoadNode() {
 
 			}, false);
 
+			input.click();
+
 		}
 	);
 
