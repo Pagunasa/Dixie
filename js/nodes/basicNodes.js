@@ -187,7 +187,7 @@ function textureLoadNode() {
 			
 				var reader = new FileReader();
 				reader.onload = function(e) {
-					that.file = GL.Texture.fromURL(reader.result);
+					that.properties.file = GL.Texture.fromURL(reader.result);
 				};
 
 				reader.readAsDataURL(file);
