@@ -336,6 +336,7 @@ gl.ondraw = function() {
 		else
 		{
 			particles_uniforms.u_texture = system_list[x].texture;
+			particles_uniforms.u_texture.bind(0);
 			particleShaderFlat.uniforms( particles_uniforms ).draw( mesh );
 		}
 
