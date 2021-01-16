@@ -190,7 +190,7 @@ function textureLoadNode() {
 					that.file = GL.Texture.fromURL(reader.result);
 				};
 
-				reader.readAsDataUrl(file);
+				reader.readAsDataURL(file);
 
 			}, false);
 
