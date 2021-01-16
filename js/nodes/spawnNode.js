@@ -1,3 +1,7 @@
+function toogleOriginVisibility(){
+	this.system.visible = !this.system.visible;
+}
+
 /*
 *	This node is for define how the particle system spawns the particles
 *	@method mySpawnNode
@@ -15,7 +19,8 @@ function mySpawnNode()
         mode: "Point",      		   //The mode of spawn
         origin_mesh: undefined,        //The mesh from where the particles spawn
         origin_mesh_mode: "Surface",   //The mode of spawn in the mesh
-        origin_2d_geometry: undefined  //The geometry 2D from where the particles spawn
+        origin_2d_geometry: undefined, //The geometry 2D from where the particles spawn
+    	color: [1,1,1,1]
     };
    
     this.last_status = {
@@ -25,6 +30,8 @@ function mySpawnNode()
 	/**************************************/
 	/***************Widgets****************/
 	/**************************************/
+	//This widget allows enable/disable the visibility of the origin of the particles
+	this.addWidget("toggle", "Show origin", true, toogleOriginVisibility.bind(this));
 	//This widget allows to change the mode for spawning the particles of the system 
 	this.addWidget("combo", "Mode", "Point", this.setValue.bind(this), { values:["Point", "Mesh", "2D Geometry"] });
 
@@ -34,6 +41,7 @@ function mySpawnNode()
 	this.addInput("Max particles", "number");
 	this.addInput("Spawn rate"   , "number");
 	this.addInput("Position"     , "vec3");
+	this.addInput("Color"        , "color")
 
 	this.addOutput("Particle system", "particle_system");
 }
@@ -60,7 +68,7 @@ mySpawnNode.prototype.setValue = function(v) {
 		this.addInput("Geometry", "2dGeometry"); //if the mode is 2D geometry  the new input must be that geometry
 	}
 
-	this.widgets.splice(1,1); //if a change is maked and a seconf widget exist in the node, it must be deleted
+	this.widgets.splice(2,1); //if a change is maked and a seconf widget exist in the node, it must be deleted
 }
 
 
@@ -92,8 +100,10 @@ mySpawnNode.prototype.onExecute = function()
 	this.properties.max_particles = max_particles == undefined ? 100 : Math.abs(Math.round(max_particles));
 	this.properties.spawn_rate    = spawn_rate    == undefined ? 10  : Math.abs(Math.round(spawn_rate));
 	this.properties.position      = this.getInputData(2) || vector_3;
+	this.properties.color         = this.getInputData(3) || [1,1,1,1];
 
 	this.system.position = this.properties.position;
+	this.system.color    = this.properties.color;
 	
 	//Check if the maximum number of particles change, if is true then the array of the particles have to be resized
 	if (this.properties.max_particles != this.last_status.max_particles)

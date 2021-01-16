@@ -324,25 +324,25 @@ gl.ondraw = function() {
 	//default sytem uniforms
 	var system_uniforms = { 
 		u_mvp: camera.mvp,
-		u_color: [0,1,0,1],
 		model: undefined
 	};
 
 	//Render the particles
 	for(x in system_list){
 		var mesh = searchMesh(system_list[x].mesh_id);
-
-		//if (mesh.vertexBuffers.vertices.data.length > 0) //If there wasn't vertices no render the mesh
-			particleShaderFlat.uniforms( particles_uniforms ).draw( mesh );
+		particleShaderFlat.uniforms( particles_uniforms ).draw( mesh );
+		
+		if(!system_list[x].visible)
+			continue;
 		
 		system_uniforms.u_model = system_list[x].model;
+		system_uniforms.u_color   = system_list[x].color;
 		flatShader.uniforms( system_uniforms ).draw( default_forces_mesh, GL.POINTS );
 	}
 
 	//default forces uniforms
 	var forces_uniforms = {
 		u_mvp: camera.mvp,
-		u_color: [1,0,0,1],
 		u_model: undefined
 	}
 
@@ -351,6 +351,7 @@ gl.ondraw = function() {
 			continue;
 
 		forces_uniforms.u_model = forces_list[x].model;
+		forces_uniforms.u_color = forces_list[x].color;
 		flatShader.uniforms( forces_uniforms ).draw( default_forces_mesh, GL.POINTS );
 	}
 

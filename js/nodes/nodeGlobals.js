@@ -105,6 +105,7 @@ function addForce(id, position, type){
 			type  : type,
 			model : model,
 			position : position,
+			color : [1,1,1,1],
 			visible : true
 		};
 
@@ -162,6 +163,8 @@ class SystemInfo {
 		this.particles_to_reset = [];
 		this.position           = position_;
 		this.model              = mat4.create();
+		this.color              = [1,1,1,1];
+		this.visible            = true;
 	}
 }
 

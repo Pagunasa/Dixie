@@ -133,6 +133,7 @@ vortexNode.prototype.onExecute = function()
 	this.properties.color          = this.getInputData(4) || vector_4;
 
 	this.force.position = this.properties.position;
+	this.force.color    = this.properties.color;
 
 	if (system != undefined)
 	{
@@ -236,6 +237,7 @@ magnetNode.prototype.onExecute = function()
 	this.properties.color          = this.getInputData(4) || vector_4;
 
 	this.force.position = this.properties.position;
+	this.force.color    = this.properties.color;
 
 	if (system != undefined)
 	{
