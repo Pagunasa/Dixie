@@ -330,8 +330,15 @@ gl.ondraw = function() {
 	//Render the particles
 	for(x in system_list){
 		var mesh = searchMesh(system_list[x].mesh_id);
-		particleShaderFlat.uniforms( particles_uniforms ).draw( mesh );
 		
+		if(system_list[x].texture == undefined)
+			particleShaderFlat.uniforms( particles_uniforms ).draw( mesh );
+		else
+		{
+			particles_uniforms.u_texture = system_list[x].texture;
+			particleShaderFlat.uniforms( particles_uniforms ).draw( mesh );
+		}
+
 		if(!system_list[x].visible)
 			continue;
 		

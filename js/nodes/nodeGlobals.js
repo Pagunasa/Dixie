@@ -165,6 +165,7 @@ class SystemInfo {
 		this.model              = mat4.create();
 		this.color              = [1,1,1,1];
 		this.visible            = true;
+		this.texture            = undefined;
 	}
 }
 

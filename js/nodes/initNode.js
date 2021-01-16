@@ -66,8 +66,11 @@ initParticlesNode.prototype.onExecute = function()
 	if (system != undefined)
 	{
 		var particles_spawned = 0;
-		var particles = searchSystem(system.id).particles_list;
-		var particles_to_reset = searchSystem(system.id).particles_to_reset;
+		var system_info = searchSystem(system.id);
+		system_info.texture = this.properties.texture.file;
+		
+		var particles = system_info.particles_list;
+		var particles_to_reset = system_info.particles_to_reset;
 		var mesh = searchMesh(system.id);
 		
 		this.internal.init_time_pased += time_interval;
