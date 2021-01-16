@@ -176,7 +176,24 @@ function textureLoadNode() {
 	this.addWidget("button", "Select texture", "", 
 		function()
 		{
-		// LOAD TEXTURE BEHAVIOUR
+			var input = document.createElement("input");
+			input.type = "file";
+
+			input.addEventListener("change", function(e){
+				var file = e.target.files[0];
+				
+				if (!file || file.type.split("/")[0] != "image")
+				    return;	
+			
+				var reader = new FileReader();
+				reader.onload = function(e) {
+					that.file = GL.Texture.fromURL(reader.result);
+				};
+
+				reader.readAsDataUrl(file);
+
+			}, false);
+
 		}
 	);
 
@@ -198,6 +215,10 @@ function textureLoadNode() {
 
 
 	this.addOutput("Texture", "texture");
+}
+
+textureLoadNode.prototype.onExecute = function() {
+	this.setOutputData(0, this.properties);
 }
 
 textureLoadNode.title = "Load Texture";
