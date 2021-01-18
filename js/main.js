@@ -342,6 +342,9 @@ gl.ondraw = function() {
 	for(x in system_list){
 		var mesh = searchMesh(system_list[x].mesh_id);
 		
+		//First all the particles of the system are rendered
+		//If a texture is defined then the textured shader is used
+		//but if te texture is undefined the flat will be used 
 		if(system_list[x].texture == undefined)
 			particleShaderFlat.uniforms( particles_uniforms ).draw( mesh );
 		else
@@ -351,6 +354,8 @@ gl.ondraw = function() {
 			particleShaderTextured.uniforms( particles_uniforms ).draw( mesh );
 		}
 
+		//If the user wants to see the origin of the particles
+		//then it will be rendered using the default texture
 		if(!system_list[x].visible)
 			continue;
 		
@@ -369,6 +374,8 @@ gl.ondraw = function() {
 	for (x in forces_list){
 		var force = forces_list[x];
 
+		//If the user wants to see the origin of the force
+		//then it will be rendered using the default texture
 		if(!force.visible)
 			continue;
 
@@ -390,6 +397,7 @@ gl.ondraw = function() {
 gl.onupdate = function( dt ) {
 	time_interval = dt;
 
+	//The model of the forces and systems is updated
 	for (x in forces_list)
 		mat4.setTranslation(forces_list[x].model, forces_list[x].position);
 

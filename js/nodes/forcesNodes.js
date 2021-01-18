@@ -132,6 +132,8 @@ vortexNode.prototype.onExecute = function()
 	this.properties.scale          = this.getInputData(3) || 10;
 	this.properties.color          = this.getInputData(4) || vector_4;
 
+	//It's necesary update the force position and color for 
+	//render te origin of the vortex
 	this.force.position = this.properties.position;
 	this.force.color    = this.properties.color;
 
@@ -236,6 +238,8 @@ magnetNode.prototype.onExecute = function()
 	this.properties.scale          = this.getInputData(3) || 10;
 	this.properties.color          = this.getInputData(4) || vector_4;
 
+	//It's necesary update the force position and color for 
+	//render te origin of the magnet point
 	this.force.position = this.properties.position;
 	this.force.color    = this.properties.color;
 

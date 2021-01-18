@@ -191,6 +191,7 @@ function textureLoadNode() {
 				reader.onload = function(e) {
 					that.properties.file = GL.Texture.fromURL(reader.result);
 					
+					//When the image is loaded the node must be resize 
 					if(!that.data_loaded)
 						that.size[1] += 112;
 		
@@ -214,6 +215,7 @@ function textureLoadNode() {
 				that.addWidget("number", "Sub textures size y", 0, function(){}, {min: 0, max: 10000000, step: 10});
 				that.size[0] = 260;
 
+				//Resizing the node in order to avoid that the image goes outside
 				if(that.data_loaded)
 					that.size[1] += 112;
 			} else {
@@ -222,6 +224,7 @@ function textureLoadNode() {
 				that.size[0] = 210;
 				that.size[1] = 80;
 
+				//Resizing the node in order to avoid that the image goes outside 
 				if(that.data_loaded)
 					that.size[1] += 112;
 			}
@@ -232,22 +235,28 @@ function textureLoadNode() {
 	this.addOutput("Texture", "texture");
 }
 
+//In order to show to the users the loaded texture it's mandatory to
+//overload the onDrawBackground
 textureLoadNode.prototype.onDrawBackground = function(ctx){
+	//if the data is not loaded we don't have anithing to show
 	if (!this.data_loaded)
 		return;
-  
-  	if(this.properties.file.data== undefined)
+  	//if the data is undedifined is still loading (2nd check)
+  	if(this.properties.file.data == undefined)
   		return;
 
+  	//The title is drawed
     ctx.fillStyle = "rgb( 255 , 255 , 255)"; 
     ctx.font = "normal " + LiteGraph.NODE_SUBTEXT_SIZE + "px Arial";  
     ctx.fillText("Loaded texture", (this.size[0]-84)*0.5, this.size[1] - 100);
 
+  	//The rectangle that encompasses the image is drawed
 	ctx.strokeStyle = "rgb( 255 , 255 , 255)";    
 	ctx.beginPath();
 	ctx.rect((this.size[0]-80)*0.5, this.size[1] - 90, 80, 80);
 	ctx.stroke();
 
+	//The image is drawed
 	ctx.drawImage(this.properties.file.data, (this.size[0]-60)*0.5, this.size[1] - 80, 60, 60);	
 }
 
@@ -276,7 +285,7 @@ function meshLoadNode() {
 	this.addWidget("button", "Select mesh", "", 
 		function()
 		{
-		// LOAD TEXTURE BEHAVIOUR
+		// LOAD MESH BEHAVIOUR
 		}
 	);
 
@@ -375,16 +384,17 @@ function colorPickerNode() {
 
 colorPickerNode.prototype.onDrawBackground = function(ctx) 
 {
-        ctx.fillStyle =
-            "rgb(" + (this.properties.color[0] * 255) + "," +
-            (this.properties.color[1] * 255) + "," +
-            (this.properties.color[2] * 255) +
-            ")";
+	//This is for make that the background color of the node
+	//is the shame than the color picked by the user	
+    ctx.fillStyle = "rgb(" + (this.properties.color[0] * 255) + "," +
+        (this.properties.color[1] * 255) + "," +
+        (this.properties.color[2] * 255) +
+        ")";
 
-        if (this.flags.collapsed) 
-            this.boxcolor = ctx.fillStyle;
-        else
-            ctx.fillRect(0, 0, this.size[0], this.size[1]);
+    if (this.flags.collapsed) 
+        this.boxcolor = ctx.fillStyle;
+    else
+        ctx.fillRect(0, 0, this.size[0], this.size[1]);
 };
 
 //For recover (in a visual way) the value when a graph is loaded

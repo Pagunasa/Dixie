@@ -20,7 +20,7 @@ function mySpawnNode()
         origin_mesh: undefined,        //The mesh from where the particles spawn
         origin_mesh_mode: "Surface",   //The mode of spawn in the mesh
         origin_2d_geometry: undefined, //The geometry 2D from where the particles spawn
-    	color: [1,1,1,1]
+    	color: [1,1,1,1]               //The color of the origin of the particle
     };
    
     this.last_status = {
@@ -102,6 +102,7 @@ mySpawnNode.prototype.onExecute = function()
 	this.properties.position      = this.getInputData(2) || vector_3;
 	this.properties.color         = this.getInputData(3) || [1,1,1,1];
 
+	//It's necesary update the system position and color for render te origin of the particles
 	this.system.position = this.properties.position;
 	this.system.color    = this.properties.color;
 	
