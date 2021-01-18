@@ -170,6 +170,8 @@ function textureLoadNode() {
 		subtextures: false,
 		subtextures_size: vector_2
 	}
+	
+	this.data_loaded = false;
 
 	var that = this;
 
@@ -188,6 +190,9 @@ function textureLoadNode() {
 				var reader = new FileReader();
 				reader.onload = function(e) {
 					that.properties.file = GL.Texture.fromURL(reader.result);
+										
+					this.data_loaded = true;
+					this.size[1] += 60;
 				};
 
 				reader.readAsDataURL(file);
@@ -220,10 +225,10 @@ function textureLoadNode() {
 }
 
 textureLoadNode.prototype.onDrawBackground = function(ctx){
-  if (this.properties.file == undefined)
-       return;
+	if (this.properties.file == undefined)
+		return;
   
- ctx.drawImage(this.properties.file.data, 0, 0, 13, 13);
+	ctx.drawImage(this.properties.file.data, (this.size[0]-60)*0.5, this.size[1] - 60, 60, 60);
 }
 
 textureLoadNode.prototype.onExecute = function() {
