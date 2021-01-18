@@ -381,7 +381,7 @@ gl.ondraw = function() {
 			forces_uniforms.u_texture = magnet_text;
 
 		forces_uniforms.u_texture.bind(0);
-		flatShader.uniforms( forces_uniforms ).draw( default_forces_mesh, GL.POINTS );
+		texturedShader.uniforms( forces_uniforms ).draw( default_forces_mesh, GL.POINTS );
 	}
 
 	gl.disable(gl.BLEND);

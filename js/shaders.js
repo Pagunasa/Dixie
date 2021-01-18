@@ -5,9 +5,7 @@
 var vs_basic = '\
 				precision highp float;\
 				attribute vec3 a_vertex;\
-				attribute vec2 a_coord;\
 				\
-				varying vec4 v_color;\
 				varying vec3 v_world_position;\
 				varying vec2 v_coord;\
 				\
@@ -15,7 +13,6 @@ var vs_basic = '\
 				uniform mat4 u_model;\
 				\
 				void main() {\
-					v_coord   = a_coord;\
 					v_world_position = (u_model * vec4(a_vertex, 1.0)).xyz;\
 					gl_Position = u_mvp * vec4(v_world_position, 1.0);\
 					gl_PointSize = 200.0 / gl_Position.z;\
@@ -77,7 +74,6 @@ var fs_texture = '\
 					precision highp float;\
 					uniform vec4 u_color;\
 					uniform sampler2D u_texture;\
-					varying vec2 v_coord;\
 					\
 					void main() {\
 						vec4 color = u_color * texture2D(u_texture, gl_PointCoord);\
