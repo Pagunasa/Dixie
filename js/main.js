@@ -283,7 +283,7 @@ function init ()
 	camera = new Camera( gl ); /**************************************************/
 
 	//Set the default mesh for the forces
-	default_forces_mesh = new GL.Mesh.plane({width: 3, height: 3});
+	default_forces_mesh = new GL.Mesh({vertices: [0,0,0]});
 	
 	//Texture Load
 	spawner_text = GL.Texture.fromURL("default_textures/spawner.png");
@@ -357,7 +357,7 @@ gl.ondraw = function() {
 		system_uniforms.u_model = system_list[x].model;
 		system_uniforms.u_color = system_list[x].color;
 		system_uniforms.u_texture.bind(0);
-		particleShaderTextured.uniforms( system_uniforms ).draw( default_forces_mesh );
+		flatShader.uniforms( system_uniforms ).draw( default_forces_mesh, GL.POINTS );
 	}
 
 	//default forces uniforms
@@ -381,7 +381,7 @@ gl.ondraw = function() {
 			forces_uniforms.u_texture = magnet_text;
 
 		forces_uniforms.u_texture.bind(0);
-		particleShaderTextured.uniforms( forces_uniforms ).draw( default_forces_mesh );
+		flatShader.uniforms( forces_uniforms ).draw( default_forces_mesh, GL.POINTS );
 	}
 
 	gl.disable(gl.BLEND);
