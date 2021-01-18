@@ -283,7 +283,7 @@ function init ()
 	camera = new Camera( gl ); /**************************************************/
 
 	//Set the default mesh for the forces
-	default_forces_mesh = new GL.Mesh({vertices: [0,0,0]});
+	default_forces_mesh = new GL.Mesh({vertices: [0,0,0], coord: [1,1, 0,1, 1,0, 0,0, 1,0, 0,1]});
 	
 	//Texture Load
 	spawner_text = GL.Texture.fromURL("default_textures/spawner.png");
