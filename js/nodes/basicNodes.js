@@ -192,7 +192,7 @@ function textureLoadNode() {
 					that.properties.file = GL.Texture.fromURL(reader.result);
 					
 					if(!that.data_loaded)
-						that.size[1] += 60;
+						that.size[1] += 112;
 		
 					that.data_loaded = true;
 				};
@@ -239,11 +239,11 @@ textureLoadNode.prototype.onDrawBackground = function(ctx){
   	if(this.properties.file.data== undefined)
   		return;
 
-    ctx.fillStyle = "rgb(" + (255) + "," + (255) + "," + (255) + ")"; 
+    ctx.fillStyle = "rgb( 255 , 255 , 255)"; 
     ctx.font = "normal " + LiteGraph.NODE_SUBTEXT_SIZE + "px Arial";  
     ctx.fillText("Loaded texture", (this.size[0]-84)*0.5, this.size[1] - 100);
 
-	ctx.strokeStyle = "rgb(" + (255) + "," + (255) + "," + (255) + ")";   
+	ctx.strokeStyle = "rgb( 255 , 255 , 255)";    
 	ctx.beginPath();
 	ctx.rect((this.size[0]-80)*0.5, this.size[1] - 90, 80, 80);
 	ctx.stroke();

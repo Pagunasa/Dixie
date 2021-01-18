@@ -357,7 +357,7 @@ gl.ondraw = function() {
 		system_uniforms.u_model = system_list[x].model;
 		system_uniforms.u_color = system_list[x].color;
 		system_uniforms.u_texture.bind(0);
-		flatShader.uniforms( system_uniforms ).draw( default_forces_mesh, GL.POINTS );
+		texturedShader.uniforms( system_uniforms ).draw( default_forces_mesh, GL.POINTS );
 	}
 
 	//default forces uniforms
