@@ -80,7 +80,7 @@ var fs_texture = '\
 					varying vec2 v_coord;\
 					\
 					void main() {\
-						vec4 color = u_color * texture2D(u_texture, v_coord);\
+						vec4 color = u_color * texture2D(u_texture, gl_PointCoord);\
 						if (color.a < 0.1)\
 							discard;\
 						gl_FragColor = color;\
