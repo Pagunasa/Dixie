@@ -219,6 +219,13 @@ function textureLoadNode() {
 	this.addOutput("Texture", "texture");
 }
 
+textureLoadNode.prototype.onDrawBackground = function(ctx){
+  if (this.properties.file == undefined)
+       return;
+  
+ ctx.drawImage(this.properties.file.data, 0, 0, 13, 13);
+}
+
 textureLoadNode.prototype.onExecute = function() {
 	this.setOutputData(0, this.properties);
 }
