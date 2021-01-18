@@ -284,11 +284,15 @@ function init ()
 
 	//Set the default mesh for the forces
 	default_forces_mesh = new GL.Mesh({vertices: [0,0,0]});
-
-	//Load the default textures
+	
+	//Texture Load
 	spawner_text = GL.Texture.fromURL("default_textures/spawner.png");
 	vortex_text  = GL.Texture.fromURL("default_textures/vortex.png");
 	magnet_text  = GL.Texture.fromURL("default_textures/magnet_point.png");
+
+	//Loading of the default demos 
+	demo = {};
+	graph.configure( demo ); //by default charging the first demo
 
 	resizeElements(); //First time that the application is executed we need to resize both canvases
 
