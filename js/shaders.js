@@ -5,6 +5,7 @@
 var vs_basic = '\
 				precision highp float;\
 				attribute vec3 a_vertex;\
+				attribute vec2 a_coord;\
 				\
 				varying vec4 v_color;\
 				varying vec3 v_world_position;\
