@@ -190,9 +190,11 @@ function textureLoadNode() {
 				var reader = new FileReader();
 				reader.onload = function(e) {
 					that.properties.file = GL.Texture.fromURL(reader.result);
-										
+					
+					if(!that.data_loaded)
+						that.size[1] += 60;
+		
 					that.data_loaded = true;
-					that.size[1] += 60;
 				};
 
 				reader.readAsDataURL(file);
@@ -211,11 +213,17 @@ function textureLoadNode() {
 				that.addWidget("number", "Sub textures size x", 0, function(){}, {min: 0, max: 10000000, step: 10});
 				that.addWidget("number", "Sub textures size y", 0, function(){}, {min: 0, max: 10000000, step: 10});
 				that.size[0] = 260;
+
+				if(!that.data_loaded)
+						that.size[1] += 60;
 			} else {
 				that.widgets.splice(3,1);
 				that.widgets.splice(2,1);
 				that.size[0] = 210;
 				that.size[1] = 80;
+
+				if(!that.data_loaded)
+						that.size[1] += 60;
 			}
 		}
 	);
@@ -228,6 +236,9 @@ textureLoadNode.prototype.onDrawBackground = function(ctx){
 	if (!this.data_loaded)
 		return;
   
+  	if(this.properties.file.data== undefined)
+  		return;
+
 	ctx.drawImage(this.properties.file.data, (this.size[0]-60)*0.5, this.size[1] - 60, 60, 60);
 }
 
