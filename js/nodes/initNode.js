@@ -67,8 +67,12 @@ initParticlesNode.prototype.onExecute = function()
 	{
 		var particles_spawned = 0;
 		var system_info = searchSystem(system.id);
-		system_info.texture = this.properties.texture.file;
-		
+
+		if(this.properties.texture != undefined)
+			system_info.texture = this.properties.texture.file;
+		else
+			system_info.texture = undefined;
+
 		var particles = system_info.particles_list;
 		var particles_to_reset = system_info.particles_to_reset;
 		var mesh = searchMesh(system.id);
