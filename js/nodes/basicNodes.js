@@ -214,16 +214,16 @@ function textureLoadNode() {
 				that.addWidget("number", "Sub textures size y", 0, function(){}, {min: 0, max: 10000000, step: 10});
 				that.size[0] = 260;
 
-				if(!that.data_loaded)
-						that.size[1] += 60;
+				if(that.data_loaded)
+					that.size[1] += 112;
 			} else {
 				that.widgets.splice(3,1);
 				that.widgets.splice(2,1);
 				that.size[0] = 210;
 				that.size[1] = 80;
 
-				if(!that.data_loaded)
-						that.size[1] += 60;
+				if(that.data_loaded)
+					that.size[1] += 112;
 			}
 		}
 	);
@@ -239,7 +239,16 @@ textureLoadNode.prototype.onDrawBackground = function(ctx){
   	if(this.properties.file.data== undefined)
   		return;
 
-	ctx.drawImage(this.properties.file.data, (this.size[0]-60)*0.5, this.size[1] - 60, 60, 60);
+    ctx.fillStyle = "rgb(" + (255) + "," + (255) + "," + (255) + ")"; 
+    ctx.font = "normal " + LiteGraph.NODE_SUBTEXT_SIZE + "px Arial";  
+    ctx.fillText("Loaded texture", (this.size[0]-84)*0.5, this.size[1] - 100);
+
+	ctx.strokeStyle = "rgb(" + (255) + "," + (255) + "," + (255) + ")";   
+	ctx.beginPath();
+	ctx.rect((this.size[0]-80)*0.5, this.size[1] - 90, 80, 80);
+	ctx.stroke();
+
+	ctx.drawImage(this.properties.file.data, (this.size[0]-60)*0.5, this.size[1] - 80, 60, 60);	
 }
 
 textureLoadNode.prototype.onExecute = function() {
