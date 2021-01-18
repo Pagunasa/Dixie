@@ -191,8 +191,8 @@ function textureLoadNode() {
 				reader.onload = function(e) {
 					that.properties.file = GL.Texture.fromURL(reader.result);
 										
-					this.data_loaded = true;
-					this.size[1] += 60;
+					that.data_loaded = true;
+					that.size[1] += 60;
 				};
 
 				reader.readAsDataURL(file);
@@ -225,7 +225,7 @@ function textureLoadNode() {
 }
 
 textureLoadNode.prototype.onDrawBackground = function(ctx){
-	if (this.properties.file == undefined)
+	if (!this.data_loaded)
 		return;
   
 	ctx.drawImage(this.properties.file.data, (this.size[0]-60)*0.5, this.size[1] - 60, 60, 60);
