@@ -10,17 +10,16 @@ function createConditionNode()
 	this.properties = {
 		system_property: "Speed",
 		condition      : "Equals",
-		value          : vector_3,
-		condition_met  : false
+		value          : vector_3
 	};
 
 	/**************************************/
 	/***************Widgets****************/
 	/**************************************/
 	//This widget allows to change the mode for spawning the particles of the system 
-	this.addWidget("combo", "Property", "Speed", function() {}, 
+	this.addWidget("combo", "Property", "Speed", this.changeProperty.bind(this), 
 		{ values:["Speed", "Life time", "Colision number", "Size"] });
-	this.addWidget("combo", "Condition", "Equals", function() {}, 
+	this.addWidget("combo", "Condition", "Equals", this.changeCondition.bind(this), 
 		{ values:["Equals", "Greater than", "Less than", 
 		"Greater than or equals", "Less than or equals", 
 		"No equals"] });
@@ -31,23 +30,123 @@ function createConditionNode()
 	this.addInput("Particle system", "particle_system");
 	this.addInput("Speed", "vec3");
 
-	this.addOutput("Condition", "condition");
+	this.addOutput("Condition", "condition_list");
+}
+
+createConditionNode.prototype.changeCondition = function(v)
+{
+	this.properties.condition = v;
+}
+
+createConditionNode.prototype.changeProperty = function(v)
+{
+	this.properties.system_property = v;
+
+	//The second input is deleted with his possible conection
+	this.disconnectInput(1);
+	this.inputs.splice(1,1);
+
+	if(v == "Speed")
+	{
+		this.addInput("Speed", "vec3");
+		this.properties.value = vector_3;
+	}
+	else if (v == "Size")
+	{
+		this.addInput("Size", "number");
+		this.properties.value = 5;
+	}
+	else if (v == "Colision number")
+	{
+		this.addInput("Colision number", "number");
+		this.properties.value = 0;
+	}
+	else if (v == "Life time")
+	{
+		this.addInput("Life time", "number");
+		this.properties.value = 0;
+	}
 }
 
 createConditionNode.prototype.onExecute = function() 
 {
 	var system = this.getInputData(0);
+	var condition_list = [];
 
 	//When is executed the inputs are gotten and if they are undefined a default value is setted
 	this.properties.value = this.getInputData(1) || vector_3;
 	
 	if (system != undefined)
 	{
-		//TO DO
+		var system_info = searchSystem(system.id);
+		var particles = system_info.particles_list;
+		var value_to_test = this.properties.value;
+
+		for (var i = 0; i < particles.length; i++)
+		{
+			var tested_value = 0;
+
+			switch (this.properties.system_property)
+			{
+				case "Speed":
+					tested_value = particles[i].speed;
+				break;
+
+				case "Colision number":
+					tested_value = particles[i].colision_number;
+				break;
+
+				case "Size":
+					tested_value = particles[i].size;
+				break;
+			
+				case "Life time":
+					tested_value = particles[i].c_lifetime;
+				break;
+
+				default:
+					condition_list.push(i);
+					continue;
+				break;
+			}
+
+			switch (this.properties.condition)
+			{
+				case "Equals":
+					if (tested_value == value_to_test)
+						condition_list.push(i);
+				break;
+
+				case "Greater than":
+					if (tested_value > value_to_test)
+						condition_list.push(i);
+				break;
+
+				case "Less than":
+					if (tested_value < value_to_test)
+						condition_list.push(i);
+				break;
+			
+				case "Greater than or equals":
+					if (value_to_test >= tested_value)
+						condition_list.push(i);
+				break;
+
+				case "Less than or equals":
+					if (tested_value <= value_to_test)
+						condition_list.push(i);
+				break;
+
+				case "No equals":
+					if (tested_value != value_to_test)
+						condition_list.push(i);
+				break;
+			}
+		}
 	}
 
 	//The porperties of the node are the output
-	this.setOutputData(0, this.properties.condition_met);
+	this.setOutputData(0, condition_list);
 }
 
 createConditionNode.title = "Create Condition";
@@ -82,10 +181,10 @@ function mergeConditionsNode()
 	/**************************************/
 	/***********Inputs & Outputs***********/
 	/**************************************/
-	this.addInput("Condition 1", "condition");
-	this.addInput("condition 2", "condition");
+	this.addInput("Condition 1", "condition_list");
+	this.addInput("condition 2", "condition_list");
 
-	this.addOutput("Condition", "condition");
+	this.addOutput("Condition", "condition_list");
 }
 
 mergeConditionsNode.prototype.onExecute = function() 

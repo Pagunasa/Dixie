@@ -306,7 +306,7 @@ init();
 /****************SHADER DEFINITION****************/
 /*************************************************/
 var flatShader     =  new GL.Shader( vs_basic, fs_flat );
-var texturedShader =  new GL.Shader( vs_basic, fs_texture );
+var texturedShader =  new GL.Shader( vs_basic, fs_point_texture );
 
 var particleShaderTextured =  new GL.Shader( vs_particles, fs_texture );
 var particleShaderFlat     =  new GL.Shader( vs_particles, fs_flat_p  );

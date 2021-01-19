@@ -101,6 +101,7 @@ initParticlesNode.prototype.onExecute = function()
 			}
 			else if (particles_to_reset.length > 0)
 			{
+				this.internal.init_time_pased = 0.0;
 				var i = particles_to_reset[0];
 				
 				particles[i].fill(this.properties);
@@ -137,9 +138,9 @@ initParticlesNode.prototype.onExecute = function()
 		{
 			particle = particles[i];
 
-			particle.lifetime -= time_interval;
+			particle.c_lifetime += time_interval;
 
-			if(particle.lifetime <= 0 && !particle.to_reset)
+			if(particle.c_lifetime >= particle.lifetime && !particle.to_reset)
 			{
 				updateVisibility(mesh, i);
 				particle.to_reset = true;

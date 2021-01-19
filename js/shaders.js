@@ -73,6 +73,20 @@ var fs_flat_p = '\
 var fs_texture = '\
 					precision highp float;\
 					uniform vec4 u_color;\
+					varying vec2 v_coord;\
+					uniform sampler2D u_texture;\
+					\
+					void main() {\
+						vec4 color = u_color * texture2D(u_texture, v_coord);\
+						if (color.a < 0.1)\
+							discard;\
+						gl_FragColor = color;\
+					}';
+
+
+var fs_point_texture = '\
+					precision highp float;\
+					uniform vec4 u_color;\
 					uniform sampler2D u_texture;\
 					\
 					void main() {\

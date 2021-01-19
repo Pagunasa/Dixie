@@ -374,10 +374,10 @@ equationNode.title_selected_color = basicSelectedTitleColor;
 function colorPickerNode() {
 	this.properties = { color : [1,1,1,1] }
 
-	var rw = this.addWidget("number", "Red",   1, this.setRed.bind(this), {min: 0, max: 1, step: 1});
-	var gw = this.addWidget("number", "Gren",  1, this.setBlue.bind(this), {min: 0, max: 1, step:  1});
-	var bw = this.addWidget("number", "Blue",  1, this.setGreen.bind(this), {min: 0, max: 1, step: 1});
-	var aw = this.addWidget("number", "Alpha", 1, this.setAlpha.bind(this), {min: 0, max: 1, step: 1});
+	this.rw = this.addWidget("number", "Red",   1, this.setRed.bind(this), {min: 0, max: 1, step: 1});
+	this.gw = this.addWidget("number", "Gren",  1, this.setBlue.bind(this), {min: 0, max: 1, step:  1});
+	this.bw = this.addWidget("number", "Blue",  1, this.setGreen.bind(this), {min: 0, max: 1, step: 1});
+	this.aw = this.addWidget("number", "Alpha", 1, this.setAlpha.bind(this), {min: 0, max: 1, step: 1});
 
 	this.addOutput("Color", "color");
 }
@@ -397,7 +397,7 @@ colorPickerNode.prototype.onDrawBackground = function(ctx)
         ctx.fillRect(0, 0, this.size[0], this.size[1]);
 };
 
-//For recover (in a visual way) the value when a graph is loaded
+//For recover (in a visual way) the values when a graph is loaded
 colorPickerNode.prototype.onPropertyChanged = function()
 {
 	this.rw.value = this.properties.color[0];

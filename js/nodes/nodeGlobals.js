@@ -37,6 +37,10 @@ var default_visibility = [0, 0, 0, 0, 0, 0];
 var default_forces_mesh;
 
 
+function lerp(s, e, x){
+	return s * ( 1 - x ) + e * x; 
+}
+
 /*
 * 	This method returns the cross product of two vectors
 *	@method cross
@@ -194,18 +198,29 @@ Particle.prototype.fill = function(properties) {
 	lifetime = randomNumber(properties.min_life_time, properties.max_life_time);
 
 	this.position = new Float32Array(3);
-	this.position[0] = properties.position[0];
-	this.position[1] = properties.position[1];
-	this.position[2] = properties.position[2];
+	for (var i = 0; i < 3; ++i)
+		this.position[i] = properties.position[i];
 
-	this.color = new Float32Array(4);
-	this.color = properties.color;
+	this.color  = new Float32Array(4);
+	this.iColor = new Float32Array(4);
+	for (var i = 0; i < 4; ++i)
+	{
+		this.iColor[i] = properties.color[i];
+		this.color[i] = properties.color[i];
+	}
 
-	this.size = randomNumber(properties.min_size, properties.max_size);
+	var s = randomNumber(properties.min_size, properties.max_size);
+	this.size  = s;
+	this.iSize = s;
+	
+	this.speed  = speed;
+	this.iSpeed = new Float32Array(3);
+	for (var i = 0; i < 3; ++i)
+		this.iSpeed[i] = speed[i];
 
-	this.speed    = speed;
-	this.lifetime = lifetime;
-	this.to_reset = false;
+	this.lifetime   = lifetime;
+	this.c_lifetime = 0.0; //How many life time the particle lived
+	this.to_reset   = false;
 };
 
 
@@ -305,7 +320,7 @@ function resizeBufferArray(mesh, newSize) {
     			size = vertexSize;
     			data_size = 6 * 3;
     			data = data_Vertex;
-    			default_data = default_vertices;
+    			default_data = default_centers;
     		}
     		else if (x == "coords") {
     			size = coordsSize;   
