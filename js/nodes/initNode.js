@@ -50,12 +50,12 @@ initParticlesNode.prototype.onExecute = function()
 	//When is executed the inputs are gotten and if they are undefined a default value is setted
 	this.properties.max_speed = this.getInputData(1)   || this.properties.max_speed;
 	this.properties.min_speed = this.getInputData(2)   || this.properties.min_speed;
-	var max_life_time         = (this.getInputData(3)) || this.properties.max_life_time;
-	var min_life_time         = (this.getInputData(4)) || this.properties.min_life_time;
-	var max_size              = (this.getInputData(5)) || this.properties.max_size ;
-	var min_size              = (this.getInputData(6)) || this.properties.min_size;
+	var max_life_time         = this.getInputData(3)   || this.properties.max_life_time;
+	var min_life_time         = this.getInputData(4)   || this.properties.min_life_time;
+	var max_size              = this.getInputData(5)   || this.properties.max_size ;
+	var min_size              = this.getInputData(6)   || this.properties.min_size;
 	this.properties.color     = this.getInputData(7)   || this.properties.color;
-	this.properties.texture   = this.getInputData(8)   || this.properties.texture;
+	this.properties.texture   = this.getInputData(8)   || undefined;
 
 	this.properties.max_life_time = Math.max(min_life_time, max_life_time);
 	this.properties.min_life_time = Math.min(min_life_time, max_life_time);
@@ -68,7 +68,9 @@ initParticlesNode.prototype.onExecute = function()
 		var particles_spawned = 0;
 		var system_info = searchSystem(system.id);
 
-		if(this.properties.texture != undefined)
+		if(this.properties.texture == undefined)
+			system_info.texture = undefined;
+		else if (this.properties.texture.file != "")
 			system_info.texture = this.properties.texture.file;
 		else
 			system_info.texture = undefined;
@@ -104,6 +106,9 @@ initParticlesNode.prototype.onExecute = function()
 				this.internal.init_time_pased = 0.0;
 				var i = particles_to_reset[0];
 				
+				while(particles_to_reset[0] > particles.length)
+					particles_to_reset.splice(0,1);
+
 				particles[i].fill(this.properties);
 				updateVisibility(mesh, particles[i], i, 1.0);				
 				updateColor(mesh, particles[i], i);

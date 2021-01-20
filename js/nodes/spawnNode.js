@@ -115,6 +115,7 @@ mySpawnNode.prototype.onExecute = function()
 	//Check if the maximum number of particles change, if is true then the array of the particles have to be resized
 	if (this.properties.max_particles != this.last_status.max_particles)
 	{
+		this.system.particles_list.splice(this.properties.max_particles, this.system.particles_list.length);
 		this.last_status.max_particles = this.properties.max_particles;	
 		resizeBufferArray(searchMesh(this.id), this.properties.max_particles);
 	}

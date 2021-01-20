@@ -331,8 +331,7 @@ gl.ondraw = function() {
 		u_viewprojection : camera.vp,
 		u_mvp            : camera.mvp,
 		u_right          : camera.getRightVector(),
-		u_up             : camera.getUpVector(),
-		u_color          : [1,1,1,1]
+		u_up             : camera.getUpVector()
 	};
 
 	//default sytem uniforms

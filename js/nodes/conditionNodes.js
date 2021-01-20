@@ -17,9 +17,9 @@ function createConditionNode()
 	/***************Widgets****************/
 	/**************************************/
 	//This widget allows to change the mode for spawning the particles of the system 
-	this.addWidget("combo", "Property", "Speed", this.changeProperty.bind(this), 
+	this.w1 = this.addWidget("combo", "Property", "Speed", this.changeProperty.bind(this), 
 		{ values:["Speed", "Life time", "Colision number", "Size"] });
-	this.addWidget("combo", "Condition", "Equals", this.changeCondition.bind(this), 
+	this.w2 = this.addWidget("combo", "Condition", "Equals", this.changeCondition.bind(this), 
 		{ values:["Equals", "Greater than", "Less than", 
 		"Greater than or equals", "Less than or equals", 
 		"No equals"] });
@@ -31,6 +31,12 @@ function createConditionNode()
 	this.addInput("Speed", "vec3");
 
 	this.addOutput("Condition", "condition_list");
+}
+
+createConditionNode.prototype.onPropertyChanged = function()
+{
+	this.w1.value = this.properties.system_property;
+	this.w2.value = this.properties.condition;
 }
 
 createConditionNode.prototype.changeCondition = function(v)
@@ -97,7 +103,11 @@ createConditionNode.prototype.onExecute = function()
 			switch (this.properties.system_property)
 			{
 				case "Speed":
-					tested_value = particles[i].speed;
+					var speed = particles[i].speed;
+					tested_value = Math.sqrt(speed[0]*speed[0]+speed[1]*speed[1]+speed[2]*speed[2]);
+					
+					if(i == 0)
+						value_to_test = Math.sqrt(value_to_test[0]*value_to_test[0]+value_to_test[1]*value_to_test[1]+value_to_test[2]*value_to_test[2]);
 				break;
 
 				case "Colision number":
@@ -136,7 +146,7 @@ createConditionNode.prototype.onExecute = function()
 				break;
 			
 				case "Greater than or equals":
-					if (value_to_test >= tested_value)
+					if (tested_value >= value_to_test)
 						condition_list.push(i);
 				break;
 

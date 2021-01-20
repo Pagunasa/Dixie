@@ -117,15 +117,25 @@ modifyPropertyNode.prototype.onExecute = function()
 		var mesh = searchMesh(system.id);
 
 		var particles_condition_list;
-		
+		var particle_id;
+		var using_condition = false; 
+
 		if (this.properties.condition == undefined)
 			particles_condition_list = particles;
 		else
+		{
+			using_condition = true;
 			particles_condition_list = this.properties.condition;
+		}
 
 		for (var i = 0; i < particles_condition_list.length; i++)
-		{
-			particle = particles[i];
+		{			
+			if (using_condition)
+				particle_id = particles_condition_list[i];
+			else
+				particle_id = i;
+
+			particle = particles[particle_id];
 
 			var e = particle.lifetime;
 			var x = particle.c_lifetime;
@@ -154,7 +164,7 @@ modifyPropertyNode.prototype.onExecute = function()
 					final_value = Math.max(particle.iSize - final_value, 0);
 
 				particle.size = final_value * modifier + particle.iSize * (1.0 - modifier);
-				updateSize(mesh, particle, i);
+				updateSize(mesh, particle, particle_id);
 				
 				mesh.upload();
 			}
@@ -171,7 +181,7 @@ modifyPropertyNode.prototype.onExecute = function()
 					particle.color[j] = final_value[j] * modifier 
 								+ particle.iColor[j] * (1.0 - modifier);
 
-				updateColor(mesh, particle, i);
+				updateColor(mesh, particle, particle_id);
 				mesh.upload();
 			}
 			else if (this.properties.changed_property == "Life time")

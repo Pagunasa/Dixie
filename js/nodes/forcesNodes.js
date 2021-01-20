@@ -36,7 +36,7 @@ gravityNode.prototype.onExecute = function()
 	var system = this.getInputData(0);
 
 	//When is executed the inputs are gotten and if they are undefined a default value is setted
-	this.properties.direction = this.getInputData(1) || this.properties.direction;
+	this.properties.direction = this.getInputData(1) || vector_3;
 	this.properties.strength  = this.getInputData(2) || this.properties.strength;
 
 	if (system != undefined)
