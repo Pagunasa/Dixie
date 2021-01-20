@@ -156,15 +156,19 @@ function initMenuButtons ()
 
 	function loadGraph(e){
 		var file = e.target.files[0];
-		  if (!file) {
-		    return;
-		  }
+
+		var filename = file.name.split(".");
+		var extension = filename[filename.length - 1];
+
+		if (!file || extension != "dx") {
+			createAlert("Holy Guacamole!", "Loading error", "Please insert a valid graph file...", "danger", true, true, "pageMessages");
+			return;
+		}
 		
 		var reader = new FileReader();
 		reader.onload = function(e) {
 		    var contents = e.target.result;
-		    var ok = graph.configure(JSON.parse(contents));
-		    console.log(ok);
+		    graph.configure(JSON.parse(contents));
 		};
 		reader.readAsText(file);
 
@@ -183,7 +187,7 @@ function initMenuButtons ()
 		link = url.createObjectURL(blobl);
 
 		var savedGraph = document.createElement("a");
-		savedGraph.download = "Graph.txt";
+		savedGraph.download = "Graph.dx";
 		savedGraph.href = link;
 
 		document.body.appendChild(savedGraph);

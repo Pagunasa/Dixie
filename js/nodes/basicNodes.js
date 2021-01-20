@@ -50,7 +50,7 @@ randomNumberNode.prototype.onExecute = function() {
 
 	this.properties.random = Math.random() * (this.properties.max - this.properties.min) + this.properties.min;
 	this.setOutputData(0, this.properties.random);
-}
+};
 
 randomNumberNode.title = "Random Number";
 randomNumberNode.title_color = basicNodeColor;
@@ -81,7 +81,7 @@ vector2Node.prototype.onExecute = function() {
 	this.data[1] = this.properties.y;
 
 	this.setOutputData(0, this.data);
-}
+};
 
 vector2Node.title = "Vector 2";
 vector2Node.title_color = basicNodeColor;
@@ -115,7 +115,7 @@ vector3Node.prototype.onExecute = function() {
 	this.data[2] = this.properties.z;
 
 	this.setOutputData(0, this.data);
-}
+};
 
 vector3Node.title = "Vector 3";
 vector3Node.title_color = basicNodeColor;
@@ -152,7 +152,7 @@ vector4Node.prototype.onExecute = function() {
 	this.data[3] = this.properties.w;
 
 	this.setOutputData(0, this.data);
-}
+};
 
 vector4Node.title = "Vector 4";
 vector4Node.title_color = basicNodeColor;
@@ -172,6 +172,7 @@ function textureLoadNode() {
 	}
 	
 	this.data_loaded = false;
+	this.firstChange = true;
 
 	var that = this;
 
@@ -185,7 +186,10 @@ function textureLoadNode() {
 				var file = e.target.files[0];
 				
 				if (!file || file.type.split("/")[0] != "image")
+				{
+					createAlert("Holy Guacamole!", "Loading error", "Please insert an image...", "danger", true, true, "pageMessages");
 				    return;	
+				}
 			
 				var reader = new FileReader();
 				reader.onload = function(e) {
@@ -231,9 +235,8 @@ function textureLoadNode() {
 		}
 	);
 
-
 	this.addOutput("Texture", "texture");
-}
+};
 
 //In order to show to the users the loaded texture it's mandatory to
 //overload the onDrawBackground
@@ -258,11 +261,19 @@ textureLoadNode.prototype.onDrawBackground = function(ctx){
 
 	//The image is drawed
 	ctx.drawImage(this.properties.file.data, (this.size[0]-60)*0.5, this.size[1] - 80, 60, 60);	
-}
+};
+
+textureLoadNode.prototype.onPropertyChanged = function() {
+	if (this.properties.file == "" && this.firstChange){
+		createAlert('','','Please reload the texture.','warning',true,true,'pageMessages');
+		this.size[1] = 82;
+		this.firstChange = false;
+	}
+};
 
 textureLoadNode.prototype.onExecute = function() {
 	this.setOutputData(0, this.properties);
-}
+};
 
 textureLoadNode.title = "Load Texture";
 textureLoadNode.title_color = basicNodeColor;

@@ -75,7 +75,13 @@ mySpawnNode.prototype.setValue = function(v) {
 //For recover (in a visual way) the value when a graph is loaded
 mySpawnNode.prototype.onPropertyChanged = function()
 {
-	this.widgets[0].value = this.properties.mode;
+	this.widgets[1].value = this.properties.mode;
+
+	if(this.properties.mode != "Mesh" && this.properties.mode != "Point" && this.properties.mode != "Surface")
+	{
+		this.widgets[1].value = "Point";
+		this.setValue("Point");
+	}
 
 	if (this.properties.mode == "Mesh")
 		this.widgets[1].value = this.properties.origin_mesh_mode;		
@@ -97,10 +103,10 @@ mySpawnNode.prototype.onExecute = function()
 	var max_particles = this.getInputData(0);
 	var spawn_rate    = this.getInputData(1);
 
-	this.properties.max_particles = max_particles == undefined ? 100 : Math.abs(Math.round(max_particles));
-	this.properties.spawn_rate    = spawn_rate    == undefined ? 10  : Math.abs(Math.round(spawn_rate));
-	this.properties.position      = this.getInputData(2) || vector_3;
-	this.properties.color         = this.getInputData(3) || [1,1,1,1];
+	this.properties.max_particles = max_particles == undefined ? this.properties.max_particles : Math.abs(Math.round(max_particles));
+	this.properties.spawn_rate    = spawn_rate    == undefined ? this.properties.spawn_rate    : Math.abs(Math.round(spawn_rate));
+	this.properties.position      = this.getInputData(2) || this.properties.position;
+	this.properties.color         = this.getInputData(3) || this.properties.color;
 
 	//It's necesary update the system position and color for render te origin of the particles
 	this.system.position = this.properties.position;

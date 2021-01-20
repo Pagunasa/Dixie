@@ -16,7 +16,7 @@ function initParticlesNode()
 		min_size: 0.25,
 		min_life_time: 10,
 		
-		color: vector_4,	
+		color: default_particle_color,	
 		texture: undefined
 	};
 
@@ -48,14 +48,14 @@ initParticlesNode.prototype.onExecute = function()
 	var system = this.getInputData(0);
 
 	//When is executed the inputs are gotten and if they are undefined a default value is setted
-	this.properties.max_speed = this.getInputData(1) || vector_3;
-	this.properties.min_speed = this.getInputData(2) || vector_3;
-	var max_life_time         = (this.getInputData(3)) || 10;
-	var min_life_time         = (this.getInputData(4)) || 5;
-	var max_size              = (this.getInputData(5)) || 0.25;
-	var min_size              = (this.getInputData(6)) || 0.25;
-	this.properties.color     = this.getInputData(7) || default_particle_color;
-	this.properties.texture   = this.getInputData(8) || undefined;
+	this.properties.max_speed = this.getInputData(1)   || this.properties.max_speed;
+	this.properties.min_speed = this.getInputData(2)   || this.properties.min_speed;
+	var max_life_time         = (this.getInputData(3)) || this.properties.max_life_time;
+	var min_life_time         = (this.getInputData(4)) || this.properties.min_life_time;
+	var max_size              = (this.getInputData(5)) || this.properties.max_size ;
+	var min_size              = (this.getInputData(6)) || this.properties.min_size;
+	this.properties.color     = this.getInputData(7)   || this.properties.color;
+	this.properties.texture   = this.getInputData(8)   || this.properties.texture;
 
 	this.properties.max_life_time = Math.max(min_life_time, max_life_time);
 	this.properties.min_life_time = Math.min(min_life_time, max_life_time);

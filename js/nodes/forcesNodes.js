@@ -36,8 +36,8 @@ gravityNode.prototype.onExecute = function()
 	var system = this.getInputData(0);
 
 	//When is executed the inputs are gotten and if they are undefined a default value is setted
-	this.properties.direction = this.getInputData(1) || vector_3;
-	this.properties.strength  = this.getInputData(2) || 10;
+	this.properties.direction = this.getInputData(1) || this.properties.direction;
+	this.properties.strength  = this.getInputData(2) || this.properties.strength;
 
 	if (system != undefined)
 	{
@@ -127,10 +127,10 @@ vortexNode.prototype.onExecute = function()
 	var system = this.getInputData(0);
 
 	//When is executed the inputs are gotten and if they are undefined a default value is setted
-	this.properties.position       = this.getInputData(1) || vector_3;
-	this.properties.angular_speed  = this.getInputData(2) || vector_3;
-	this.properties.scale          = this.getInputData(3) || 10;
-	this.properties.color          = this.getInputData(4) || vector_4;
+	this.properties.position       = this.getInputData(1) || this.properties.position;
+	this.properties.angular_speed  = this.getInputData(2) || this.properties.angular_speed;
+	this.properties.scale          = this.getInputData(3) || this.properties.scale;
+	this.properties.color          = this.getInputData(4) || this.properties.color;
 
 	//It's necesary update the force position and color for 
 	//render te origin of the vortex
@@ -233,10 +233,10 @@ magnetNode.prototype.onExecute = function()
 	var system = this.getInputData(0);
 
 	//When is executed the inputs are gotten and if they are undefined a default value is setted
-	this.properties.position       = this.getInputData(1) || vector_3;
-	this.properties.strength       = this.getInputData(2) || 10;
-	this.properties.scale          = this.getInputData(3) || 10;
-	this.properties.color          = this.getInputData(4) || vector_4;
+	this.properties.position = this.getInputData(1) || this.properties.position;
+	this.properties.strength = this.getInputData(2) || this.properties.strength;
+	this.properties.scale    = this.getInputData(3) || this.properties.scale;
+	this.properties.color    = this.getInputData(4) || this.properties.color;
 
 	//It's necesary update the force position and color for 
 	//render te origin of the magnet point

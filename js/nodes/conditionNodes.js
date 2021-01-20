@@ -36,6 +36,10 @@ function createConditionNode()
 createConditionNode.prototype.changeCondition = function(v)
 {
 	this.properties.condition = v;
+
+	if(v == "Greater than or equals" || v == "Less than or equals")
+		this.size[0] = 270;
+
 }
 
 createConditionNode.prototype.changeProperty = function(v)
@@ -60,12 +64,16 @@ createConditionNode.prototype.changeProperty = function(v)
 	{
 		this.addInput("Colision number", "number");
 		this.properties.value = 0;
+		this.size[0] = 250;
 	}
 	else if (v == "Life time")
 	{
 		this.addInput("Life time", "number");
 		this.properties.value = 0;
 	}
+
+	if(this.properties.condition == "Greater than or equals" || this.properties.condition == "Less than or equals")
+		this.size[0] = 270;
 }
 
 createConditionNode.prototype.onExecute = function() 
@@ -74,7 +82,7 @@ createConditionNode.prototype.onExecute = function()
 	var condition_list = [];
 
 	//When is executed the inputs are gotten and if they are undefined a default value is setted
-	this.properties.value = this.getInputData(1) || vector_3;
+	this.properties.value = this.getInputData(1) || this.properties.value;
 	
 	if (system != undefined)
 	{
@@ -165,17 +173,14 @@ function mergeConditionsNode()
 	/***********Node properties************/
 	/**************************************/
 	this.properties = {
-		merge_mode   : "And",
-		condition_1  : undefined,
-		condition_2  : undefined,
-		condition_met: false
+		merge_mode   : "And"
 	};
 
 	/**************************************/
 	/***************Widgets****************/
 	/**************************************/
 	//This widget allows to change the mode for spawning the particles of the system 
-	this.addWidget("combo", "Merge mode", "And", function() {}, 
+	this.w = this.addWidget("combo", "Merge mode", "And", this.changeMergeMode.bind(this), 
 		{ values:["And", "Or"] });
 	
 	/**************************************/
@@ -187,19 +192,64 @@ function mergeConditionsNode()
 	this.addOutput("Condition", "condition_list");
 }
 
+mergeConditionsNode.prototype.onPropertyChanged = function()
+{
+	if(this.properties.merge_mode != "And" && this.properties.merge_mode != "Or")
+		this.properties.merge_mode = "And";
+
+	this.w.value = this.properties.merge_mode;
+}
+
+mergeConditionsNode.prototype.changeMergeMode = function(v)
+{
+	this.properties.merge_mode = v;
+}
+
+
 mergeConditionsNode.prototype.onExecute = function() 
 {
-	//When is executed the inputs are gotten and if they are undefined a default value is setted
-	this.properties.condition_1 = this.getInputData(0);
-	this.properties.condition_2 = this.getInputData(1);
+	var condition_1 = this.getInputData(0) || [];
+	var condition_2 = this.getInputData(1) || [];
 
-	if (this.properties.condition_1 != undefined && this.properties.condition_2 != undefined)
+	var lenght1 = condition_1.length;
+	var lenght2 = condition_2.length;
+
+	var condition_list = [];
+		
+	switch (this.properties.merge_mode)
 	{
-		//TO DO
+		case "And":
+			if (lenght1 > 0 && lenght2 > 0)
+				for(var i = 0; i < lenght1; ++i){
+				    for (var j = 0; j < lenght2; ++j){
+				        if(condition_1[i] == condition_2[j] && !condition_list.includes(condition_1[i]))
+				            condition_list.push(condition_1[i]);
+				        else if (condition_2[j] > condition_1[i])
+				            break;
+				    }
+				}
+		break;
+
+		case "Or":
+			if (lenght1 > 0 && lenght2 > 0)
+			{
+				condition_list = condition_1;
+
+				for (var i = 0; i < condition_2.length; ++i)
+				    if(!condition_list.includes(condition_2[i]))
+				        condition_list.push(condition_2[i]);
+				
+			}
+			else if (lenght1 == 0)
+				condition_list = condition_2;
+			else if (lenght2 == 0)
+				condition_list = condition_1;
+
+		break;
 	}
 
 	//The porperties of the node are the output
-	this.setOutputData(0, this.properties.condition_met);
+	this.setOutputData(0, condition_list);
 }
 
 mergeConditionsNode.title = "Merge Conditions";
