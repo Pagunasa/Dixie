@@ -272,8 +272,8 @@ magnetNode.prototype.onExecute = function()
 				distance_factor *= strength;
 
 				//Here the distance is transformed to the values of -1, 1 and 0
-				for(var j = 0; j < 3; j++)
-					distance[j] = distance[j] < 0 ? -1 : distance[j] > 0 ? 1 : 0;
+				//for(var j = 0; j < 3; j++)
+				//	distance[j] = distance[j] < 0 ? -1 : distance[j] > 0 ? 1 : 0;
 
 				for(var j = 0; j < 3; j++)
 					particle.position[j] += (distance[j] * distance_factor * time_interval);
