@@ -268,6 +268,7 @@ textureLoadNode.prototype.onPropertyChanged = function() {
 		createAlert('','Please reload your texture','A default texture will be loaded.','warning',true,true,'pageMessages');
 		this.properties.file = particle_text;
 		//this.size[1] = 82;
+		this.data_loaded = true;
 		this.firstChange = false;
 	}
 };
