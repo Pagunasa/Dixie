@@ -27,34 +27,36 @@ function mySpawnNode()
     	max_particles: 100             //Which was the max_particles in the last change
     };
 
+    this.modeValues = ["Point", "Mesh", "2D Geometry"];
+
 	/**************************************/
 	/***************Widgets****************/
 	/**************************************/
 	//This widget allows enable/disable the visibility of the origin of the particles
 	this.addWidget("toggle", "Show origin", true, toogleOriginVisibility.bind(this));
 	//This widget allows to change the mode for spawning the particles of the system 
-	this.addWidget("combo", "Mode", "Point", this.setValue.bind(this), { values:["Point", "Mesh", "2D Geometry"] });
+	this.addWidget("combo", "Mode", "Point", this.setValue.bind(this), { values: this.modeValues});
 
 	/**************************************/
 	/***********Inputs & Outputs***********/
 	/**************************************/
 	this.addInput("Max particles", "number");
 	this.addInput("Spawn rate"   , "number");
-	this.addInput("Position"     , "vec3");
 	this.addInput("Color"        , "color")
+	this.addInput("Position"     , "vec3");
 
 	this.addOutput("Particle system", "particle_system");
 }
 
 mySpawnNode.prototype.setValue = function(v) {
-	this.mode = v;
+	this.properties.mode = v;
 	//The first two inputs will be always the same, so we have to disconect and delete the third
-	this.disconnectInput(2);
-	this.inputs.splice(2,1);
+	this.disconnectInput(3);
+	this.inputs.splice(3,1);
 
-	if (v == "Point")
-	{
+	if (v == "Point"){
 		this.addInput("Position", "vec3"); //if the mode is point the new input must be a vector 3
+		this.size[1] = 142;
 	}
 	else if (v == "Mesh")
 	{
@@ -66,6 +68,7 @@ mySpawnNode.prototype.setValue = function(v) {
 	else if (v == "2D Geometry")
 	{
 		this.addInput("Geometry", "2dGeometry"); //if the mode is 2D geometry  the new input must be that geometry
+		this.size[1] = 142;
 	}
 
 	this.widgets.splice(2,1); //if a change is maked and a seconf widget exist in the node, it must be deleted
@@ -75,16 +78,13 @@ mySpawnNode.prototype.setValue = function(v) {
 //For recover (in a visual way) the value when a graph is loaded
 mySpawnNode.prototype.onPropertyChanged = function()
 {
-	this.widgets[1].value = this.properties.mode;
+	var m = this.properties.mode;
 
-	if(this.properties.mode != "Mesh" && this.properties.mode != "Point" && this.properties.mode != "Surface")
-	{
-		this.widgets[1].value = "Point";
-		this.setValue("Point");
-	}
+	if(!this.modeValues.includes(m))
+		m = "Point";
 
-	if (this.properties.mode == "Mesh")
-		this.widgets[1].value = this.properties.origin_mesh_mode;		
+	this.widgets[1].value = m;
+	this.setValue("Point");	 //Is Point because the others are not implemented
 }
 
 

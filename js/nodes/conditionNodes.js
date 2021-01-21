@@ -13,16 +13,17 @@ function createConditionNode()
 		value          : vector_3
 	};
 
+	this.w1Values = ["Speed", "Life time", "Colision number", "Size"];
+	this.w2Values = ["Equals", "Greater than", "Less than", "Greater than or equals", "Less than or equals", "No equals"];
+
 	/**************************************/
 	/***************Widgets****************/
 	/**************************************/
 	//This widget allows to change the mode for spawning the particles of the system 
 	this.w1 = this.addWidget("combo", "Property", "Speed", this.changeProperty.bind(this), 
-		{ values:["Speed", "Life time", "Colision number", "Size"] });
+		{values: this.w1Values});
 	this.w2 = this.addWidget("combo", "Condition", "Equals", this.changeCondition.bind(this), 
-		{ values:["Equals", "Greater than", "Less than", 
-		"Greater than or equals", "Less than or equals", 
-		"No equals"] });
+		{values: this.w2Values});
 	
 	/**************************************/
 	/***********Inputs & Outputs***********/
@@ -35,8 +36,20 @@ function createConditionNode()
 
 createConditionNode.prototype.onPropertyChanged = function()
 {
-	this.w1.value = this.properties.system_property;
-	this.w2.value = this.properties.condition;
+	var sp = this.properties.system_property;
+	var co = this.properties.condition;
+
+	if(!this.w1Values.includes(sp))
+		sp = "Speed";
+		
+	this.changeProperty(sp);
+	this.w1.value = sp;
+
+	if(!this.w2Values.includes(co))
+		co = "Equals";
+
+	this.changeCondition(co);
+	this.w2.value = co;
 }
 
 createConditionNode.prototype.changeCondition = function(v)
@@ -189,12 +202,14 @@ function mergeConditionsNode()
 		merge_mode   : "And"
 	};
 
+	this.vValues = ["And", "Or"];
+
 	/**************************************/
 	/***************Widgets****************/
 	/**************************************/
 	//This widget allows to change the mode for spawning the particles of the system 
 	this.w = this.addWidget("combo", "Merge mode", "And", this.changeMergeMode.bind(this), 
-		{ values:["And", "Or"] });
+		{ values: this.vValues});
 	
 	/**************************************/
 	/***********Inputs & Outputs***********/
@@ -207,10 +222,12 @@ function mergeConditionsNode()
 
 mergeConditionsNode.prototype.onPropertyChanged = function()
 {
-	if(this.properties.merge_mode != "And" && this.properties.merge_mode != "Or")
-		this.properties.merge_mode = "And";
+	var m = this.properties.merge_mode;
 
-	this.w.value = this.properties.merge_mode;
+	if(!this.vValues.includes(m))
+		m = "And";
+
+	this.w.value = m;
 }
 
 mergeConditionsNode.prototype.changeMergeMode = function(v)

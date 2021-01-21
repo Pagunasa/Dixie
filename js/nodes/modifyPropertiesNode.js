@@ -12,21 +12,25 @@ function modifyPropertyNode()
 		change_equation: undefined,
 		changed_property: "Speed",
 		application_mode: "Equalization",
+		modification_mode: "Along lifetime",
+		user_defined_seconds: 5,
 		new_value: vector_3	
 	};
+
+	this.propValues = ["Speed", "Size", "Color", "Life time"];
+	this.applValues = ["Equalization", "Addition", "Subtraction"];
+	this.modiValues = ["Along life time", "User defined"];
 
 	/**************************************/
 	/***************Widgets****************/
 	/**************************************/
 	//This widget allows to change the mode for spawning the particles of the system 
 	this.propW = this.addWidget("combo", "Property", "Speed", this.changeProperty.bind(this), 
-		{ values:["Speed", "Size", "Color", "Life time"] });
+		{values: this.propValues});
 	this.applW = this.addWidget("combo", "Application Mode", "Equalization", this.changeApplication.bind(this), 
-		{ values:["Equalization", "Addition", "Subtraction"] });
-	this.modiW = this.addWidget("combo", "Modification Mode", "Along life time", function() {}, 
-		{ values:["Along life time", "User defined"] });
-	//this.addWidget("combo", "Seconds", "Along life time", function() {}, 
-	//	{ values:["Along life time", "User defined"] });
+		{values: this.applValues});
+	this.modiW = this.addWidget("combo", "Modification Mode", "Along life time", this.changeModification.bind(this), 
+		{values: this.modiValues});
 
 	/**************************************/
 	/***********Inputs & Outputs***********/
@@ -37,6 +41,30 @@ function modifyPropertyNode()
 	this.addInput("New speed"      , "vec3");
 	
 	this.addOutput("Particle system", "particle_system");
+}
+
+modifyPropertyNode.prototype.changeModification = function(v)
+{
+	this.properties.modification_mode = v;
+	this.widgets.splice(3,1);
+
+	if (v == "User defined")
+	{
+		var value = this.properties.user_defined_seconds;
+		this.secW = this.addWidget("number", "Seconds", value, this.setSeconds.bind(this), {min: 0, max: 100000, step: 0.1});
+	}
+	else
+		this.size[1] = 166;
+	
+}
+
+modifyPropertyNode.prototype.setSeconds = function(v)
+{
+	if(isNaN(v))
+		v = 5;
+
+	this.properties.user_defined_seconds = v;
+	this.secW.value = v;
 }
 
 modifyPropertyNode.prototype.changeApplication = function(v)
@@ -77,8 +105,30 @@ modifyPropertyNode.prototype.changeProperty = function(v)
 //For recover (in a visual way) the values when a graph is loaded
 modifyPropertyNode.prototype.onPropertyChanged = function()
 {
-	this.propW.value = this.properties.changed_property;
-	this.applW.value = this.properties.application_mode;
+	var p = this.properties.changed_property;
+	var a = this.properties.application_mode;
+	var m = this.properties.modification_mode;
+
+	if(!this.propValues.includes(p))
+		p = "Size";
+
+	this.propW.value = p;
+	this.changeProperty(p);
+
+	if(!this.applValues.includes(a))
+		a = "Equalization";
+	
+	this.applW.value = a;
+	this.changeApplication(a);
+
+	if(!this.modiValues.includes(m))
+		m = "Along life time";
+
+	this.modiW.value = m;
+	this.changeModification(m);
+
+	if(this.secW != undefined)
+		this.setSeconds(this.properties.user_defined_seconds);
 }
 
 modifyPropertyNode.prototype.onExecute = function() 
@@ -140,8 +190,17 @@ modifyPropertyNode.prototype.onExecute = function()
 			particle = particles[particle_id];
 
 			//The modifier for the canges along life time is computed
-			var e = particle.lifetime;
+			var e;
 			var x = particle.c_lifetime;
+
+			if (this.properties.modification_mode == "Along life time")
+				e = particle.lifetime;
+			else if (this.properties.modification_mode == "User defined")
+			{
+				e = this.properties.user_defined_seconds;
+				if(x > e) continue; //That means that the condition is already meeted
+			}
+
 			var modifier = Math.clamp(x / e, 0.0, 1.0); //The clamp is mandatory for avoid computacion errors
 
 			var final_value = this.properties.new_value;

@@ -13,12 +13,16 @@ function constantNumberNode() {
 //For recover (in a visual way) the value when a graph is loaded
 constantNumberNode.prototype.onPropertyChanged = function()
 {
+	var number = this.properties.number;
+	this.properties.number = isNaN(number) ? 1.0 : number; 
 	this.widget.value = this.properties.number;
 }
 
 constantNumberNode.prototype.setValue = function(v)
 {
-	this.properties.number = v;
+	var number = isNaN(v) ? 1.0 : v;
+	this.widget.value = number; 
+	this.properties.number = number;
 }
 
 constantNumberNode.prototype.onExecute = function() {
@@ -36,7 +40,7 @@ constantNumberNode.title_selected_color = basicSelectedTitleColor;
 *	@method randomNumberNode
 */
 function randomNumberNode() {
-	this.properties = { min: 0.0, max: 1.0, random: 0.0 }
+	this.properties = { min: 0.0, max: 1.0 }
     
 	this.addInput("Min value", "number");
 	this.addInput("Max value", "number");
@@ -44,12 +48,20 @@ function randomNumberNode() {
 	this.addOutput("Number", "number");
 }
 
-randomNumberNode.prototype.onExecute = function() {
-	this.properties.min = this.getInputData(0) || 0.0;
-	this.properties.max = this.getInputData(1) || 1.0;
+randomNumberNode.prototype.onPropertyChanged = function()
+{
+	var min = this.properties.min;
+	var max = this.properties.max;
+	this.properties.min = isNaN(min) ? 0.0 : min; 
+	this.properties.max = isNaN(max) ? 1.0 : max; 
+}
 
-	this.properties.random = Math.random() * (this.properties.max - this.properties.min) + this.properties.min;
-	this.setOutputData(0, this.properties.random);
+randomNumberNode.prototype.onExecute = function() {
+	this.properties.min = Math.min(this.getInputData(0), this.getInputData(1)) || 0.0;
+	this.properties.max = Math.max(this.getInputData(0), this.getInputData(1)) || 1.0;
+
+	var random = Math.random() * (this.properties.max - this.properties.min) + this.properties.min;
+	this.setOutputData(0, random);
 };
 
 randomNumberNode.title = "Random Number";
@@ -71,6 +83,15 @@ function vector2Node() {
 	this.addInput("Y", "number");
 
 	this.addOutput("Vec2", "vec2");
+}
+
+vector2Node.prototype.onPropertyChanged = function()
+{
+	var x = this.properties.x;
+	var y = this.properties.y;
+
+	this.properties.x = isNaN(x) ? 0.0 : x; 
+	this.properties.y = isNaN(y) ? 0.0 : y; 
 }
 
 vector2Node.prototype.onExecute = function() {
@@ -103,6 +124,17 @@ function vector3Node() {
 	this.addInput("Z", "number");
 
 	this.addOutput("Vec3", "vec3");
+}
+
+vector3Node.prototype.onPropertyChanged = function()
+{
+	var x = this.properties.x;
+	var y = this.properties.y;
+	var z = this.properties.z;
+	
+	this.properties.x = isNaN(x) ? 0.0 : x; 
+	this.properties.y = isNaN(y) ? 0.0 : y; 
+	this.properties.z = isNaN(z) ? 0.0 : z; 
 }
 
 vector3Node.prototype.onExecute = function() {
@@ -138,6 +170,19 @@ function vector4Node() {
 	this.addInput("W", "number");
 
 	this.addOutput("Vec4", "vec4");
+}
+
+vector4Node.prototype.onPropertyChanged = function()
+{
+	var x = this.properties.x;
+	var y = this.properties.y;
+	var z = this.properties.z;
+	var w = this.properties.w;
+	
+	this.properties.x = isNaN(x) ? 0.0 : x; 
+	this.properties.y = isNaN(y) ? 0.0 : y; 
+	this.properties.z = isNaN(z) ? 0.0 : z; 
+	this.properties.w = isNaN(w) ? 0.0 : w; 
 }
 
 vector4Node.prototype.onExecute = function() {
@@ -211,32 +256,33 @@ function textureLoadNode() {
 		}
 	);
 
-	this.addWidget("toggle", "Sub textures", false, 
-		function() {
-			that.subtextures = !that.subtextures;
-			if (that.subtextures) {
-				that.addWidget("number", "Sub textures size x", 0, function(){}, {min: 0, max: 10000000, step: 10});
-				that.addWidget("number", "Sub textures size y", 0, function(){}, {min: 0, max: 10000000, step: 10});
-				that.size[0] = 260;
-
-				//Resizing the node in order to avoid that the image goes outside
-				if(that.data_loaded)
-					that.size[1] += 112;
-			} else {
-				that.widgets.splice(3,1);
-				that.widgets.splice(2,1);
-				that.size[0] = 210;
-				that.size[1] = 80;
-
-				//Resizing the node in order to avoid that the image goes outside 
-				if(that.data_loaded)
-					that.size[1] += 112;
-			}
-		}
-	);
+	this.addWidget("toggle", "Sub textures", false, this.changeSubTexture.bind(this));
 
 	this.addOutput("Texture", "texture");
 };
+
+textureLoadNode.prototype.changeSubTexture = function(v){
+	this.subtextures = v;
+
+	if (this.subtextures) {
+		this.addWidget("number", "Sub textures size x", 0, function(){}, {min: 0, max: 10000000, step: 10});
+		this.addWidget("number", "Sub textures size y", 0, function(){}, {min: 0, max: 10000000, step: 10});
+		this.size[0] = 260;
+
+		//Resizing the node in order to avoid that the image goes outside
+		if(this.data_loaded)
+			this.size[1] += 112;
+	} else {
+		this.widgets.splice(3,1);
+		this.widgets.splice(2,1);
+		this.size[0] = 210;
+		this.size[1] = 80;
+
+		//Resizing the node in order to avoid that the image goes outside 
+		if(this.data_loaded)
+			this.size[1] += 112;
+	}
+}
 
 //In order to show to the users the loaded texture it's mandatory to
 //overload the onDrawBackground
@@ -269,6 +315,9 @@ textureLoadNode.prototype.onPropertyChanged = function() {
 		this.size[1] = 82;
 		this.firstChange = false;
 	}
+
+	this.widgets[1].value = this.properties.subtextures;
+	this.changeSubTexture(this.properties.subtextures);
 };
 
 textureLoadNode.prototype.onExecute = function() {
