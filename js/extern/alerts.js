@@ -1,10 +1,8 @@
-/*	Guillem Martínez Jiménez		
-*   In this file you can find the:
-*		--> Inicialiation of the app
-*		--> The behaviour of some buttons
-*	Here is where the graph is executed and the particles are rendered 
+/*	
+* This file is not mine, all the honour is for Sechelski for make this amazing code. If you want to see the original one just go to:
+* https://codepen.io/codysechelski/pen/dYVwjb
 */
-//https://codepen.io/codysechelski/pen/dYVwjb
+
 function createAlert(title, summary, details, severity, dismissible, autoDismiss, appendToId) {
   var iconMap = {
     info: "fa fa-info-circle",

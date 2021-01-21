@@ -74,9 +74,11 @@ var fs_texture = '\
 					precision highp float;\
 					varying vec4 v_color;\
 					varying vec2 v_coord;\
+					varying float v_visible;\
 					uniform sampler2D u_texture;\
 					\
 					void main() {\
+						if (v_visible == 0.0) discard;\
 						vec4 color = v_color * texture2D(u_texture, v_coord);\
 						if (color.a < 0.1)\
 							discard;\

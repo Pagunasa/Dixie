@@ -28,7 +28,6 @@ function modifyPropertyNode()
 	//this.addWidget("combo", "Seconds", "Along life time", function() {}, 
 	//	{ values:["Along life time", "User defined"] });
 
-
 	/**************************************/
 	/***********Inputs & Outputs***********/
 	/**************************************/
@@ -95,6 +94,7 @@ modifyPropertyNode.prototype.onExecute = function()
 	{
 		if(this.properties.new_value == undefined)
 		{
+			//Get the property to change
 			switch (this.properties.changed_property)
 			{
 				case "Speed":
@@ -120,6 +120,7 @@ modifyPropertyNode.prototype.onExecute = function()
 		var particle_id;
 		var using_condition = false; 
 
+		//Look if there was an non undefined contition list
 		if (this.properties.condition == undefined)
 			particles_condition_list = particles;
 		else
@@ -129,7 +130,8 @@ modifyPropertyNode.prototype.onExecute = function()
 		}
 
 		for (var i = 0; i < particles_condition_list.length; i++)
-		{			
+		{	
+			//Depending if there was a condition, the way to get the id of the particle changes		
 			if (using_condition)
 				particle_id = particles_condition_list[i];
 			else
@@ -137,12 +139,18 @@ modifyPropertyNode.prototype.onExecute = function()
 
 			particle = particles[particle_id];
 
+			//The modifier for the canges along life time is computed
 			var e = particle.lifetime;
 			var x = particle.c_lifetime;
-			var modifier = x / e;
+			var modifier = Math.clamp(x / e, 0.0, 1.0); //The clamp is mandatory for avoid computacion errors
 
 			var final_value = this.properties.new_value;
 
+			/*
+			* If the mode of application is addition the starting value is added to the final one
+			* If the mode of application is substraction the starting value is substracted to the final one
+			* If the mode is equalization thats all
+			*/
 			if(this.properties.changed_property == "Speed")
 			{
 				if(this.properties.application_mode == "Addition")

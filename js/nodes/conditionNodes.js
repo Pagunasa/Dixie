@@ -103,9 +103,11 @@ createConditionNode.prototype.onExecute = function()
 			switch (this.properties.system_property)
 			{
 				case "Speed":
+					//for the speed the compared value is the module of the vector
 					var speed = particles[i].speed;
 					tested_value = Math.sqrt(speed[0]*speed[0]+speed[1]*speed[1]+speed[2]*speed[2]);
 					
+					//We only have to do it the first time 
 					if(i == 0)
 						value_to_test = Math.sqrt(value_to_test[0]*value_to_test[0]+value_to_test[1]*value_to_test[1]+value_to_test[2]*value_to_test[2]);
 				break;
@@ -128,6 +130,7 @@ createConditionNode.prototype.onExecute = function()
 				break;
 			}
 
+			//Depending on the condition, the comparison is made
 			switch (this.properties.condition)
 			{
 				case "Equals":
@@ -163,7 +166,7 @@ createConditionNode.prototype.onExecute = function()
 		}
 	}
 
-	//The porperties of the node are the output
+	//The ids of the particles that meet the condition are the output for this node
 	this.setOutputData(0, condition_list);
 }
 
@@ -228,29 +231,31 @@ mergeConditionsNode.prototype.onExecute = function()
 		
 	switch (this.properties.merge_mode)
 	{
+		//If the merge mode is And. You have to see if the particles meet both conditions
 		case "And":
 			if (lenght1 > 0 && lenght2 > 0)
 				for(var i = 0; i < lenght1; ++i){
 				    for (var j = 0; j < lenght2; ++j){
-				        if(condition_1[i] == condition_2[j] && !condition_list.includes(condition_1[i]))
+				        if(condition_1[i] == condition_2[j] && !condition_list.includes(condition_1[i])) //The includes is for avoid duplications
 				            condition_list.push(condition_1[i]);
-				        else if (condition_2[j] > condition_1[i])
+				        else if (condition_2[j] > condition_1[i]) //We can do this because the conditions list is allways in ascendent order
 				            break;
 				    }
 				}
 		break;
 
+		//In case of the Or is more easy, the only problem is to take care of duplications
 		case "Or":
 			if (lenght1 > 0 && lenght2 > 0)
 			{
 				condition_list = condition_1;
 
 				for (var i = 0; i < condition_2.length; ++i)
-				    if(!condition_list.includes(condition_2[i]))
+				    if(!condition_list.includes(condition_2[i])) //For these reason is used the includes
 				        condition_list.push(condition_2[i]);
 				
 			}
-			else if (lenght1 == 0)
+			else if (lenght1 == 0) //if we don't have particles in one, we can put the other
 				condition_list = condition_2;
 			else if (lenght2 == 0)
 				condition_list = condition_1;
@@ -258,7 +263,7 @@ mergeConditionsNode.prototype.onExecute = function()
 		break;
 	}
 
-	//The porperties of the node are the output
+	//The ids of the particles that meet the conditions are the output for this node
 	this.setOutputData(0, condition_list);
 }
 

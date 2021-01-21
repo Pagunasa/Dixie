@@ -225,22 +225,16 @@ html,body {
 /**************************************/
 /****************Demos*****************/
 /**************************************/
-#defaultDemo:hover{
-	background-color: var(--ternary-color);
-	color: var(--secondary-color); 
-}
-
-#vortexDemo:hover{
-	background-color: var(--ternary-color);
-	color: var(--secondary-color); 
-}
-
-#magnetDemo:hover{
+.demoButton:hover{
 	background-color: var(--ternary-color);
 	color: var(--secondary-color); 
 }
 /**************************************/
 /**************************************/
+/**************************************/
+
+/**************************************/
+/****************Alerts****************/
 /**************************************/
 #pageMessages {
   position: fixed;
@@ -269,3 +263,6 @@ html,body {
 	margin-bottom: 0;
 	margin-top: 0;
 }
+/**************************************/
+/**************************************/
+/**************************************/
