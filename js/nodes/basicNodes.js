@@ -265,10 +265,8 @@ textureLoadNode.prototype.onDrawBackground = function(ctx){
 
 textureLoadNode.prototype.onPropertyChanged = function() {
 	if (this.properties.file == "" && this.firstChange){
-		createAlert('','Please reload your texture','A default texture will be loaded.','warning',true,true,'pageMessages');
-		this.properties.file = particle_text;
-		//this.size[1] = 82;
-		this.data_loaded = true;
+		createAlert('','','Please reload your texture.','warning',true,true,'pageMessages');
+		this.size[1] = 82;
 		this.firstChange = false;
 	}
 };
