@@ -9,11 +9,12 @@ function initParticlesNode()
 	/**************************************/
 	this.properties = {
 		max_speed: vector_3,
-		max_size: 0.25,
-		max_life_time: 10,
-		
 		min_speed: vector_3,
+
+		max_size: 0.25,
 		min_size: 0.25,
+
+		max_life_time: 10,
 		min_life_time: 10,
 		
 		color: default_particle_color,	
@@ -41,6 +42,38 @@ function initParticlesNode()
 	this.addInput("Texture"        , "texture");
 
 	this.addOutput("Particle system", "particle_system");
+}
+
+//For recover (in a visual way) the value when a graph is loaded
+initParticlesNode.prototype.onPropertyChanged = function()
+{
+	var max_size = this.properties.max_size;
+	max_size = isNaN(max_size) ? 0 : max_size;
+	this.properties.max_size = Math.max(max_size, 0.0);
+
+	var min_size = this.properties.min_size;
+	min_size = isNaN(min_size) ? 0 : min_size;
+	this.properties.min_size = Math.max(min_size, 0.0);
+
+	var max_life_time = this.properties.max_life_time;
+	max_life_time = isNaN(max_life_time) ? 0 : max_life_time;
+	this.properties.max_life_time = Math.max(max_life_time, 0.0);
+
+	var min_life_time = this.properties.min_life_time;
+	min_life_time = isNaN(min_life_time) ? 0 : min_life_time;
+	this.properties.min_life_time = Math.max(min_life_time, 0.0);
+
+	if(this.properties.max_speed.length != 3)
+		this.properties.max_speed = [0,0,0];
+
+	if(this.properties.min_speed.length != 3)
+		this.properties.min_speed = [0,0,0];
+
+	if(this.properties.color.length != 4)
+		this.properties.color = [1,1,1,1];
+
+	for (var i = 0; i < 4; ++i)
+		this.properties.color[i] = Math.min(Math.max(this.properties.color[i], 0.0), 1.0);
 }
 
 initParticlesNode.prototype.onExecute = function() 

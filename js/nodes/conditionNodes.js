@@ -41,15 +41,21 @@ createConditionNode.prototype.onPropertyChanged = function()
 
 	if(!this.w1Values.includes(sp))
 		sp = "Speed";
-		
-	this.changeProperty(sp);
-	this.w1.value = sp;
+	
+	if(this.w1.value != sp)
+	{
+		this.changeProperty(sp);
+		this.w1.value = sp;
+	}
 
 	if(!this.w2Values.includes(co))
 		co = "Equals";
 
-	this.changeCondition(co);
-	this.w2.value = co;
+	if(this.w2.value != co)
+	{
+		this.changeCondition(co);
+		this.w2.value = co;
+	}
 }
 
 createConditionNode.prototype.changeCondition = function(v)

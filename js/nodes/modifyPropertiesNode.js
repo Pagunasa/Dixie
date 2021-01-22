@@ -12,7 +12,7 @@ function modifyPropertyNode()
 		change_equation: undefined,
 		changed_property: "Speed",
 		application_mode: "Equalization",
-		modification_mode: "Along lifetime",
+		modification_mode: "Along life time",
 		user_defined_seconds: 5,
 		new_value: vector_3	
 	};
@@ -20,6 +20,7 @@ function modifyPropertyNode()
 	this.propValues = ["Speed", "Size", "Color", "Life time"];
 	this.applValues = ["Equalization", "Addition", "Subtraction"];
 	this.modiValues = ["Along life time", "User defined"];
+	this.firstTime  = true;
 
 	/**************************************/
 	/***************Widgets****************/
@@ -74,11 +75,17 @@ modifyPropertyNode.prototype.changeApplication = function(v)
 
 modifyPropertyNode.prototype.changeProperty = function(v)
 {
+	this.properties.changed_property = v;
+	
+	if(this.firstTime)
+	{
+		this.firstTime = false;
+		return
+	}
+	
 	//The third input is deleted with his possible conection
 	this.disconnectInput(3);
 	this.inputs.splice(3,1);
-
-	this.properties.changed_property = v;
 
 	if(v == "Speed")
 	{
@@ -112,23 +119,44 @@ modifyPropertyNode.prototype.onPropertyChanged = function()
 	if(!this.propValues.includes(p))
 		p = "Size";
 
-	this.propW.value = p;
-	this.changeProperty(p);
+	if(this.propW.value != p)
+	{
+		this.propW.value = p;
+		this.changeProperty(p);
+	}
 
 	if(!this.applValues.includes(a))
 		a = "Equalization";
 	
-	this.applW.value = a;
-	this.changeApplication(a);
+	if(this.applW.value != a)
+	{
+		this.applW.value = a;
+		this.changeApplication(a);
+	}
 
 	if(!this.modiValues.includes(m))
 		m = "Along life time";
 
-	this.modiW.value = m;
-	this.changeModification(m);
+	if(this.modiW.value != m)
+	{
+		this.modiW.value = m;
+		this.changeModification(m);
+	}
+
+	this.properties.user_defined_seconds = Math.max(this.properties.user_defined_seconds, 0.0);
 
 	if(this.secW != undefined)
 		this.setSeconds(this.properties.user_defined_seconds);
+
+	if(this.properties.changed_property == "Speed" && this.properties.new_value.length != 3)
+		this.properties.new_value = [0,0,0];
+
+	if(this.properties.changed_property == "Color" && this.properties.new_value.length != 4)
+		this.properties.new_value = [1,1,1,1];
+
+	if((this.properties.changed_property == "Size" || this.properties.changed_property == "Life time") 
+		&& (isNaN(this.properties.new_value) || this.properties.new_value < 0))
+		this.properties.new_value = 0;
 }
 
 modifyPropertyNode.prototype.onExecute = function() 
@@ -138,29 +166,12 @@ modifyPropertyNode.prototype.onExecute = function()
 	//When is executed the inputs are gotten and if they are undefined a default value is setted
 	this.properties.condition       = this.getInputData(1) || undefined;
 	this.properties.change_equation = this.getInputData(2) || undefined;
-	this.properties.new_value       = this.getInputData(3);
+	var new_value                   = this.getInputData(3);
 
 	if (system != undefined)
 	{
-		if(this.properties.new_value == undefined)
-		{
-			//Get the property to change
-			switch (this.properties.changed_property)
-			{
-				case "Speed":
-					this.properties.new_value = vector_3;
-				break;
-				case "Size":
-					this.properties.new_value = 5;
-				break;
-				case "Color":
-					this.properties.new_value = [1,1,1,1];
-				break;
-				case "Life time":
-					this.properties.new_value = 0;
-				break;
-			}
-		}
+		if(new_value != undefined)
+			this.properties.new_value = new_value;
 
 		var system_info = searchSystem(system.id);
 		var particles = system_info.particles_list;

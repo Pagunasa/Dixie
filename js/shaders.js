@@ -26,6 +26,7 @@ var fs_flat = '\
 					gl_FragColor = u_color;\
 				}';
 
+//For doing the billboard I follow the next tutorial
 //http://www.opengl-tutorial.org/intermediate-tutorials/billboards-particles/billboards/
 var vs_particles = '\
 					precision highp float;\

@@ -85,6 +85,23 @@ mySpawnNode.prototype.onPropertyChanged = function()
 
 	this.widgets[1].value = m;
 	this.setValue("Point");	 //Is Point because the others are not implemented
+
+	var max_particles = this.properties.max_particles;
+	max_particles = isNaN(max_particles) ? 0 : max_particles;
+	this.properties.max_particles = Math.max(max_particles, 0.0);
+
+	var spawn_rate = this.properties.spawn_rate;
+	spawn_rate = isNaN(spawn_rate) ? 0 : spawn_rate;
+	this.properties.spawn_rate = Math.max(spawn_rate, 0.0);
+
+	if(this.properties.position.length != 3)
+		this.properties.position = [0,0,0];
+
+	if(this.properties.color.length != 4)
+		this.properties.color = [1,1,1,1];
+
+	for (var i = 0; i < 4; ++i)
+		this.properties.color[i] = Math.min(Math.max(this.properties.color[i], 0.0), 1.0);
 }
 
 

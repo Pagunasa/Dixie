@@ -31,6 +31,16 @@ function gravityNode()
 	this.addOutput("Particle system", "particle_system");
 }
 
+//For recover (in a visual way) the values when a graph is loaded
+gravityNode.prototype.onPropertyChanged = function()
+{
+	var strength = this.properties.strength;
+	this.properties.strength = isNaN(strength) ? 10 : strength;
+
+	if (this.properties.direction.length != 3)
+		this.properties.direction = [0,0,0];
+}
+
 gravityNode.prototype.onExecute = function() 
 {
 	var system = this.getInputData(0);
@@ -93,7 +103,7 @@ function vortexNode()
 		position: vector_3,
 		angular_speed: vector_3,
 		scale: 10,
-		color: vector_4
+		color: [1,1,1,1]
 	};
 
 	/**************************************/
@@ -114,6 +124,26 @@ function vortexNode()
 	this.addOutput("Particle system", "particle_system");
 }
 
+//For recover (in a visual way) the values when a graph is loaded
+vortexNode.prototype.onPropertyChanged = function()
+{
+	var scale = this.properties.scale;
+	scale = isNaN(scale) ? 10 : scale;
+	this.properties.scale = Math.max(scale, 0);
+
+	if (this.properties.position.length != 3)
+		this.properties.position = [0,0,0];
+
+	if (this.properties.angular_speed.length != 3)
+		this.properties.angular_speed = [0,0,0];
+
+	if (this.properties.color.length != 4)
+		this.properties.color = [1,1,1,1];	
+	else
+		for (var i = 0; i < 4; ++i)
+			this.properties.color[i] = Math.min(Math.max(this.properties.color[i], 0.0), 1.0);
+}
+
 vortexNode.prototype.onAdded = function() {
  	this.force = addForce(this.id, this.properties.position, "vortex")
 };
@@ -127,10 +157,10 @@ vortexNode.prototype.onExecute = function()
 	var system = this.getInputData(0);
 
 	//When is executed the inputs are gotten and if they are undefined a default value is setted
-	this.properties.position       = this.getInputData(1) || this.properties.position;
-	this.properties.angular_speed  = this.getInputData(2) || this.properties.angular_speed;
-	this.properties.scale          = this.getInputData(3) || this.properties.scale;
-	this.properties.color          = this.getInputData(4) || this.properties.color;
+	this.properties.position       = this.getInputData(1)             || this.properties.position;
+	this.properties.angular_speed  = this.getInputData(2)             || this.properties.angular_speed;
+	this.properties.scale          = Math.max(this.getInputData(3),0) || this.properties.scale;
+	this.properties.color          = this.getInputData(4)             || this.properties.color;
 
 	//It's necesary update the force position and color for 
 	//render te origin of the vortex
@@ -199,7 +229,7 @@ function magnetNode()
 		position: vector_3,
 		strength: 10,
 		scale: 10,
-		color: vector_4
+		color: [1,1,1,1]
 	};
 
 	/**************************************/
@@ -220,6 +250,26 @@ function magnetNode()
 	this.addOutput("Particle system", "particle_system");
 }
 
+//For recover (in a visual way) the values when a graph is loaded
+magnetNode.prototype.onPropertyChanged = function()
+{
+	var scale = this.properties.scale;
+	scale = isNaN(scale) ? 10 : scale;
+	this.properties.scale = Math.max(scale, 0);
+
+	var strength = this.properties.strength;
+	this.properties.strength = isNaN(strength) ? 10 : strength;
+
+	if (this.properties.position.length != 3)
+		this.properties.position = [0,0,0];
+
+	if (this.properties.color.length != 4)
+		this.properties.color = [1,1,1,1];	
+	else
+		for (var i = 0; i < 4; ++i)
+			this.properties.color[i] = Math.min(Math.max(this.properties.color[i], 0.0), 1.0);
+}
+
 magnetNode.prototype.onAdded = function() {
 	this.force = addForce(this.id, this.properties.position, "magnet")
 };
@@ -235,7 +285,7 @@ magnetNode.prototype.onExecute = function()
 	//When is executed the inputs are gotten and if they are undefined a default value is setted
 	this.properties.position = this.getInputData(1) || this.properties.position;
 	this.properties.strength = this.getInputData(2) || this.properties.strength;
-	this.properties.scale    = this.getInputData(3) || this.properties.scale;
+	this.properties.scale    = Math.max(this.getInputData(3),0) || this.properties.scale;
 	this.properties.color    = this.getInputData(4) || this.properties.color;
 
 	//It's necesary update the force position and color for 

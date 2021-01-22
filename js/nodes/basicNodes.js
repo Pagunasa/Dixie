@@ -262,26 +262,25 @@ function textureLoadNode() {
 };
 
 textureLoadNode.prototype.changeSubTexture = function(v){
-	this.subtextures = v;
+	if(this.properties.subtextures == v)
+		return;
 
-	if (this.subtextures) {
+	this.properties.subtextures = v;
+
+	if (this.properties.subtextures) {
 		this.addWidget("number", "Sub textures size x", 0, function(){}, {min: 0, max: 10000000, step: 10});
 		this.addWidget("number", "Sub textures size y", 0, function(){}, {min: 0, max: 10000000, step: 10});
 		this.size[0] = 260;
-
-		//Resizing the node in order to avoid that the image goes outside
-		if(this.data_loaded)
-			this.size[1] += 112;
 	} else {
 		this.widgets.splice(3,1);
 		this.widgets.splice(2,1);
 		this.size[0] = 210;
 		this.size[1] = 80;
-
-		//Resizing the node in order to avoid that the image goes outside 
-		if(this.data_loaded)
-			this.size[1] += 112;
 	}
+
+	//Resizing the node in order to avoid that the image goes outside
+	if(this.data_loaded)
+		this.size[1] += 112;
 }
 
 //In order to show to the users the loaded texture it's mandatory to
@@ -316,6 +315,15 @@ textureLoadNode.prototype.onPropertyChanged = function() {
 		this.firstChange = false;
 	}
 
+	if(this.properties.subtextures_size.length != 2)
+		this.properties.subtextures_size = [0,0];
+	
+	if(this.widgets[2] != undefined)
+	{
+		this.widgets[2].value = Math.max(0.0, this.properties.subtextures_size[0]);
+		this.widgets[3].value = Math.max(0.0, this.properties.subtextures_size[1]);
+	}
+
 	this.widgets[1].value = this.properties.subtextures;
 	this.changeSubTexture(this.properties.subtextures);
 };
@@ -331,7 +339,7 @@ textureLoadNode.title_selected_color = basicSelectedTitleColor;
 
 
 /*
-* 	This node is for load a texture.
+* 	This node is for load a mesh.
 *	@method textureLoadNode
 */
 function meshLoadNode() {
@@ -364,7 +372,7 @@ meshLoadNode.title_selected_color = basicSelectedTitleColor;
 
 
 /*
-* 	This node is for load a texture.
+* 	This node is for generate a 2D geometry.
 *	@method textureLoadNode
 */
 function geometry2DNode() {
@@ -434,10 +442,10 @@ equationNode.title_selected_color = basicSelectedTitleColor;
 function colorPickerNode() {
 	this.properties = { color : [1,1,1,1] }
 
-	this.rw = this.addWidget("number", "Red",   1, this.setRed.bind(this), {min: 0, max: 1, step: 1});
-	this.gw = this.addWidget("number", "Gren",  1, this.setBlue.bind(this), {min: 0, max: 1, step:  1});
-	this.bw = this.addWidget("number", "Blue",  1, this.setGreen.bind(this), {min: 0, max: 1, step: 1});
-	this.aw = this.addWidget("number", "Alpha", 1, this.setAlpha.bind(this), {min: 0, max: 1, step: 1});
+	this.rw = this.addWidget("number", "Red",   1, this.setRed.bind(this), {min: 0, max: 1, step: 0.1});
+	this.gw = this.addWidget("number", "Gren",  1, this.setBlue.bind(this), {min: 0, max: 1, step:  0.1});
+	this.bw = this.addWidget("number", "Blue",  1, this.setGreen.bind(this), {min: 0, max: 1, step: 0.1});
+	this.aw = this.addWidget("number", "Alpha", 1, this.setAlpha.bind(this), {min: 0, max: 1, step: 0.1});
 
 	this.addOutput("Color", "color");
 }
@@ -460,10 +468,13 @@ colorPickerNode.prototype.onDrawBackground = function(ctx)
 //For recover (in a visual way) the values when a graph is loaded
 colorPickerNode.prototype.onPropertyChanged = function()
 {
-	this.rw.value = this.properties.color[0];
-	this.gw.value = this.properties.color[1];
-	this.bw.value = this.properties.color[2];
-	this.aw.value = this.properties.color[3];
+	if (this.properties.color.length != 4)
+		this.properties.color = [1,1,1,1];
+
+	this.rw.value = Math.min(Math.max(this.properties.color[0], 0.0), 1.0);
+	this.gw.value = Math.min(Math.max(this.properties.color[1], 0.0), 1.0);
+	this.bw.value = Math.min(Math.max(this.properties.color[2], 0.0), 1.0);
+	this.aw.value = Math.min(Math.max(this.properties.color[3], 0.0), 1.0);
 }
 
 colorPickerNode.prototype.onExecute = function() {
