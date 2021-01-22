@@ -421,17 +421,85 @@ function equationNode() {
 		type: "Lineal"
 	}
 
-	var that = this;
+	this.coef;
 
-	this.addWidget("combo", "Equation type", "Lineal", 
+	/*this.addWidget("combo", "Equation type", "Lineal", 
 		function() {
 			that.properties.type = this.value;
 
 			//TO DO
 		}, 
-		{ values:["Lineal", "Exponential"] });
+		{ values:["Lineal", "Exponential"] });*/
 
 	this.addOutput("Equation", "equation");
+}
+
+equationNode.prototype.onDrawBackground = function(ctx) {
+	if(!this.flags.collapsed)
+		this.curve_editor.draw(ctx, this.size, graphCanvas, true);
+}
+
+equationNode.prototype.generateFunction = function() {
+	var y = [];
+	var x = [];
+	var coef = [];
+	var local_coef;
+	var local_x;
+	var points = this.curve_editor.points;
+
+	for(var i = 0; i < points.length; ++i)
+	{
+		y.push(points[i][1]);
+		local_x = [];
+		for(var j = points.length-1; j >= 0 ; --j)
+		{
+			local_x.push(Math.pow(points[i][0], j));
+		}
+		x.push(local_x);
+	}
+
+	x = matrix_invert(x);
+
+	for (var i = 0; i < y.length; ++i)
+	{
+		local_coef = 0;
+		for (var j = 0; j < y.length; ++j)
+		{
+			local_coef += y[j] * x[i][j];
+		}		
+		coef.push(local_coef);
+	}
+
+	this.coef = coef;
+	console.log(points);
+	console.log(coef);
+}
+
+equationNode.prototype.onMouseMove = function(e, local_pos, graphCanvas) {
+	this.curve_editor.onMouseMove(local_pos, graphCanvas);
+}
+
+equationNode.prototype.onMouseDown = function(e, local_pos, graphCanvas) {
+	var editor_clicked = this.curve_editor.onMouseDown(local_pos, graphCanvas);
+	if(editor_clicked) this.captureInput(editor_clicked);
+	return editor_clicked;
+}
+
+equationNode.prototype.onMouseUp = function(e, local_pos, graphCanvas) {
+	this.curve_editor.onMouseUp(local_pos, graphCanvas);
+	this.generateFunction();
+	this.captureInput(false);
+}
+
+equationNode.prototype.onAdded = function() {
+	this.curve_points = [[0,0], [1,1]];
+	this.curve_editor = new LiteGraph.CurveEditor(this.curve_points);
+	this.curve_editor.margin = 10;
+	this.size  = [300,250];
+}
+
+equationNode.prototype.onExecute = function() {
+	this.setOutputData(0, this.coef);
 }
 
 equationNode.title = "Equation";
