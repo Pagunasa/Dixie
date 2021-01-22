@@ -225,7 +225,7 @@
     border-radius: 6px;
 }
 
-.litegraph .dialog.settings {
+.litegraph .dialog .settings {
 	left: 10px;
 	top: 10px;
 	height: calc( 100% - 20px );

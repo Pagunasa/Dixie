@@ -25,6 +25,11 @@ constantNumberNode.prototype.setValue = function(v)
 	this.properties.number = number;
 }
 
+constantNumberNode.prototype.onDblClick = function()
+{
+	console.log(this);
+}
+
 constantNumberNode.prototype.onExecute = function() {
 	this.setOutputData(0, this.properties.number);
 }

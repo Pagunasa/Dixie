@@ -442,3 +442,103 @@ function updateSize(mesh, particle, particle_id){
 		j = (j + 1) % 2;
 	}
 } 
+
+
+function onShowNodePanel(node){
+	window.SELECTED_NODE = node;
+    var panel = document.querySelector("#node-panel");
+    if(panel)
+        panel.close();
+    var ref_window = this.graphCanvas.getCanvasWindow();
+    panel = this.graphCanvas.createPanel(node.title || "",{closable: true, window: ref_window });
+    panel.id = "node-panel";
+    panel.node = node;
+    panel.classList.add("dialog");
+    var that = this.graphCanvas;
+    var graphcanvas = this.graphCanvas;
+
+    function inner_refresh()
+    {
+        panel.content.innerHTML = ""; //clear
+        panel.addHTML("<span class='node_type'>"+node.type+"</span><span class='node_desc'>"+(node.constructor.desc || "")+"</span><span class='separator'></span>");
+
+        panel.addHTML("<h3>Properties</h3>");
+
+        for(var i in node.properties)
+        {
+            var value = node.properties[i];
+            var info = node.getPropertyInfo(i);
+            var type = info.type || "string";
+
+            //in case the user wants control over the side panel widget
+            if( node.onAddPropertyToPanel && node.onAddPropertyToPanel(i,panel) )
+                continue;
+
+            panel.addWidget( info.widget || info.type, i, value, info, function(name,value){
+                graphcanvas.graph.beforeChange(node);
+                node.setProperty(name,value);
+                graphcanvas.graph.afterChange();
+                graphcanvas.dirty_canvas = true;
+            });
+        }
+
+        panel.addSeparator();
+
+        if(node.onShowCustomPanelInfo)
+            node.onShowCustomPanelInfo(panel);
+
+        panel.addButton("Delete",function(){
+            if(node.block_delete)
+                return;
+            node.graph.remove(node);
+            panel.close();
+        }).classList.add("delete");
+    }
+
+    function inner_showCodePad( node, propname )
+    {
+        panel.style.top = "calc( 50% - 250px)";
+        panel.style.left = "calc( 50% - 400px)";
+        panel.style.width = "800px";
+        panel.style.height = "500px";
+
+        if(window.CodeFlask) //disabled for now
+        {
+            panel.content.innerHTML = "<div class='code'></div>";
+            var flask = new CodeFlask( "div.code", { language: 'js' });
+            flask.updateCode(node.properties[propname]);
+            flask.onUpdate( function(code) {
+                node.setProperty(propname, code);
+            });
+        }
+        else
+        {
+            panel.content.innerHTML = "<textarea class='code'></textarea>";
+            var textarea = panel.content.querySelector("textarea");
+            textarea.value = node.properties[propname];
+            textarea.addEventListener("keydown", function(e){
+                //console.log(e);
+                if(e.code == "Enter" && e.ctrlKey )
+                {
+                    console.log("Assigned");
+                    node.setProperty(propname, textarea.value);
+                }
+            });
+            textarea.style.height = "calc(100% - 40px)";
+        }
+        var assign = that.createButton( "Assign", null, function(){
+            node.setProperty(propname, textarea.value);
+        });
+        panel.content.appendChild(assign);
+        var button = that.createButton( "Close", null, function(){
+            panel.style.height = "";
+            inner_refresh();
+        });
+        button.style.float = "right";
+        panel.content.appendChild(button);
+    }
+
+    inner_refresh();
+
+    document.getElementById("nodeDisplay").appendChild( panel );
+}

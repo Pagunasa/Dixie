@@ -315,6 +315,8 @@ function init ()
 
 	//Listener for the window resize, this is for make the application responsive
 	window.addEventListener( 'resize', function(){resizeElements()} );
+
+	graphCanvas.onShowNodePanel = onShowNodePanel.bind(this);
 }
 
 init();
