@@ -159,6 +159,24 @@ modifyPropertyNode.prototype.onPropertyChanged = function()
 		this.properties.new_value = 0;
 }
 
+modifyPropertyNode.prototype.computeChangeEquation = function(lifetime)
+{
+	var value = 0;
+	var equation = this.properties.change_equation;
+	var length = equation.length;
+
+	for (var i = 0; i < length; ++i)
+	{
+		console.log(length-1-i);
+		value += equation[i]*Math.pow(lifetime, length-1-i);
+	}
+
+	if(value >= 0.99)
+		value = 1;
+	
+	return value;
+}
+
 modifyPropertyNode.prototype.onExecute = function() 
 {
 	var system = this.getInputData(0);
@@ -213,6 +231,9 @@ modifyPropertyNode.prototype.onExecute = function()
 			}
 
 			var modifier = Math.clamp(x / e, 0.0, 1.0); //The clamp is mandatory for avoid computacion errors
+
+			if(this.properties.change_equation)
+				modifier = this.computeChangeEquation(modifier);
 
 			var final_value = this.properties.new_value;
 

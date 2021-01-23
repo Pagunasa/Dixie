@@ -418,25 +418,17 @@ geometry2DNode.title_selected_color = basicSelectedTitleColor;
 */
 function equationNode() {
 	this.properties = { 
-		type: "Lineal"
+		curve_points: [[0.0, 0.0], [1.0, 1.0]]
 	}
 
 	this.coef;
-
-	/*this.addWidget("combo", "Equation type", "Lineal", 
-		function() {
-			that.properties.type = this.value;
-
-			//TO DO
-		}, 
-		{ values:["Lineal", "Exponential"] });*/
 
 	this.addOutput("Equation", "equation");
 }
 
 equationNode.prototype.onDrawBackground = function(ctx) {
 	if(!this.flags.collapsed)
-		this.curve_editor.draw(ctx, this.size, graphCanvas, true);
+	  	this.curve_editor.draw(ctx, this.size, graphCanvas, true);
 }
 
 equationNode.prototype.generateFunction = function() {
@@ -471,8 +463,17 @@ equationNode.prototype.generateFunction = function() {
 	}
 
 	this.coef = coef;
-	console.log(points);
-	console.log(coef);
+}
+
+equationNode.prototype.verifyPoints = function() {
+	for(var i = 0; i < this.properties.curve_points.length; ++i) {
+		for(var j = 0; j < this.properties.curve_points.length; ++j) {
+			if (j!=i && this.properties.curve_points[i][0] == this.properties.curve_points[j][0]){
+				this.properties.curve_points.splice(i, 1);
+				break;
+			}
+		}
+	}	
 }
 
 equationNode.prototype.onMouseMove = function(e, local_pos, graphCanvas) {
@@ -481,21 +482,33 @@ equationNode.prototype.onMouseMove = function(e, local_pos, graphCanvas) {
 
 equationNode.prototype.onMouseDown = function(e, local_pos, graphCanvas) {
 	var editor_clicked = this.curve_editor.onMouseDown(local_pos, graphCanvas);
-	if(editor_clicked) this.captureInput(editor_clicked);
+	if(editor_clicked){			
+		this.captureInput(editor_clicked);
+		this.verifyPoints();
+	} 
+
 	return editor_clicked;
 }
 
 equationNode.prototype.onMouseUp = function(e, local_pos, graphCanvas) {
 	this.curve_editor.onMouseUp(local_pos, graphCanvas);
+	this.verifyPoints();
 	this.generateFunction();
 	this.captureInput(false);
 }
 
 equationNode.prototype.onAdded = function() {
-	this.curve_points = [[0,0], [1,1]];
-	this.curve_editor = new LiteGraph.CurveEditor(this.curve_points);
-	this.curve_editor.margin = 10;
-	this.size  = [300,250];
+	this.curve_editor = new LiteGraph.CurveEditor(this.properties.curve_points);
+	this.verifyPoints();
+	this.generateFunction();
+	
+	this.curve_editor.margin = 0;
+	this.size = [350, 200];
+	this.curve_editor.size = this.size;
+}
+
+equationNode.prototype.onPropertyChanged = function() {
+	this.curve_editor.points = this.properties.curve_points;
 }
 
 equationNode.prototype.onExecute = function() {
