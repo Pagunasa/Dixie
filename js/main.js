@@ -336,30 +336,57 @@ var particleShaderFlat     =  new GL.Shader( vs_particles, fs_flat_p  );
 gl.ondraw = function() {
 
 	gl.clear(gl.COLOR_BUFFER_BIT);
+	gl.clear(gl.DEPTH_BUFFER_BIT);
 
 	gl.enable(gl.BLEND );
 	gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
-	gl.disable(gl.DEPTH_TEST);
+	gl.enable(gl.DEPTH_TEST);
+	gl.depthFunc(gl.LESS);
+
+	var object_uniforms = {
+		u_mvp: camera.mvp,
+		u_model: undefined,
+		u_color: [1,1,1,1]
+	}
+
+	for (x in objects_list) {
+		var object = objects_list[x];
+
+		object_uniforms.u_model = object.model;
+		//flatShader.uniforms( object_uniforms ).draw( object.mesh );
+	}
 
 	//default particles uniforms
 	var particles_uniforms = { 
 		u_viewprojection : camera.vp,
 		u_mvp            : camera.mvp,
 		u_right          : camera.getRightVector(),
-		u_up             : camera.getUpVector()
+		u_up             : camera.getUpVector(),
+		u_model          : undefined
 	};
 
 	//default sytem uniforms
 	var system_uniforms = { 
 		u_mvp: camera.mvp,
 		u_texture: spawner_text,
-		model: undefined
+		u_model: undefined
 	};
 
 	//Render the particles
 	for(x in system_list){
 		var mesh = searchMesh(system_list[x].mesh_id);
 		
+		if(system_list[x].point_mode)
+		{
+			particles_uniforms.u_model = system_list[x].model;
+			system_uniforms.u_model    = system_list[x].model;
+		}
+		else
+		{
+			particles_uniforms.u_model = system_list[x].external_model;
+			system_uniforms.u_model    = system_list[x].external_model;
+		}
+
 		//First all the particles of the system are rendered
 		//If a texture is defined then the textured shader is used
 		//but if te texture is undefined the flat will be used 
@@ -377,7 +404,6 @@ gl.ondraw = function() {
 		if(!system_list[x].visible)
 			continue;
 		
-		system_uniforms.u_model = system_list[x].model;
 		system_uniforms.u_color = system_list[x].color;
 		system_uniforms.u_texture.bind(0);
 		texturedShader.uniforms( system_uniforms ).draw( default_forces_mesh, GL.POINTS );
@@ -409,18 +435,57 @@ gl.ondraw = function() {
 		texturedShader.uniforms( forces_uniforms ).draw( default_forces_mesh, GL.POINTS );
 	}
 
+	gl.disable(gl.DEPTH_TEST);
 	gl.disable(gl.BLEND);
 }
 
 gl.onupdate = function( dt ) {
 	time_interval = dt;
 
-	//The model of the forces and systems is updated
-	for (x in forces_list)
-		mat4.setTranslation(forces_list[x].model, forces_list[x].position);
+	var force;
+	var system;
+	var particle_list;
+	var particle_ids;
+	var particle;
+	var distance;
 
-	for (x in system_list)
-		mat4.setTranslation(system_list[x].model, system_list[x].position);
+	//The model of the forces and systems is updated
+	for (var i = 0; i < forces_list.length; ++i)
+	{
+		force = forces_list[i];
+		mat4.setTranslation(force.model, force.position);
+	}
+
+	for (var i = 0; i < system_list.length; ++i)
+	{
+		system        = system_list[i];
+		particle_list = system.particles_list;
+		particle_ids  = system.particles_ids;
+
+		mat4.setTranslation(system.model, system.position);
+
+		//Update particles distance_to_camera
+		for (var j = 0; j < particle_ids.length; ++j)
+		{
+			distance = [0,0,0];
+			particle = particle_list[particle_ids[j].id];
+
+			//Compute the distance from the particle position to the camera eye
+			for(var k = 0; k < 3; ++k)
+				distance[k] = particle.position[k] - camera.eye[k];
+
+			//particles_ids saves the id (index in particle list) and the distance to the eye
+			particle_ids[j].distance_to_camera = Math.sqrt((distance[0]*distance[0]+distance[1]*distance[1]+distance[2]*distance[2]));
+		}
+
+		//Ordening (descendent)
+		particle_ids.sort(function(a,b){
+			return b.distance_to_camera - a.distance_to_camera;
+		});
+
+		//function that reorder the buffers
+		orderBuffers(particle_ids, particle_list, searchMesh(system.mesh_id));
+	}
 
 	if(graph.status == LGraph.STATUS_RUNNING)
 	graph.runStep();

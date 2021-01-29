@@ -25,6 +25,7 @@ var default_particle_color = [1,1,1,1];
 var meshes_list  = [];
 var forces_list  = [];
 var system_list  = [];
+var objects_list = [];
 
 /********************************/
 /***********Mesh Stuff***********/
@@ -36,6 +37,16 @@ var default_sizes      = [0.25,0.25, 0.25,0.25, 0.25,0.25, 0.25,0.25, 0.25,0.25,
 var default_visibility = [0, 0, 0, 0, 0, 0];
 var default_forces_mesh;
 
+
+/********************************/
+/*************Modals*************/
+/********************************/
+var texture_modal = $('#texturesModal');
+var def_texture_1 = document.getElementById("def_texture1");
+var def_texture_2 = document.getElementById("def_texture2");
+var def_texture_3 = document.getElementById("def_texture3");
+var def_texture_4 = document.getElementById("def_texture4");
+var local_texture;
 
 function lerp(s, e, x){
 	return s * ( 1 - x ) + e * x; 
@@ -120,6 +131,24 @@ function addForce(id, position, type){
 
 
 /*
+* 	This method is for search a object in the objects list
+*	@method searchObject
+*	@params {Number}  the id of the object
+*	@params {Boolean} if is true the mesh will be deleted
+*/
+function searchObject(id, remove = false)
+{
+    for(x in objects_list){
+		if (objects_list[x].id == id){
+			if(!remove)
+				return objects_list[x];
+			objects_list.splice(x, 1);
+		}
+	}
+}
+
+
+/*
 * 	This method is for search a mesh in the meshes list
 *	@method searchMesh
 *	@params {Number}  the id of the mesh
@@ -163,10 +192,13 @@ class SystemInfo {
 	constructor(id_, position_) {
 		this.id                 = id_;
 		this.mesh_id            = id_;
+		this.particles_ids      = [];
 		this.particles_list     = [];
 		this.particles_to_reset = [];
 		this.position           = position_;
 		this.model              = mat4.create();
+		this.point_mode         = true;
+		this.external_model     = undefined;
 		this.color              = [1,1,1,1];
 		this.visible            = true;
 		this.texture            = undefined;
@@ -206,9 +238,9 @@ Particle.prototype.fill = function(properties) {
 	for (var i = 0; i < 4; ++i)
 	{
 		this.iColor[i] = properties.color[i];
-		this.color[i] = properties.color[i];
+		this.color[i]  = properties.color[i];
 	}
-
+	
 	var s = randomNumber(properties.min_size, properties.max_size);
 	this.size  = s;
 	this.iSize = s;
@@ -220,7 +252,7 @@ Particle.prototype.fill = function(properties) {
 
 	this.lifetime   = lifetime;
 	this.c_lifetime = 0.0; //How many life time the particle lived
-	this.to_reset   = false;
+	this.visibility = 1;
 };
 
 
@@ -258,6 +290,44 @@ function createMesh(id, particles){
 	meshes_list.push({id: id, mesh: mesh})
 }
 
+function orderBuffers(new_order, particles, mesh) {
+	var length = new_order.length;
+
+	//If there are no particles then retun
+	if(length <= 1)
+		return;
+
+	var particle, id;
+
+	var vertex_data      = mesh.getBuffer("vertices").data;
+	var visibility_data  = mesh.getBuffer("visible").data;
+	var color_data       = mesh.getBuffer("colors").data;
+	var size_data        = mesh.getBuffer("size").data;
+	var coord_data       = mesh.getBuffer("coords").data;;
+
+	for (var i = 0; i < length; ++i)
+	{
+		id = new_order[i].id;
+		particle = particles[id];
+
+		for(var j = 0; j < 18; ++j)
+			vertex_data[i*18 + j] = particle.position[j % 3];
+
+		for(var j = 0; j < 12; ++j)
+			size_data[i*12 + j]  = particle.size;
+
+		for(var j = 0; j < 6; ++j)
+			visibility_data[i*6 + j] = particle.visibility;
+		
+		for(var j = 0; j < 24; ++j)
+			color_data[i*24 + j] = particle.color[j % 4];
+
+
+			//coord_data[i*12 + j] = particle.size[j % 2];
+	}
+
+	mesh.upload();
+}
 
 /*
 * 	This method is for change the maximum number of particles of a system
@@ -425,7 +495,7 @@ function updateColor(mesh, particle, particle_id){
 
 /*
 * 	This method is for update the size of a particle
-*	@method updateColor
+*	@method updateSize
 *	@params {Mesh} the mesh
 *	@params {particle} the particle
 *	@params {Number} the id of the particle
@@ -434,13 +504,43 @@ function updateSize(mesh, particle, particle_id){
 	var size_data = mesh.vertexBuffers.size.data;
 	particle_id *= 12
 
-	var j = 0;
+	//var j = 0;
 
 	for(var i = 0; i < 12; i++)
 	{
 		size_data[particle_id + i] = particle.size;		
-		j = (j + 1) % 2;
+	//	j = (j + 1) % 2;
 	}
+} 
+
+
+function updateCoord(mesh, particle, particle_id, new_coord){
+	var coord_data = mesh.vertexBuffers.coords.data;
+	var lowX  = new_coord[0];
+	var lowY = new_coord[1];
+	var highX  = new_coord[2];
+	var highY = new_coord[3];
+	
+	particle_id *= 12
+
+	coord_data[particle_id]   = highX;
+	coord_data[particle_id+1] = highY;
+
+	coord_data[particle_id+2] = lowX;
+	coord_data[particle_id+3] = highY;
+
+	coord_data[particle_id+4] = highX;
+	coord_data[particle_id+5] = lowY;
+
+	coord_data[particle_id+6] = lowX;
+	coord_data[particle_id+7] = lowY;
+
+	coord_data[particle_id+8] = highX;
+	coord_data[particle_id+9] = lowY;
+
+	coord_data[particle_id+10] = lowX;
+	coord_data[particle_id+11] = highY;
+
 } 
 
 
@@ -541,4 +641,58 @@ function onShowNodePanel(node){
     inner_refresh();
 
     document.getElementById("nodeDisplay").appendChild( panel );
+}
+
+
+function loadTexture(node){
+	
+	texture_modal.modal('show');
+	var node_properties = node.properties;
+
+	var input = document.createElement("input");
+	input.type = "file";
+
+	input.addEventListener("change", function(e){
+		var file = e.target.files[0];
+		
+		if (!file || file.type.split("/")[0] != "image")
+		{
+			createAlert("Holy Guacamole!", "Loading error", "Please insert an image...", "danger", true, true, "pageMessages");
+		    return;	
+		}
+	
+		var reader = new FileReader();
+		reader.onload = function(e) {
+			node_properties.file = GL.Texture.fromURL(reader.result);
+			
+			//When the image is loaded the node must be resize 
+			if(!node.data_loaded)
+				node.size[1] += 112;
+
+			node.data_loaded = true;
+		};
+
+		reader.readAsDataURL(file);
+
+	
+	}, false);
+
+	input.click();
+
+	def_texture_1.onclick = function(){
+		node_properties.file = GL.Texture.fromURL('default_textures/particles.png');
+	}
+
+	def_texture_2.onclick = function(){
+
+	}
+	
+	def_texture_3.onclick = function(){
+
+	}
+	
+	def_texture_4.onclick = function(){
+
+	}
+	
 }

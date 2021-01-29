@@ -223,41 +223,15 @@ function textureLoadNode() {
 	
 	this.data_loaded = false;
 	this.firstChange = true;
+	this.numberTextX = 0;
+	this.numberTextY = 0;
 
 	var that = this;
 
 	this.addWidget("button", "Select texture", "", 
 		function()
 		{
-			var input = document.createElement("input");
-			input.type = "file";
-
-			input.addEventListener("change", function(e){
-				var file = e.target.files[0];
-				
-				if (!file || file.type.split("/")[0] != "image")
-				{
-					createAlert("Holy Guacamole!", "Loading error", "Please insert an image...", "danger", true, true, "pageMessages");
-				    return;	
-				}
-			
-				var reader = new FileReader();
-				reader.onload = function(e) {
-					that.properties.file = GL.Texture.fromURL(reader.result);
-					
-					//When the image is loaded the node must be resize 
-					if(!that.data_loaded)
-						that.size[1] += 112;
-		
-					that.data_loaded = true;
-				};
-
-				reader.readAsDataURL(file);
-
-			}, false);
-
-			input.click();
-
+			loadTexture(that);
 		}
 	);
 
@@ -273,19 +247,46 @@ textureLoadNode.prototype.changeSubTexture = function(v){
 	this.properties.subtextures = v;
 
 	if (this.properties.subtextures) {
-		this.addWidget("number", "Sub textures size x", 0, function(){}, {min: 0, max: 10000000, step: 10});
-		this.addWidget("number", "Sub textures size y", 0, function(){}, {min: 0, max: 10000000, step: 10});
+		this.addWidget("number", "Sub textures size x", 0, this.changeSubTextureSizeX.bind(this), {min: 0, max: 10000000, step: 10});
+		this.addWidget("number", "Sub textures size y", 0, this.changeSubTextureSizeY.bind(this), {min: 0, max: 10000000, step: 10});
 		this.size[0] = 260;
 	} else {
 		this.widgets.splice(3,1);
 		this.widgets.splice(2,1);
 		this.size[0] = 210;
 		this.size[1] = 80;
+		this.properties.subtextures_size = [0,0];
 	}
 
 	//Resizing the node in order to avoid that the image goes outside
 	if(this.data_loaded)
 		this.size[1] += 112;
+}
+
+textureLoadNode.prototype.computeSubTextures = function(){			
+	//if the data is not loaded we don't have anithing to show
+	if (!this.data_loaded)
+		return;
+  	//if the data is undedifined is still loading (2nd check)
+  	if(this.properties.file.data == undefined)
+  		return;
+	
+	var sizes = this.properties.subtextures_size;
+
+	if(sizes[0] != 0)
+  		this.numberTextX = this.properties.file.width / sizes[0];
+	if(sizes[1] != 0)
+  		this.numberTextY = this.properties.file.height / sizes[1];
+} 
+
+textureLoadNode.prototype.changeSubTextureSizeX = function(v){
+	this.properties.subtextures_size[0] = v;
+	this.computeSubTextures();
+}
+
+textureLoadNode.prototype.changeSubTextureSizeY = function(v){
+	this.properties.subtextures_size[1] = v;
+	this.computeSubTextures();
 }
 
 //In order to show to the users the loaded texture it's mandatory to
@@ -325,8 +326,11 @@ textureLoadNode.prototype.onPropertyChanged = function() {
 	
 	if(this.widgets[2] != undefined)
 	{
-		this.widgets[2].value = Math.max(0.0, this.properties.subtextures_size[0]);
-		this.widgets[3].value = Math.max(0.0, this.properties.subtextures_size[1]);
+		this.properties.subtextures_size[0] = Math.max(0.0, this.properties.subtextures_size[0]);
+		this.properties.subtextures_size[1] = Math.max(0.0, this.properties.subtextures_size[1]);
+		this.widgets[2].value = this.properties.subtextures_size[0];
+		this.widgets[3].value = this.properties.subtextures_size[1];
+		this.computeSubTextures();
 	}
 
 	this.widgets[1].value = this.properties.subtextures;
@@ -334,7 +338,7 @@ textureLoadNode.prototype.onPropertyChanged = function() {
 };
 
 textureLoadNode.prototype.onExecute = function() {
-	this.setOutputData(0, this.properties);
+	this.setOutputData(0, {prop: this.properties, ntx: this.numberTextX, nty: this.numberTextY});
 };
 
 textureLoadNode.title = "Load Texture";
@@ -349,18 +353,14 @@ textureLoadNode.title_selected_color = basicSelectedTitleColor;
 */
 function meshLoadNode() {
 	this.properties = { 
-		file: undefined,
-		position: vector_3,
-		scale: vector_3,
-		rotation: vector_3
+		position: [0,0,0],
+		scale: [1,1,1],
+		rotation: [0,0,0]
 	}
 
-	this.addWidget("button", "Select mesh", "", 
-		function()
-		{
-		// LOAD MESH BEHAVIOUR
-		}
-	);
+	var that = this;
+
+	this.addWidget("button", "Select mesh", "", function() {});
 
 	this.addInput("Position", "vec3");
 	this.addInput("Scale"   , "vec3");
@@ -368,6 +368,36 @@ function meshLoadNode() {
 	
 	this.addOutput("Mesh"  , "mesh");
 	this.addOutput("Object", "object");
+}
+
+meshLoadNode.prototype.onAdded = function(){
+	this.mesh = new GL.Mesh.cube();
+	objects_list.push({id: this.id, mesh: this.mesh, model: mat4.create()});
+	this.model = searchObject(this.id).model;
+
+	this.triangle_num = this.mesh.vertexBuffers.vertices.data.length / 9; //3 coordinates by 3 points of a triangle
+}
+
+meshLoadNode.prototype.onRemoved = function(){
+	searchObject(this.id, true);
+}
+
+meshLoadNode.prototype.onPropertyChanged = function() {
+	this.properties.scale[0] = Math.max(this.properties.scale[0], 0.01);
+	this.properties.scale[1] = Math.max(this.properties.scale[1], 0.01);
+	this.properties.scale[2] = Math.max(this.properties.scale[2], 0.01);
+
+	this.properties.rotation[0] = Math.max(this.properties.rotation[0], 0.0);
+	this.properties.rotation[1] = Math.max(this.properties.rotation[1], 0.0);
+	this.properties.rotation[2] = Math.max(this.properties.rotation[2], 0.0);
+
+	mat4.identity(this.model);
+	mat4.setTranslation(this.model, this.properties.position);
+	mat4.scale(this.model, this.model, this.properties.scale);
+}
+
+meshLoadNode.prototype.onExecute = function() {
+	this.setOutputData(0, {id: this.id, triangle_num: this.triangle_num, vertices: this.mesh.vertexBuffers.vertices.data, model: this.model});
 }
 
 meshLoadNode.title = "Load Mesh";
@@ -405,6 +435,7 @@ function geometry2DNode() {
 	this.addOutput("Geometry", "geometry");
 	this.addOutput("Object"  , "object");
 }
+
 
 geometry2DNode.title = "2D Geometry";
 geometry2DNode.title_color = basicNodeColor;

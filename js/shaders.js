@@ -57,7 +57,7 @@ var vs_particles = '\
 						v_color   = a_color;\
 						v_normal  = (u_model * vec4(a_normal, 0.0)).xyz;\
 						v_pos = a_vertex + u_right * v_coord.x * a_size.x + u_up * v_coord.y * a_size.y;\
-						gl_Position = u_mvp * vec4(v_pos, 1.0);\
+						gl_Position = u_mvp * (u_model * vec4(v_pos, 1.0));\
 					}';
 
 

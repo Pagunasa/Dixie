@@ -36,8 +36,9 @@ function createConditionNode()
 
 createConditionNode.prototype.onPropertyChanged = function()
 {
-	var sp = this.properties.system_property;
-	var co = this.properties.condition;
+	var properties = this.properties;
+	var sp = properties.system_property;
+	var co = properties.condition;
 
 	if(!this.w1Values.includes(sp))
 		sp = "Speed";
@@ -69,7 +70,10 @@ createConditionNode.prototype.changeCondition = function(v)
 
 createConditionNode.prototype.changeProperty = function(v)
 {
-	this.properties.system_property = v;
+	var properties = this.properties;
+	var condition  = properties.condition;
+
+	properties.system_property = v;
 
 	//The second input is deleted with his possible conection
 	this.disconnectInput(1);
@@ -78,52 +82,59 @@ createConditionNode.prototype.changeProperty = function(v)
 	if(v == "Speed")
 	{
 		this.addInput("Speed", "vec3");
-		this.properties.value = vector_3;
+		properties.value = vector_3;
 	}
 	else if (v == "Size")
 	{
 		this.addInput("Size", "number");
-		this.properties.value = 5;
+		properties.value = 5;
 	}
 	else if (v == "Colision number")
 	{
 		this.addInput("Colision number", "number");
-		this.properties.value = 0;
+		properties.value = 0;
 		this.size[0] = 250;
 	}
 	else if (v == "Life time")
 	{
 		this.addInput("Life time", "number");
-		this.properties.value = 0;
+		properties.value = 0;
 	}
 
-	if(this.properties.condition == "Greater than or equals" || this.properties.condition == "Less than or equals")
+	if(condition == "Greater than or equals" || condition == "Less than or equals")
 		this.size[0] = 270;
 }
 
 createConditionNode.prototype.onExecute = function() 
 {
+	var properties = this.properties;
 	var system = this.getInputData(0);
 	var condition_list = [];
 
 	//When is executed the inputs are gotten and if they are undefined a default value is setted
-	this.properties.value = this.getInputData(1) || this.properties.value;
+	properties.value = this.getInputData(1) || properties.value;
 	
 	if (system != undefined)
 	{
-		var system_info = searchSystem(system.id);
-		var particles = system_info.particles_list;
-		var value_to_test = this.properties.value;
+		var system_info   = searchSystem(system.id);
+		var particles     = system_info.particles_list;
+		var particles_ids  = system_info.particles_ids;
+		var value_to_test = properties.value;
+		var tested_value;
+		var particle;
+		var id;
 
-		for (var i = 0; i < particles.length; i++)
+		for (var i = 0; i < particles_ids.length; i++)
 		{
-			var tested_value = 0;
+			tested_value = 0;
+			id = particles_ids[i].id;
+			particle = particles[id];
 
-			switch (this.properties.system_property)
+			switch (properties.system_property)
 			{
 				case "Speed":
 					//for the speed the compared value is the module of the vector
-					var speed = particles[i].speed;
+					var speed = particle.speed;
 					tested_value = Math.sqrt(speed[0]*speed[0]+speed[1]*speed[1]+speed[2]*speed[2]);
 					
 					//We only have to do it the first time 
@@ -132,20 +143,17 @@ createConditionNode.prototype.onExecute = function()
 				break;
 
 				case "Colision number":
-					tested_value = particles[i].colision_number;
+					tested_value = particle.colision_number;
 				break;
 
 				case "Size":
-					tested_value = particles[i].size;
+					tested_value = particle.size;
 				break;
 			
 				case "Life time":
-					tested_value = particles[i].c_lifetime;
+					tested_value = particle.c_lifetime;
 				break;
 
-				default:
-					condition_list.push(i);
-					continue;
 				break;
 			}
 
@@ -154,32 +162,32 @@ createConditionNode.prototype.onExecute = function()
 			{
 				case "Equals":
 					if (tested_value == value_to_test)
-						condition_list.push(i);
+						condition_list.push({id : id, index: i});
 				break;
 
 				case "Greater than":
 					if (tested_value > value_to_test)
-						condition_list.push(i);
+						condition_list.push({id : id, index: i});
 				break;
 
 				case "Less than":
 					if (tested_value < value_to_test)
-						condition_list.push(i);
+						condition_list.push({id : id, index: i});
 				break;
 			
 				case "Greater than or equals":
 					if (tested_value >= value_to_test)
-						condition_list.push(i);
+						condition_list.push({id : id, index: i});
 				break;
 
 				case "Less than or equals":
 					if (tested_value <= value_to_test)
-						condition_list.push(i);
+						condition_list.push({id : id, index: i});
 				break;
 
 				case "No equals":
 					if (tested_value != value_to_test)
-						condition_list.push(i);
+						condition_list.push({id : id, index: i});
 				break;
 			}
 		}

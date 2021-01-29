@@ -34,32 +34,33 @@ function gravityNode()
 //For recover (in a visual way) the values when a graph is loaded
 gravityNode.prototype.onPropertyChanged = function()
 {
-	var strength = this.properties.strength;
-	this.properties.strength = isNaN(strength) ? 10 : strength;
+	var properties = this.properties;
 
-	if (this.properties.direction.length != 3)
-		this.properties.direction = [0,0,0];
+	var strength = properties.strength;
+	properties.strength = isNaN(strength) ? 10 : strength;
+
+	if (properties.direction.length != 3)
+		properties.direction = [0,0,0];
 }
 
 gravityNode.prototype.onExecute = function() 
 {
 	var system = this.getInputData(0);
+	var properties = this.properties;
 
 	//When is executed the inputs are gotten and if they are undefined a default value is setted
-	this.properties.direction = this.getInputData(1) || vector_3;
-	this.properties.strength  = this.getInputData(2) || this.properties.strength;
+	properties.direction = this.getInputData(1) || vector_3;
+	properties.strength  = this.getInputData(2) || properties.strength;
 
 	if (system != undefined)
 	{
 		var particles = searchSystem(system.id).particles_list;
 		
 		if(particles.length > 0)
-		{
-			var mesh = searchMesh(system.id);
-			
+		{	
 			var particle;
-			var direction = this.properties.direction;
-			var strength  = this.properties.strength;
+			var direction = properties.direction;
+			var strength  = properties.strength;
 
 			direction[0] = direction[0] * strength;
 			direction[1] = direction[1] * strength;
@@ -71,12 +72,8 @@ gravityNode.prototype.onExecute = function()
 				
 				//For the gravity only is needed to add to the position of the particle the direction
 				for(var j = 0; j < 3; j++)
-						particle.position[j] += direction[j] * time_interval;
-				
-				updateVertexs(mesh, i, particle);
+					particle.position[j] += direction[j] * time_interval;
 			}
-
-			mesh.upload()
 		}
 
 	}
@@ -127,21 +124,23 @@ function vortexNode()
 //For recover (in a visual way) the values when a graph is loaded
 vortexNode.prototype.onPropertyChanged = function()
 {
-	var scale = this.properties.scale;
+	var properties = this.properties;
+
+	var scale = properties.scale;
 	scale = isNaN(scale) ? 10 : scale;
-	this.properties.scale = Math.max(scale, 0);
+	properties.scale = Math.max(scale, 0);
 
-	if (this.properties.position.length != 3)
-		this.properties.position = [0,0,0];
+	if (properties.position.length != 3)
+		properties.position = [0,0,0];
 
-	if (this.properties.angular_speed.length != 3)
-		this.properties.angular_speed = [0,0,0];
+	if (properties.angular_speed.length != 3)
+		properties.angular_speed = [0,0,0];
 
-	if (this.properties.color.length != 4)
-		this.properties.color = [1,1,1,1];	
+	if (properties.color.length != 4)
+		properties.color = [1,1,1,1];	
 	else
 		for (var i = 0; i < 4; ++i)
-			this.properties.color[i] = Math.min(Math.max(this.properties.color[i], 0.0), 1.0);
+			properties.color[i] = Math.min(Math.max(properties.color[i], 0.0), 1.0);
 }
 
 vortexNode.prototype.onAdded = function() {
@@ -154,18 +153,19 @@ vortexNode.prototype.onRemoved = function() {
 
 vortexNode.prototype.onExecute = function() 
 {
+	var properties = this.properties;
 	var system = this.getInputData(0);
 
 	//When is executed the inputs are gotten and if they are undefined a default value is setted
-	this.properties.position       = this.getInputData(1)             || this.properties.position;
-	this.properties.angular_speed  = this.getInputData(2)             || this.properties.angular_speed;
-	this.properties.scale          = Math.max(this.getInputData(3),0) || this.properties.scale;
-	this.properties.color          = this.getInputData(4)             || this.properties.color;
+	properties.position       = this.getInputData(1)             || properties.position;
+	properties.angular_speed  = this.getInputData(2)             || properties.angular_speed;
+	properties.scale          = Math.max(this.getInputData(3),0) || properties.scale;
+	properties.color          = this.getInputData(4)             || properties.color;
 
 	//It's necesary update the force position and color for 
 	//render te origin of the vortex
-	this.force.position = this.properties.position;
-	this.force.color    = this.properties.color;
+	this.force.position = properties.position;
+	this.force.color    = properties.color;
 
 	if (system != undefined)
 	{
@@ -173,13 +173,11 @@ vortexNode.prototype.onExecute = function()
 		
 		if(particles.length > 0)
 		{
-			var mesh = searchMesh(system.id);
-
 			var particle;
-			var position = this.properties.position;
-			var angular_speed = this.properties.angular_speed;
-			var scale = this.properties.scale;
-			var distance = new Float32Array(3);
+			var position = properties.position;
+			var angular_speed = properties.angular_speed;
+			var scale = properties.scale;
+			var distance = [0,0,0];
 			var v_vortex;
 			var distance_factor;
 
@@ -193,17 +191,13 @@ vortexNode.prototype.onExecute = function()
 
 				//Then the cross product and the distance factor are computed
 				v_vortex = cross(angular_speed, distance);
-				distance_factor =1/(1+(distance[0]*distance[0]+distance[1]*distance[1]+distance[2]*distance[2])/scale);
+				distance_factor = 1/(1+(distance[0]*distance[0]+distance[1]*distance[1]+distance[2]*distance[2])/scale);
 				//The distance factor uses a formula which is based on inverse square distance, avoiding singularity at the center
 
 				//At the end, we add the cross product multiplied by the distance factor
 				for(var j = 0; j < 3; j++)
 						particle.position[j] += v_vortex[j] * distance_factor * time_interval;
-				
-				updateVertexs(mesh, i, particle);
 			}
-
-			mesh.upload()
 		}
 	}
 
@@ -253,21 +247,23 @@ function magnetNode()
 //For recover (in a visual way) the values when a graph is loaded
 magnetNode.prototype.onPropertyChanged = function()
 {
-	var scale = this.properties.scale;
+	var properties = this.properties;
+
+	var scale = properties.scale;
 	scale = isNaN(scale) ? 10 : scale;
-	this.properties.scale = Math.max(scale, 0);
+	properties.scale = Math.max(scale, 0);
 
-	var strength = this.properties.strength;
-	this.properties.strength = isNaN(strength) ? 10 : strength;
+	var strength = properties.strength;
+	properties.strength = isNaN(strength) ? 10 : strength;
 
-	if (this.properties.position.length != 3)
-		this.properties.position = [0,0,0];
+	if (properties.position.length != 3)
+		properties.position = [0,0,0];
 
-	if (this.properties.color.length != 4)
-		this.properties.color = [1,1,1,1];	
+	if (properties.color.length != 4)
+		properties.color = [1,1,1,1];	
 	else
 		for (var i = 0; i < 4; ++i)
-			this.properties.color[i] = Math.min(Math.max(this.properties.color[i], 0.0), 1.0);
+			properties.color[i] = Math.min(Math.max(properties.color[i], 0.0), 1.0);
 }
 
 magnetNode.prototype.onAdded = function() {
@@ -281,17 +277,18 @@ magnetNode.prototype.onRemoved = function() {
 magnetNode.prototype.onExecute = function() 
 {
 	var system = this.getInputData(0);
+	var properties = this.properties;
 
 	//When is executed the inputs are gotten and if they are undefined a default value is setted
-	this.properties.position = this.getInputData(1) || this.properties.position;
-	this.properties.strength = this.getInputData(2) || this.properties.strength;
-	this.properties.scale    = Math.max(this.getInputData(3),0) || this.properties.scale;
-	this.properties.color    = this.getInputData(4) || this.properties.color;
+	properties.position = this.getInputData(1) || properties.position;
+	properties.strength = this.getInputData(2) || properties.strength;
+	properties.scale    = Math.max(this.getInputData(3),0) || properties.scale;
+	properties.color    = this.getInputData(4) || properties.color;
 
 	//It's necesary update the force position and color for 
 	//render te origin of the magnet point
-	this.force.position = this.properties.position;
-	this.force.color    = this.properties.color;
+	this.force.position = properties.position;
+	this.force.color    = properties.color;
 
 	if (system != undefined)
 	{
@@ -299,14 +296,12 @@ magnetNode.prototype.onExecute = function()
 		
 		if(particles.length > 0)
 		{
-			var mesh = searchMesh(system.id);
-
 			var particle;
-			var position = this.properties.position;
-			var strength = this.properties.strength;
-			var scale    = this.properties.scale;
-			var distance = new Float32Array(3);
-			var new_pos  = new Float32Array(3);
+			var position = properties.position;
+			var strength = properties.strength;
+			var scale    = properties.scale;
+			var distance = [0,0,0];
+			var new_pos  = [0,0,0];
 			var distance_factor;
 
 			for (var i = 0; i < particles.length; i++)
@@ -318,20 +313,12 @@ magnetNode.prototype.onExecute = function()
 					distance[j] = particle.position[j] - position[j];
 
 				//Then the distance factor is computed
-				distance_factor =1/(1+(distance[0]*distance[0]+distance[1]*distance[1]+distance[2]*distance[2])/scale);
+				distance_factor = 1/(1+(distance[0]*distance[0]+distance[1]*distance[1]+distance[2]*distance[2])/scale);
 				distance_factor *= strength;
-
-				//Here the distance is transformed to the values of -1, 1 and 0
-				//for(var j = 0; j < 3; j++)
-				//	distance[j] = distance[j] < 0 ? -1 : distance[j] > 0 ? 1 : 0;
 
 				for(var j = 0; j < 3; j++)
 					particle.position[j] += (distance[j] * distance_factor * time_interval);
-			
-				updateVertexs(mesh, i, particle);
 			}
-
-			mesh.upload()
 		}
 	}
 

@@ -417,3 +417,11 @@ html,body {
     background-color: #F33;
     color: black;
 }
+
+
+
+
+.img-max {
+	max-width:  100px;
+	max-height: 100px;
+}
