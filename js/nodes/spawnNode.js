@@ -125,7 +125,7 @@ mySpawnNode.prototype.onExecute = function()
 	var position       = properties.position;
 	var mode           = properties.mode;
 	var system         = this.system;
-	var last_max_part  = this.last_status.max_particles;
+	var last_status     = this.last_status;
 	var origin_mesh;
 	var origin_2d_geometry;
 
@@ -151,17 +151,17 @@ mySpawnNode.prototype.onExecute = function()
 	system.color    = color;
 	
 	//Check if the maximum number of particles change, if is true then the array of the particles have to be resized
-	if (max_particles != last_max_part)
+	if (max_particles != last_status.max_particles)
 	{	
 		var particles_list = system.particles_list;
 
-		if(max_particles < last_max_part)	
+		if(max_particles < last_status.max_particles)	
 		{
 			particles_list.splice(max_particles, particles_list.length);
 			system.particles_ids = system.particles_ids.filter(p => p.id < max_particles); //I no put particles_ids in other variable because it didn't work
 		}
 			
-		last_max_part = max_particles;	
+		last_status.max_particles = max_particles;	
 		resizeBufferArray(searchMesh(this.id), max_particles);
 	}
 

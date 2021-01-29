@@ -200,8 +200,9 @@ class SystemInfo {
 		this.point_mode         = true;
 		this.external_model     = undefined;
 		this.color              = [1,1,1,1];
-		this.visible            = true;
+		this.visibility         = 1;
 		this.texture            = undefined;
+		this.coords             = default_coords;
 	}
 }
 
@@ -229,24 +230,26 @@ Particle.prototype.fill = function(properties) {
 	//Radom definition of the lifetime
 	lifetime = randomNumber(properties.min_life_time, properties.max_life_time);
 
-	this.position = new Float32Array(3);
+	this.position = [0,0,0];
 	for (var i = 0; i < 3; ++i)
 		this.position[i] = properties.position[i];
 
-	this.color  = new Float32Array(4);
-	this.iColor = new Float32Array(4);
+	this.color  = [0,0,0,0];
+	this.iColor = [0,0,0,0];
 	for (var i = 0; i < 4; ++i)
 	{
 		this.iColor[i] = properties.color[i];
 		this.color[i]  = properties.color[i];
 	}
 	
+	this.coords = properties.coords;
+
 	var s = randomNumber(properties.min_size, properties.max_size);
 	this.size  = s;
 	this.iSize = s;
 	
 	this.speed  = speed;
-	this.iSpeed = new Float32Array(3);
+	this.iSpeed = [0,0,0];
 	for (var i = 0; i < 3; ++i)
 		this.iSpeed[i] = speed[i];
 
@@ -264,16 +267,18 @@ Particle.prototype.fill = function(properties) {
 */
 function createMesh(id, particles){
 	var vertices = new Float32Array(particles * 6 * 3); //Save information about the center of the particle
-	var coords   = new Float32Array(particles * 6 * 2);
-	var sizes    = new Float32Array(particles * 6 * 2);
-	var colors   = new Float32Array(particles * 6 * 4);
-	var visible  = new Float32Array(particles * 6); //This array is for know with particles are not initialized
+	var coords   = new Float32Array(particles * 6 * 2); //The "possible changed" coordinates of the particle
+	var icoord   = new Float32Array(particles * 6 * 2); //The original coordinates of the particle
+	var sizes    = new Float32Array(particles * 6 * 2); //
+	var colors   = new Float32Array(particles * 6 * 4); //
+	var visible  = new Float32Array(particles * 6);     //This array is for know with particles are not visible
 
 	for(var i = 0; i < particles; i ++)
 	{
 		visible.set(default_visibility, i*6);
 		vertices.set(default_centers, i*6*3);
 		coords.set(default_coords, i*6*2);
+		icoord.set(default_coords, i*6*2);
 		colors.set(default_color, i*6*4);
 		sizes.set(default_sizes, i*6*2);
 	}
@@ -282,6 +287,7 @@ function createMesh(id, particles){
 	mesh.addBuffers({ 
 					  vertices : vertices, 
 					  coords   : coords, 
+					  icoord   : icoord,
 		              colors   : colors, 
 		              visible  : visible,
 		              size     : sizes
@@ -313,17 +319,16 @@ function orderBuffers(new_order, particles, mesh) {
 		for(var j = 0; j < 18; ++j)
 			vertex_data[i*18 + j] = particle.position[j % 3];
 
-		for(var j = 0; j < 12; ++j)
+		for(var j = 0; j < 12; ++j){
+			coord_data[i*12 + j] = particle.coords[j];
 			size_data[i*12 + j]  = particle.size;
+		}
 
 		for(var j = 0; j < 6; ++j)
 			visibility_data[i*6 + j] = particle.visibility;
 		
 		for(var j = 0; j < 24; ++j)
 			color_data[i*24 + j] = particle.color[j % 4];
-
-
-			//coord_data[i*12 + j] = particle.size[j % 2];
 	}
 
 	mesh.upload();
@@ -339,6 +344,7 @@ function resizeBufferArray(mesh, newSize) {
 	var data_Vertex  = mesh.getBuffer("vertices").data;
 	var data_Visible = mesh.getBuffer("visible").data;
 	var data_Coords  = mesh.getBuffer("coords").data;
+	var data_iCoords = mesh.getBuffer("icoord").data;
 	var data_Colors  = mesh.getBuffer("colors").data;
 	var data_Size    = mesh.getBuffer("size").data;
 
@@ -355,37 +361,20 @@ function resizeBufferArray(mesh, newSize) {
 	if (vertexSize == data_Vertex.length)
 		return;
 
+	var vertexBuffers = mesh.vertexBuffers;
+
     if (vertexSize < data_Vertex.length){
 
-    	for (x in meshes_list[0].mesh.vertexBuffers) { 
-    		if (x == "vertices") {
-    			size = vertexSize;
-    			data = data_Vertex;
-    		}
-    		else if (x == "coords") {
-    			size = coordsSize;   
-    			data = data_Coords; 		
-    		}
-    		else if (x == "colors") {
-    			size = colorsSize;
-    			data = data_Colors;
-    		}
-    		else if (x == "visible") {
-    			size = visibleSize;
-    			data = data_Visible;
-    		} 
-    		else if (x == "size") {
-    			size = coordsSize;
-    			data = data_Size;
-    		}
-
-    		data = data.slice(0, size);
-        	mesh.getBuffer(x).data = data;
-    	}
+        mesh.getBuffer("vertices").data = data_Vertex.slice(0, vertexSize);
+        mesh.getBuffer("visible").data  = data_Visible.slice(0, visibleSize);
+        mesh.getBuffer("colors").data   = data_Colors.slice( 0, colorsSize);
+        mesh.getBuffer("coords").data   = data_Coords.slice(0, coordsSize);
+        mesh.getBuffer("icoord").data   = data_iCoords.slice(0, coordsSize);
+        mesh.getBuffer("size").data     = data_Size.slice(0, coordsSize);
 
     } else {
 
-    	for (x in meshes_list[0].mesh.vertexBuffers) { 
+    	for (x in mesh.vertexBuffers) { 
     		if (x == "vertices") {
     			size = vertexSize;
     			data_size = 6 * 3;
@@ -419,9 +408,11 @@ function resizeBufferArray(mesh, newSize) {
 
         	var nBuff = new Float32Array(size);
 
+        	//Copying the old data
 	        for (var i = 0; i < data.length; i++)
 	            nBuff[i] = data[i];
-	            
+	        
+	        //Filling the new information in the buffers
 			for(var i = data.length / data_size; i < nBuff.length / data_size; i ++)
 			    nBuff.set(default_data, i*data_size);
 

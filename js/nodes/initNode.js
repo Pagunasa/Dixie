@@ -75,33 +75,46 @@ initParticlesNode.prototype.onPropertyChanged = function()
 		this.properties.color[i] = Math.min(Math.max(this.properties.color[i], 0.0), 1.0);
 }
 
-initParticlesNode.prototype.coordChange = function(mesh, particle, particle_id)
+initParticlesNode.prototype.generateParticleInfo = function (properties, system, system_info)
+{
+
+	var max_life_time = Math.max(properties.min_life_time, properties.max_life_time);
+	var min_life_time = Math.min(properties.min_life_time, properties.max_life_time);
+
+	var max_size = Math.abs(Math.max(properties.max_size, properties.min_size));
+	var min_size = Math.abs(Math.min(properties.max_size, properties.min_size));
+
+	return {
+				min_speed     : properties.min_speed,
+				max_speed     : properties.max_speed,
+				min_life_time : min_life_time,
+				max_life_time : max_life_time,
+				position      : this.generateRandomPoint(system, system_info),
+				color         : properties.color,
+				min_size      : min_size,
+				max_size      : max_size,
+				coords        : this.getCoords()
+			};
+}
+
+initParticlesNode.prototype.getCoords = function()
 {
 	var sizeX = this.texture.ntx;
 	var sizeY = this.texture.nty; 
 
-	if(sizeX > 0 && sizeY > 0)
-	{
-		var new_coord = [0,0, 1,1];
+	if(sizeX == 0 && sizeY == 0)
+		return default_coords;
 
-		new_coord[0] = Math.floor(Math.random() * sizeX)/sizeX;
-		new_coord[1] = Math.floor(Math.random() * sizeY)/sizeY; 
+	var new_coord = [0,0, 1,1];
 
-		new_coord[2] = new_coord[0] + 1/sizeX;
-		new_coord[3] = new_coord[1] + 1/sizeY;
+	new_coord[0] = Math.floor(Math.random() * sizeX)/sizeX;
+	new_coord[1] = Math.floor(Math.random() * sizeY)/sizeY;
 
-		updateCoord(mesh, particle, particle_id, new_coord);
-	}
-}
+	new_coord[2] = new_coord[0] + (1/sizeX); 
+	new_coord[3] = new_coord[1] + (1/sizeY); 
 
-initParticlesNode.prototype.updateParticle = function(mesh, particle, id, texture)
-{
-	updateVisibility(mesh, particle, id, 1.0);
-	updateColor(mesh, particle, id);
-	updateSize(mesh, particle, id);
-	
-	if(texture != undefined)
-		this.coordChange(mesh, particle, id);
+	return [new_coord[2],new_coord[3], new_coord[0],new_coord[3], new_coord[2],new_coord[1], 
+	new_coord[0],new_coord[1], new_coord[2],new_coord[1], new_coord[0],new_coord[3]];
 }
 
 initParticlesNode.prototype.generateRandomPoint = function(system, system_info)
@@ -170,20 +183,14 @@ initParticlesNode.prototype.onExecute = function()
 	properties.max_speed = input_max_speed || properties.max_speed;
 	properties.min_speed = input_min_speed || properties.min_speed;
 
-	var aux_max_life_time = input_max_life_time || properties.max_life_time;
-	var aux_min_life_time = input_min_life_time || properties.min_life_time;
+	properties.max_life_time = input_max_life_time || properties.max_life_time;
+	properties.min_life_time = input_min_life_time || properties.min_life_time;
 	
-	var aux_max_size = input_max_size || properties.max_size;
-	var aux_min_size = input_min_size || properties.min_size;
+	properties.max_size = input_max_size || properties.max_size;
+	properties.min_size = input_min_size || properties.min_size;
 
 	properties.color   = input_color || properties.color;
 	this.texture = input_texture || undefined;
-
-	properties.max_life_time = Math.max(aux_min_life_time, aux_max_life_time);
-	properties.min_life_time = Math.min(aux_min_life_time, aux_max_life_time);
-
-	properties.max_size = Math.abs(Math.max(aux_max_size, aux_min_size));
-	properties.min_size = Math.abs(Math.min(aux_max_size, aux_min_size));
 
 	if (system != undefined)
 	{
@@ -216,23 +223,12 @@ initParticlesNode.prototype.onExecute = function()
 			{
 				this.internal.init_time_pased = 0.0;
 				
-				particle_info = {
-					min_speed     : properties.min_speed,
-					max_speed     : properties.max_speed,
-					min_life_time : properties.min_life_time,
-					max_life_time : properties.max_life_time,
-					position      : this.generateRandomPoint(system, system_info),
-					color         : properties.color,
-					min_size      : properties.min_size,
-					max_size      : properties.max_size
-				}
+				particle_info = this.generateParticleInfo(properties, system, system_info);
 
 				particle = new Particle();
 				particle.fill(particle_info);
 				particles_ids.push({id : particles.length, distance_to_camera : 0.0});
 				particles.push(particle);
-				
-				this.updateParticle(mesh, particle, particles.length - 1, system_info.texture);
 			}
 			else if (particles_to_reset.length > 0)
 			{
@@ -248,22 +244,11 @@ initParticlesNode.prototype.onExecute = function()
 				if(id != undefined)
                 {
      				
-					particle_info = {
-						min_speed     : properties.min_speed,
-						max_speed     : properties.max_speed,
-						min_life_time : properties.min_life_time,
-						max_life_time : properties.max_life_time,
-						position      : this.generateRandomPoint(system, system_info),
-						color         : properties.color,
-						min_size      : properties.min_size,
-						max_size      : properties.max_size
-					}
-                	
+					particle_info = this.generateParticleInfo(properties, system, system_info);
+
                 	particle = particles[id];
 					particle.fill(particle_info);
 					particles_to_reset.splice(0,1);
-
-					this.updateParticle(mesh, particle, id, system_info.texture);
 				}
 			}
 

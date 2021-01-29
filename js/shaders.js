@@ -34,6 +34,7 @@ var vs_particles = '\
 					attribute vec3 a_vertex;\
 					attribute vec3 a_normal;\
 					attribute vec2 a_coord;\
+					attribute vec2 a_icoord;\
 					attribute vec4 a_color;\
 					attribute vec2 a_size;\
 					attribute float a_visible;\
@@ -56,7 +57,7 @@ var vs_particles = '\
 						v_coord   = a_coord;\
 						v_color   = a_color;\
 						v_normal  = (u_model * vec4(a_normal, 0.0)).xyz;\
-						v_pos = a_vertex + u_right * v_coord.x * a_size.x + u_up * v_coord.y * a_size.y;\
+						v_pos = a_vertex + u_right * a_icoord.x * a_size.x + u_up * a_icoord.y * a_size.y;\
 						gl_Position = u_mvp * (u_model * vec4(v_pos, 1.0));\
 					}';
 
