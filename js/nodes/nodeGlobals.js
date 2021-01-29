@@ -681,6 +681,11 @@ function loadTexture(node){
 
 	def_texture_1.onclick = function(){
 		node_properties.file = GL.Texture.fromURL('default_textures/particles.png');
+		
+		if(!node.data_loaded)
+			node.size[1] += 112;
+
+		node.data_loaded = true;
 	}
 
 	def_texture_2.onclick = function(){
