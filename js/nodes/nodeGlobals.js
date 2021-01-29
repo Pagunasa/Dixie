@@ -643,6 +643,15 @@ function onShowNodePanel(node){
     document.getElementById("nodeDisplay").appendChild( panel );
 }
 
+function chargeTexture(node, node_properties, url){
+	node_properties.file = GL.Texture.fromURL(url);
+	
+	if(!node.data_loaded)
+		node.size[1] += 112;
+
+	node.data_loaded = true;
+	texture_modal.modal('hide');
+}
 
 function loadTexture(node){
 	
@@ -663,13 +672,7 @@ function loadTexture(node){
 	
 		var reader = new FileReader();
 		reader.onload = function(e) {
-			node_properties.file = GL.Texture.fromURL(reader.result);
-			
-			//When the image is loaded the node must be resize 
-			if(!node.data_loaded)
-				node.size[1] += 112;
-
-			node.data_loaded = true;
+			chargeTexture(node, node_properties, reader.result);
 		};
 
 		reader.readAsDataURL(file);
@@ -680,24 +683,18 @@ function loadTexture(node){
 	input.click();
 
 	def_texture_1.onclick = function(){
-		node_properties.file = GL.Texture.fromURL('default_textures/particles.png');
-		
-		if(!node.data_loaded)
-			node.size[1] += 112;
-
-		node.data_loaded = true;
+		chargeTexture(node, node_properties, 'default_textures/particles/smoke.png');
 	}
 
 	def_texture_2.onclick = function(){
-
+		chargeTexture(node, node_properties, 'default_textures/particles/smoke2.png');
 	}
 	
 	def_texture_3.onclick = function(){
-
+		chargeTexture(node, node_properties, 'default_textures/particles/fire.png');
 	}
 	
 	def_texture_4.onclick = function(){
-
+		chargeTexture(node, node_properties, 'default_textures/particles/light.png');
 	}
-	
 }
