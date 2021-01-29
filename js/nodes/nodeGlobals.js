@@ -46,7 +46,7 @@ var def_texture_1 = document.getElementById("def_texture1");
 var def_texture_2 = document.getElementById("def_texture2");
 var def_texture_3 = document.getElementById("def_texture3");
 var def_texture_4 = document.getElementById("def_texture4");
-var local_texture;
+var local_texture = document.getElementById("texture_local");
 
 function lerp(s, e, x){
 	return s * ( 1 - x ) + e * x; 
@@ -658,30 +658,6 @@ function loadTexture(node){
 	texture_modal.modal('show');
 	var node_properties = node.properties;
 
-	var input = document.createElement("input");
-	input.type = "file";
-
-	input.addEventListener("change", function(e){
-		var file = e.target.files[0];
-		
-		if (!file || file.type.split("/")[0] != "image")
-		{
-			createAlert("Holy Guacamole!", "Loading error", "Please insert an image...", "danger", true, true, "pageMessages");
-		    return;	
-		}
-	
-		var reader = new FileReader();
-		reader.onload = function(e) {
-			chargeTexture(node, node_properties, reader.result);
-		};
-
-		reader.readAsDataURL(file);
-
-	
-	}, false);
-
-	input.click();
-
 	def_texture_1.onclick = function(){
 		chargeTexture(node, node_properties, 'default_textures/particles/smoke.png');
 	}
@@ -696,5 +672,30 @@ function loadTexture(node){
 	
 	def_texture_4.onclick = function(){
 		chargeTexture(node, node_properties, 'default_textures/particles/light.png');
+	}
+
+	local_texture.onclick = function(){
+		var input = document.createElement("input");
+		input.type = "file";
+
+		input.addEventListener("change", function(e){
+			var file = e.target.files[0];
+			
+			if (!file || file.type.split("/")[0] != "image")
+			{
+				createAlert("Holy Guacamole!", "Loading error", "Please insert an image...", "danger", true, true, "pageMessages");
+			    return;	
+			}
+		
+			var reader = new FileReader();
+			reader.onload = function(e) {
+				chargeTexture(node, node_properties, reader.result);
+			};
+
+			reader.readAsDataURL(file);
+
+		}, false);
+
+		input.click();
 	}
 }
