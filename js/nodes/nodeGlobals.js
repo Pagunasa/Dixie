@@ -294,7 +294,7 @@ function orderBuffers(new_order, particles, mesh) {
 	var length = new_order.length;
 
 	//If there are no particles then retun
-	if(length <= 1)
+	if(length == 0)
 		return;
 
 	var particle, id;
