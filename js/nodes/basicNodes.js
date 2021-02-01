@@ -376,11 +376,12 @@ function meshLoadNode() {
 }
 
 meshLoadNode.prototype.onAdded = function(){
-	this.mesh = new GL.Mesh.fromURL("default_meshes/pango.obj");
-	objects_list.push({id: this.id, mesh: this.mesh, model: mat4.create()});
-	this.model = searchObject(this.id).model;
+	this.mesh = new GL.Mesh.fromURL("default_meshes/pango.obj", function(){
+		objects_list.push({id: this.id, mesh: this.mesh, model: mat4.create()});
+		this.model = searchObject(this.id).model;
 
-	this.triangle_num = this.mesh.vertexBuffers.vertices.data.length / 9; //3 coordinates by 3 points of a triangle
+		this.triangle_num = this.mesh.vertexBuffers.vertices.data.length / 9; //3 coordinates by 3 points of a triangle
+	});
 }
 
 meshLoadNode.prototype.onRemoved = function(){
