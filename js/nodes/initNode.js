@@ -107,11 +107,11 @@ initParticlesNode.prototype.getCoords = function()
 
 	var new_coord = [0,0, 1,1];
 
-	new_coord[0] = Math.floor(Math.random() * sizeX)/sizeX;
-	new_coord[1] = Math.floor(Math.random() * sizeY)/sizeY;
+	new_coord[0] = sizeX != 0 ? Math.floor(Math.random() * sizeX)/sizeX : 0;
+	new_coord[1] = sizeY != 0 ? Math.floor(Math.random() * sizeY)/sizeY : 0;
 
-	new_coord[2] = new_coord[0] + (1/sizeX); 
-	new_coord[3] = new_coord[1] + (1/sizeY); 
+	new_coord[2] = sizeX != 0 ? new_coord[0] + (1/sizeX) : 1; 
+	new_coord[3] = sizeY != 0 ? new_coord[1] + (1/sizeY) : 1; 
 
 	return [new_coord[2],new_coord[3], new_coord[0],new_coord[3], new_coord[2],new_coord[1], 
 	new_coord[0],new_coord[1], new_coord[2],new_coord[1], new_coord[0],new_coord[3]];

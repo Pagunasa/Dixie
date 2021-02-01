@@ -273,10 +273,9 @@ textureLoadNode.prototype.computeSubTextures = function(){
 	
 	var sizes = this.properties.subtextures_size;
 
-	if(sizes[0] != 0)
-  		this.numberTextX = this.properties.file.width / sizes[0];
-	if(sizes[1] != 0)
-  		this.numberTextY = this.properties.file.height / sizes[1];
+	
+  	this.numberTextX = sizes[0] != 0 ? this.properties.file.width  / sizes[0] : 0;
+  	this.numberTextY = sizes[1] != 0 ? this.properties.file.height / sizes[1] : 0;
 } 
 
 textureLoadNode.prototype.changeSubTextureSizeX = function(v){
@@ -324,8 +323,14 @@ textureLoadNode.prototype.onPropertyChanged = function() {
 	if(this.properties.subtextures_size.length != 2)
 		this.properties.subtextures_size = [0,0];
 	
-	if(this.widgets[2] != undefined)
-	{
+	if (this.properties.subtextures) {
+		this.widgets.splice(3,1);
+		this.widgets.splice(2,1);
+
+		this.addWidget("number", "Sub textures size x", 0, this.changeSubTextureSizeX.bind(this), {min: 0, max: 10000000, step: 10});
+		this.addWidget("number", "Sub textures size y", 0, this.changeSubTextureSizeY.bind(this), {min: 0, max: 10000000, step: 10});
+		this.size[0] = 260;
+
 		this.properties.subtextures_size[0] = Math.max(0.0, this.properties.subtextures_size[0]);
 		this.properties.subtextures_size[1] = Math.max(0.0, this.properties.subtextures_size[1]);
 		this.widgets[2].value = this.properties.subtextures_size[0];
@@ -371,7 +376,7 @@ function meshLoadNode() {
 }
 
 meshLoadNode.prototype.onAdded = function(){
-	this.mesh = new GL.Mesh.cube();
+	this.mesh = new GL.Mesh.fromURL("default_meshes/pango.obj");
 	objects_list.push({id: this.id, mesh: this.mesh, model: mat4.create()});
 	this.model = searchObject(this.id).model;
 
