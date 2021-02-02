@@ -123,7 +123,7 @@ initParticlesNode.prototype.generateRandomPoint = function(system, system_info)
 	var position      = system.position;
 	var origin_mesh   = system.origin_mesh;
 
-	if (mode == "Point" || mode == "2D Geometry" || origin_mesh == undefined)
+	if (mode == "Point" || mode == "2D Geometry" || origin_mesh.vertices == undefined)
 	{
 		system_info.point_mode     = true;
 		system_info.external_model = undefined;		
