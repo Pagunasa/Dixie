@@ -382,8 +382,10 @@ function meshLoadNode() {
 	this.addOutput("Object", "object");
 }
 
-meshLoadNode.prototype.onMeshLoaded = function(){
+meshLoadNode.prototype.onMeshLoaded = function(loaded_mesh){
 	var model;
+
+	this.mesh = loaded_mesh;
 
 	if(!this.loaded){
 		model = mat4.create();

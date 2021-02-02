@@ -709,7 +709,7 @@ function loadTexture(node){
 
 
 function chargeMesh(node, url){
-	node.mesh = GL.Mesh.fromURL(url, node.onMeshLoaded);
+	GL.Mesh.fromURL(url, node.onMeshLoaded);
 	mesh_modal.modal('hide');
 }
 
