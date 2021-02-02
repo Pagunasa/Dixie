@@ -319,6 +319,8 @@ textureLoadNode.prototype.onPropertyChanged = function() {
 	var properties = this.properties;
 
 	if (properties.file == "" && this.firstChange && this.numChanges == 1){
+		this.size[1] = 82;
+
 		switch (properties.default_texture)
 		{
 			case "smoke":
@@ -339,7 +341,6 @@ textureLoadNode.prototype.onPropertyChanged = function() {
 
 			default:
 				createAlert('','','Please reload your texture.','warning',true,true,'pageMessages');
-				this.size[1] = 82;
 				this.firstChange = false;	
 			break;
 		}
