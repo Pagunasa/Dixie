@@ -224,6 +224,7 @@ function textureLoadNode() {
 	
 	this.data_loaded = false;
 	this.firstChange = true;
+	this.numChanges  = 0;
 	this.numberTextX = 0;
 	this.numberTextY = 0;
 
@@ -317,7 +318,7 @@ textureLoadNode.prototype.onDrawBackground = function(ctx){
 textureLoadNode.prototype.onPropertyChanged = function() {
 	var properties = this.properties;
 
-	if (properties.file == "" && this.firstChange){
+	if (properties.file == "" && this.firstChange && this.numChanges == 1){
 		switch (properties.default_texture)
 		{
 			case "smoke":
@@ -343,6 +344,8 @@ textureLoadNode.prototype.onPropertyChanged = function() {
 			break;
 		}
 	}
+
+	this.numChanges++;
 
 	if(properties.subtextures_size.length != 2)
 		properties.subtextures_size = [0,0];
