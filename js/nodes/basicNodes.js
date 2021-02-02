@@ -216,8 +216,8 @@ vector4Node.title_selected_color = basicSelectedTitleColor;
 */
 function textureLoadNode() {
 	this.properties = { 
-		file: undefined,
 		default_texture: "NONE",
+		file: undefined,
 		subtextures: false,
 		subtextures_size: vector_2
 	}
