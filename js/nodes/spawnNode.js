@@ -49,6 +49,9 @@ function mySpawnNode()
 }
 
 mySpawnNode.prototype.setValue = function(v) {
+	if (this.properties.mode == v)
+		return;
+
 	this.properties.mode = v;
 	//The first two inputs will be always the same, so we have to disconect and delete the third
 	this.disconnectInput(3);
