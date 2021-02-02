@@ -388,10 +388,11 @@ meshLoadNode.prototype.onMeshLoaded = function(){
 	if(!this.loaded){
 		model = mat4.create();
 		objects_list.push({id: this.id, mesh: this.mesh, model: mat4.create()});
+		
+		this.model = searchObject(this.id).model;
 		this.loaded = true;
 	}
 	
-	this.model = searchObject(this.id).model;
 	this.triangle_num = this.mesh.vertexBuffers.vertices.data.length / 9; //3 coordinates by 3 points of a triangle
 }
 
