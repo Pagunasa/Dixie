@@ -315,23 +315,25 @@ textureLoadNode.prototype.onDrawBackground = function(ctx){
 };
 
 textureLoadNode.prototype.onPropertyChanged = function() {
+	var properties = this.properties;
+	
 	if (this.properties.file == "" && this.firstChange){
 		switch (this.properties.default_texture)
 		{
 			case "smoke":
-				chargeTexture(node, node_properties, 'default_textures/particles/smoke.png', 'smoke');
+				chargeTexture(this, this.properties, 'default_textures/particles/smoke.png', 'smoke');
 			break;
 			
 			case "smoke2":
-				chargeTexture(node, node_properties, 'default_textures/particles/smoke2.png', 'smoke2');
+				chargeTexture(this, this.properties, 'default_textures/particles/smoke2.png', 'smoke2');
 			break;
 			
 			case "fire":
-				chargeTexture(node, node_properties, 'default_textures/particles/fire.png', 'fire');
+				chargeTexture(this, this.properties, 'default_textures/particles/fire.png', 'fire');
 			break;
 			
 			case "light":
-				chargeTexture(node, node_properties, 'default_textures/particles/light.png', 'light');
+				chargeTexture(this, this.properties, 'default_textures/particles/light.png', 'light');
 			break;
 
 			default:
