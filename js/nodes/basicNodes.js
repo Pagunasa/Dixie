@@ -358,6 +358,9 @@ textureLoadNode.prototype.onPropertyChanged = function() {
 		this.addWidget("number", "Sub textures size y", 0, this.changeSubTextureSizeY.bind(this), {min: 0, max: 10000000, step: 10});
 		this.size[0] = 260;
 
+		if(this.data_loaded)
+		    this.size[1] += 112;
+
 		this.properties.subtextures_size[0] = Math.max(0.0, properties.subtextures_size[0]);
 		this.properties.subtextures_size[1] = Math.max(0.0, properties.subtextures_size[1]);
 		this.widgets[2].value = properties.subtextures_size[0];
@@ -592,7 +595,9 @@ equationNode.prototype.onMouseUp = function(e, local_pos, graphCanvas) {
 }
 
 equationNode.prototype.onAdded = function() {
-	this.curve_editor = new LiteGraph.CurveEditor(this.properties.curve_points);
+	if(this.curve_editor == undefined)
+	    this.curve_editor = new LiteGraph.CurveEditor(this.properties.curve_points);
+
 	this.verifyPoints();
 	this.generateFunction();
 	
@@ -602,6 +607,9 @@ equationNode.prototype.onAdded = function() {
 }
 
 equationNode.prototype.onPropertyChanged = function() {
+	if(this.curve_editor == undefined)
+	    this.curve_editor = new LiteGraph.CurveEditor(this.properties.curve_points);
+
 	this.curve_editor.points = this.properties.curve_points;
 	this.verifyPoints();
 	this.generateFunction();
