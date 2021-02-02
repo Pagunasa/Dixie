@@ -709,7 +709,7 @@ function loadTexture(node){
 
 
 function chargeMesh(node, url){
-	GL.Mesh.fromURL(url, node.onMeshLoaded);
+	GL.Mesh.fromURL(url, node.onMeshLoaded.bind(node));
 	mesh_modal.modal('hide');
 }
 
@@ -724,15 +724,13 @@ function loadMesh(node){
 
 	//Cylinder
 	def_mesh_2.onclick = function(){
-		node.mesh = GL.Mesh.cylinder({radius:0.5});
-		node.onMeshLoaded();
+		node.onMeshLoaded(GL.Mesh.cylinder({radius:0.5}));
 		mesh_modal.modal('hide');
 	}
 	
 	//Torus
 	def_mesh_3.onclick = function(){
-		node.mesh = GL.Mesh.torus({innerradius:0.25,outerradius:1,innerslices:8});
-		node.onMeshLoaded();
+		node.onMeshLoaded(GL.Mesh.torus({innerradius:0.25,outerradius:1,innerslices:8}));
 		mesh_modal.modal('hide');
 	}
 	
@@ -743,15 +741,13 @@ function loadMesh(node){
 
 	//Cube
 	def_mesh_5.onclick = function(){
-		node.mesh = GL.Mesh.cube();
-		node.onMeshLoaded();
+		node.onMeshLoaded(GL.Mesh.cube());
 		mesh_modal.modal('hide');
 	}
 
 	//Cone
 	def_mesh_6.onclick = function(){
-		node.mesh = GL.Mesh.cone({radius:0.5,height:1});
-		node.onMeshLoaded();
+		node.onMeshLoaded(GL.Mesh.cone({radius:0.5,height:1}));
 		mesh_modal.modal('hide');
 	}
 
@@ -762,15 +758,13 @@ function loadMesh(node){
 
 	//Sphere
 	def_mesh_8.onclick = function(){
-		node.mesh = GL.Mesh.sphere();;
-		node.onMeshLoaded();
+		node.onMeshLoaded(GL.Mesh.sphere());
 		mesh_modal.modal('hide');
 	}
 
 	//Icosahedron
 	def_mesh_9.onclick = function(){
-		node.mesh = GL.Mesh.icosahedron({size:1,subdivisions:1});
-		node.onMeshLoaded();
+		node.onMeshLoaded(GL.Mesh.icosahedron({size:1,subdivisions:1}));
 		mesh_modal.modal('hide');
 	}
 }
