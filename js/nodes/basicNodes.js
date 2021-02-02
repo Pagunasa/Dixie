@@ -428,7 +428,12 @@ meshLoadNode.prototype.onPropertyChanged = function() {
 }
 
 meshLoadNode.prototype.onExecute = function() {
-	this.setOutputData(0, {id: this.id, triangle_num: this.triangle_num, vertices: this.mesh.vertexBuffers.vertices.data, model: this.model});
+	this.setOutputData(0, {
+		id: this.id, 
+		triangle_num: this.triangle_num, 
+		vertices: this.mesh != undefined ? this.mesh.vertexBuffers.vertices.data : undefined, 
+		model: this.model
+	});
 }
 
 meshLoadNode.title = "Load Mesh";
