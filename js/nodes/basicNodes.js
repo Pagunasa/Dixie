@@ -576,6 +576,8 @@ equationNode.prototype.onAdded = function() {
 
 equationNode.prototype.onPropertyChanged = function() {
 	this.curve_editor.points = this.properties.curve_points;
+	this.verifyPoints();
+	this.generateFunction();
 }
 
 equationNode.prototype.onExecute = function() {
