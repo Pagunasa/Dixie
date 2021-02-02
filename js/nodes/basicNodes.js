@@ -217,6 +217,7 @@ vector4Node.title_selected_color = basicSelectedTitleColor;
 function textureLoadNode() {
 	this.properties = { 
 		file: undefined,
+		default_texture: "NONE",
 		subtextures: false,
 		subtextures_size: vector_2
 	}
@@ -315,9 +316,37 @@ textureLoadNode.prototype.onDrawBackground = function(ctx){
 
 textureLoadNode.prototype.onPropertyChanged = function() {
 	if (this.properties.file == "" && this.firstChange){
-		createAlert('','','Please reload your texture.','warning',true,true,'pageMessages');
-		this.size[1] = 82;
-		this.firstChange = false;
+		if(this.properties.default_texture == "NONE")
+		{
+			createAlert('','','Please reload your texture.','warning',true,true,'pageMessages');
+			this.size[1] = 82;
+			this.firstChange = false;	
+		}
+		else
+		{
+			switch (this.properties.default_texture)
+			{
+				case "smoke":
+					chargeTexture(node, node_properties, 'default_textures/particles/smoke.png', 'smoke');
+				break;
+				
+				case "smoke2":
+					chargeTexture(node, node_properties, 'default_textures/particles/smoke2.png', 'smoke2');
+				break;
+				
+				case "fire":
+					chargeTexture(node, node_properties, 'default_textures/particles/fire.png', 'fire');
+				break;
+				
+				case "light":
+					chargeTexture(node, node_properties, 'default_textures/particles/light.png', 'light');
+				break;
+
+				default:
+					createAlert('','','Please reload your texture.','warning',true,true,'pageMessages');
+				break;
+			}
+		}
 	}
 
 	if(this.properties.subtextures_size.length != 2)

@@ -650,8 +650,9 @@ function onShowNodePanel(node){
     document.getElementById("nodeDisplay").appendChild( panel );
 }
 
-function chargeTexture(node, node_properties, url){
+function chargeTexture(node, node_properties, url, def_text = "NONE"){
 	node_properties.file = GL.Texture.fromURL(url);
+	node_properties.default_texture = def_text;
 	
 	if(!node.data_loaded)
 		node.size[1] += 112;
@@ -666,19 +667,19 @@ function loadTexture(node){
 	var node_properties = node.properties;
 
 	def_texture_1.onclick = function(){
-		chargeTexture(node, node_properties, 'default_textures/particles/smoke.png');
+		chargeTexture(node, node_properties, 'default_textures/particles/smoke.png', 'smoke');
 	}
 
 	def_texture_2.onclick = function(){
-		chargeTexture(node, node_properties, 'default_textures/particles/smoke2.png');
+		chargeTexture(node, node_properties, 'default_textures/particles/smoke2.png', 'smoke2');
 	}
 	
 	def_texture_3.onclick = function(){
-		chargeTexture(node, node_properties, 'default_textures/particles/fire.png');
+		chargeTexture(node, node_properties, 'default_textures/particles/fire.png', 'fire');
 	}
 	
 	def_texture_4.onclick = function(){
-		chargeTexture(node, node_properties, 'default_textures/particles/light.png');
+		chargeTexture(node, node_properties, 'default_textures/particles/light.png', 'light');
 	}
 
 	local_texture.onclick = function(){
