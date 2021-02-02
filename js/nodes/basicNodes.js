@@ -316,36 +316,29 @@ textureLoadNode.prototype.onDrawBackground = function(ctx){
 
 textureLoadNode.prototype.onPropertyChanged = function() {
 	if (this.properties.file == "" && this.firstChange){
-		if(this.properties.default_texture == "NONE")
+		switch (this.properties.default_texture)
 		{
-			createAlert('','','Please reload your texture.','warning',true,true,'pageMessages');
-			this.size[1] = 82;
-			this.firstChange = false;	
-		}
-		else
-		{
-			switch (this.properties.default_texture)
-			{
-				case "smoke":
-					chargeTexture(node, node_properties, 'default_textures/particles/smoke.png', 'smoke');
-				break;
-				
-				case "smoke2":
-					chargeTexture(node, node_properties, 'default_textures/particles/smoke2.png', 'smoke2');
-				break;
-				
-				case "fire":
-					chargeTexture(node, node_properties, 'default_textures/particles/fire.png', 'fire');
-				break;
-				
-				case "light":
-					chargeTexture(node, node_properties, 'default_textures/particles/light.png', 'light');
-				break;
+			case "smoke":
+				chargeTexture(node, node_properties, 'default_textures/particles/smoke.png', 'smoke');
+			break;
+			
+			case "smoke2":
+				chargeTexture(node, node_properties, 'default_textures/particles/smoke2.png', 'smoke2');
+			break;
+			
+			case "fire":
+				chargeTexture(node, node_properties, 'default_textures/particles/fire.png', 'fire');
+			break;
+			
+			case "light":
+				chargeTexture(node, node_properties, 'default_textures/particles/light.png', 'light');
+			break;
 
-				default:
-					createAlert('','','Please reload your texture.','warning',true,true,'pageMessages');
-				break;
-			}
+			default:
+				createAlert('','','Please reload your texture.','warning',true,true,'pageMessages');
+				this.size[1] = 82;
+				this.firstChange = false;	
+			break;
 		}
 	}
 
