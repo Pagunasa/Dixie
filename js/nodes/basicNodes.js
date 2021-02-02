@@ -363,9 +363,16 @@ function meshLoadNode() {
 		rotation: [0,0,0]
 	}
 
+	this.loaded = false;
+
 	var that = this;
 
-	this.addWidget("button", "Select mesh", "", function() {});
+	this.addWidget("button", "Select mesh", "", 
+		function() 
+		{
+			loadMesh(that);
+		}
+	);
 
 	this.addInput("Position", "vec3");
 	this.addInput("Scale"   , "vec3");
@@ -375,13 +382,28 @@ function meshLoadNode() {
 	this.addOutput("Object", "object");
 }
 
-meshLoadNode.prototype.onAdded = function(){
-	this.mesh = new GL.Mesh.fromURL("default_meshes/pango.obj", function(){
-		objects_list.push({id: this.id, mesh: this.mesh, model: mat4.create()});
-		this.model = searchObject(this.id).model;
+meshLoadNode.prototype.onMeshLoaded = function(){
+	var model;
 
-		this.triangle_num = this.mesh.vertexBuffers.vertices.data.length / 9; //3 coordinates by 3 points of a triangle
-	});
+	if(!this.loaded){
+		model = mat4.create();
+		objects_list.push({id: this.id, mesh: this.mesh, model: mat4.create()});
+		this.loaded = true;
+	}
+	
+	this.model = searchObject(this.id).model;
+	this.triangle_num = this.mesh.vertexBuffers.vertices.data.length / 9; //3 coordinates by 3 points of a triangle
+}
+
+meshLoadNode.prototype.onAdded = function(){
+	/*var that = this;
+
+	this.mesh = new GL.Mesh.fromURL("default_meshes/pango.obj", function(){
+		objects_list.push({id: that.id, mesh: that.mesh, model: mat4.create()});
+		that.model = searchObject(that.id).model;
+
+		that.triangle_num = that.mesh.vertexBuffers.vertices.data.length / 9; //3 coordinates by 3 points of a triangle
+	});*/
 }
 
 meshLoadNode.prototype.onRemoved = function(){

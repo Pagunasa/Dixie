@@ -48,6 +48,22 @@ var def_texture_3 = document.getElementById("def_texture3");
 var def_texture_4 = document.getElementById("def_texture4");
 var local_texture = document.getElementById("texture_local");
 
+
+/********************************/
+/*************Meshes*************/
+/********************************/
+var mesh_modal = $('#meshesModal');
+var def_mesh_1 = document.getElementById("def_mesh1");
+var def_mesh_2 = document.getElementById("def_mesh2");
+var def_mesh_3 = document.getElementById("def_mesh3");
+var def_mesh_4 = document.getElementById("def_mesh4");
+var def_mesh_5 = document.getElementById("def_mesh5");
+var def_mesh_6 = document.getElementById("def_mesh6");
+var def_mesh_7 = document.getElementById("def_mesh7");
+var def_mesh_8 = document.getElementById("def_mesh8");
+var def_mesh_9 = document.getElementById("def_mesh9");
+
+
 function lerp(s, e, x){
 	return s * ( 1 - x ) + e * x; 
 }
@@ -688,5 +704,73 @@ function loadTexture(node){
 		}, false);
 
 		input.click();
+	}
+}
+
+
+function chargeMesh(node, url){
+	node.mesh = GL.Mesh.fromURL(url, node.onMeshLoaded());
+	mesh_modal.modal('hide');
+}
+
+function loadMesh(node){
+	
+	mesh_modal.modal('show');
+
+	//Pango
+	def_mesh_1.onclick = function(){
+		chargeMesh(node, 'default_meshes/pango.obj');
+	}
+
+	//Cylinder
+	def_mesh_2.onclick = function(){
+		node.mesh = GL.Mesh.cylinder({radius:0.5});
+		node.onMeshLoaded();
+		mesh_modal.modal('hide');
+	}
+	
+	//Torus
+	def_mesh_3.onclick = function(){
+		node.mesh = GL.Mesh.torus({innerradius:0.25,outerradius:1,innerslices:8});
+		node.onMeshLoaded();
+		mesh_modal.modal('hide');
+	}
+	
+	//Dodo
+	def_mesh_4.onclick = function(){
+		chargeMesh(node, 'default_meshes/dodo.obj');
+	}
+
+	//Cube
+	def_mesh_5.onclick = function(){
+		node.mesh = GL.Mesh.cube();
+		node.onMeshLoaded();
+		mesh_modal.modal('hide');
+	}
+
+	//Cone
+	def_mesh_6.onclick = function(){
+		node.mesh = GL.Mesh.cone({radius:0.5,height:1});
+		node.onMeshLoaded();
+		mesh_modal.modal('hide');
+	}
+
+	//PI
+	def_mesh_7.onclick = function(){
+		chargeMesh(node, 'default_meshes/pi.obj');
+	}
+
+	//Sphere
+	def_mesh_8.onclick = function(){
+		node.mesh = GL.Mesh.fromURL(url);
+		node.onMeshLoaded();
+		mesh_modal.modal('hide');
+	}
+
+	//Icosahedron
+	def_mesh_9.onclick = function(){
+		node.mesh = GL.Mesh.icosahedron({size:1,subdivisions:1});
+		node.onMeshLoaded();
+		mesh_modal.modal('hide');
 	}
 }

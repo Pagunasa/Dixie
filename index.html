@@ -92,30 +92,111 @@
 	          <span aria-hidden="true">&times;</span>
 	        </button>
 	      </div>
-	      <div class="modal-body quaternary-bg-color">
-	   		<ul class="list-group list-group-flush">
-			  <li id="def_texture1" class="demoButton list-group-item quaternary-bg-color">
-			  	<img src="default_textures/particles/smoke.png" class="img-max rounded mx-auto d-block" alt="Texture 1">
-			  	<p class="mb-0 text-center"> Smoke 1 </p>
-			  </li>
-			  <li id="def_texture2" class="demoButton list-group-item quaternary-bg-color">
-			  	<img src="default_textures/particles/smoke2.png" class="img-max rounded mx-auto d-block" alt="Texture 2">
-			  	<p class="mb-0 text-center"> Smoke 2 </p>
-			  </li>
-			  <li id="def_texture3" class="demoButton list-group-item quaternary-bg-color">
-			  	<img src="default_textures/particles/fire.png" class="img-max rounded mx-auto d-block" alt="Texture 3">
-			  	<p class="mb-0 text-center"> Fire </p>
-			  </li>
-			  <li id="def_texture4" class="demoButton list-group-item quaternary-bg-color">
-				<img src="default_textures/particles/light.png" class="img-max rounded mx-auto d-block" alt="Texture 4">
-				<p class="mb-0 text-center"> Light </p>
-			  </li>
-			  <li class="list-group-item quaternary-bg-color text-center"><button id="texture_local" class="button-secondary"><i class="fas fa-upload icon-margin"></i>Upload a custom texture</button></li>
-			</ul>
+	      <div class="container modal-body quaternary-bg-color">
+	      	  	<div class="row">
+  					<div class="col-sm pr-0">
+  						<ul class="list-group list-group-flush">
+						  <li id="def_texture1" class="demoButton list-group-item quaternary-bg-color">
+						  	<img src="default_textures/particles/smoke.png" class="img-max rounded mx-auto d-block" alt="Texture 1">
+						  	<p class="mb-0 text-center"> Smoke 1 </p>
+						  </li>
+						  <li id="def_texture2" class="demoButton list-group-item quaternary-bg-color">
+						  	<img src="default_textures/particles/smoke2.png" class="img-max rounded mx-auto d-block" alt="Texture 2">
+						  	<p class="mb-0 text-center"> Smoke 2 </p>
+						  </li>
+						</ul>
+  					</div>
+
+  					<div class="col-sm pl-0">
+  						<ul class="list-group list-group-flush">
+						  <li id="def_texture3" class="demoButton list-group-item quaternary-bg-color">
+						  	<img src="default_textures/particles/fire.png" class="img-max rounded mx-auto d-block" alt="Texture 3">
+						  	<p class="mb-0 text-center"> Fire </p>
+						  </li>
+						  <li id="def_texture4" class="demoButton list-group-item quaternary-bg-color">
+							<img src="default_textures/particles/light.png" class="img-max rounded mx-auto d-block" alt="Texture 4">
+							<p class="mb-0 text-center"> Light </p>
+						  </li>
+						</ul>
+  					</div>
+  				</div>
+
+  				<div class = "text-center mt-2">
+	   			  <button id="texture_local" class="button-secondary">
+	   			  	<i class="fas fa-upload icon-margin"></i>Upload a custom texture
+	   			  </button>
+	   			</div>
 	      </div>
 	    </div>
 	  </div>
 	</div>
+
+
+	<!-------------------------->
+	<!-- Select Mesh modal -->
+	<!-------------------------->
+	<div class="modal fade" id="meshesModal" tabindex="-1" role="dialog" aria-labelledby="demoModalLabel" aria-hidden="true">
+	  <div class="modal-dialog" role="document">
+	    <div class="modal-content">
+	      <div class="modal-header primary-bg-color">
+	        <h5 class="modal-title ternary-color" id="demoModalLabel">Select Mesh</h5>
+	        <button type="button" class="close button-secondary" data-dismiss="modal" aria-label="Close">
+	          <span aria-hidden="true">&times;</span>
+	        </button>
+	    	</div>
+	    	<div class="container modal-body quaternary-bg-color">
+  				<div class="row">
+  					<div class="col-sm pr-0">
+				      	<ul class="list-group list-group-flush">
+						  <li id="def_mesh1" class="demoButton list-group-item quaternary-bg-color">
+						  	<p class="mb-0 text-center"> Pangolin </p>
+						  </li>
+						  <li id="def_mesh2" class="demoButton list-group-item quaternary-bg-color">
+						  	<p class="mb-0 text-center"> Cylinder </p>
+						  </li>
+						  <li id="def_mesh3" class="demoButton list-group-item quaternary-bg-color">
+							<p class="mb-0 text-center"> Torus </p>
+						  </li>
+						</ul>
+				    </div>
+				    <div class="col-sm pr-0 pl-0">
+				    	<ul class="list-group list-group-flush">
+				      	  <li id="def_mesh4" class="demoButton list-group-item quaternary-bg-color">
+						  	<p class="mb-0 text-center"> Dodo </p>
+						  </li>
+						  <li id="def_mesh5" class="demoButton list-group-item quaternary-bg-color">
+							<p class="mb-0 text-center"> Cube </p>
+						  </li>
+						  <li id="def_mesh6" class="demoButton list-group-item quaternary-bg-color">
+							<p class="mb-0 text-center"> Cone </p>
+						  </li>
+				    	</ul>
+				    </div>
+				    <div class="col-sm pl-0">
+				    	<ul class="list-group list-group-flush">
+				      	  <li id="def_mesh7" class="demoButton list-group-item quaternary-bg-color">
+						  	<p class="mb-0 text-center"> Pi </p>
+						  </li>
+						  <li id="def_mesh8" class="demoButton list-group-item quaternary-bg-color">
+							<p class="mb-0 text-center"> Sphere </p>
+						  </li>
+						  <li id="def_mesh9" class="demoButton list-group-item quaternary-bg-color">
+							<p class="mb-0 text-center"> Icosahedron </p>
+						  </li>
+				     	</ul>
+				    </div>
+  				</div>
+
+  				<div class = "text-center mt-2">
+					<button id="mesh_local" class="button-secondary">
+						<i class="fas fa-upload icon-margin"></i>Upload a custom Mesh
+					</button>
+				</div>
+	      </div>
+	    </div>
+	  </div>
+	</div>
+
 
 	<!------------------->
 	<!-- Options modal -->
