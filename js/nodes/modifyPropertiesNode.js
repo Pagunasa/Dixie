@@ -8,8 +8,6 @@ function modifyPropertyNode()
 	/***********Node properties************/
 	/**************************************/
 	this.properties = {
-		condition: undefined,
-		change_equation: undefined,
 		changed_property: "Speed",
 		application_mode: "Equalization",
 		modification_mode: "Along life time",
@@ -164,7 +162,7 @@ modifyPropertyNode.prototype.onPropertyChanged = function()
 modifyPropertyNode.prototype.computeChangeEquation = function(lifetime)
 {
 	var value = 0;
-	var equation = this.properties.change_equation;
+	var equation = this.change_equation;
 	var length = equation.length;
 
 	for (var i = 0; i < length; ++i)
@@ -182,9 +180,9 @@ modifyPropertyNode.prototype.onExecute = function()
 	var properties = this.properties;
 
 	//When is executed the inputs are gotten and if they are undefined a default value is setted
-	properties.condition       = this.getInputData(1) || undefined;
-	properties.change_equation = this.getInputData(2) || undefined;
-	var new_value              = this.getInputData(3);
+	var condition        = this.getInputData(1) || undefined;
+	this.change_equation = this.getInputData(2) || undefined;
+	var new_value        = this.getInputData(3);
 
 	if (system != undefined)
 	{
@@ -202,12 +200,12 @@ modifyPropertyNode.prototype.onExecute = function()
 		var index;
 
 		//Look if there was an non undefined contition list
-		if (properties.condition == undefined)
+		if (condition == undefined)
 			particles_condition_list = particles;
 		else
 		{
 			using_condition = true;
-			particles_condition_list = properties.condition;
+			particles_condition_list = condition;
 		}
 
 		for (var i = 0; i < particles_condition_list.length; i++)
@@ -234,12 +232,12 @@ modifyPropertyNode.prototype.onExecute = function()
 			else if (properties.modification_mode == "User defined")
 			{
 				e = properties.user_defined_seconds;
-				if(x > e) continue; //That means that the condition is already meeted
+				//if(x > e) continue; //That means that the condition is already meeted
 			}
 
 			var modifier = Math.clamp(x / e, 0.0, 1.0); //The clamp is mandatory for avoid computacion errors
 
-			if(properties.change_equation)
+			if(this.change_equation)
 				modifier = this.computeChangeEquation(modifier);
 
 			var final_value = properties.new_value;

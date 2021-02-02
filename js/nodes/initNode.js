@@ -99,6 +99,9 @@ initParticlesNode.prototype.generateParticleInfo = function (properties, system,
 
 initParticlesNode.prototype.getCoords = function()
 {
+	if(this.texture == undefined)
+		return default_coords;
+
 	var sizeX = this.texture.ntx;
 	var sizeY = this.texture.nty; 
 
@@ -123,7 +126,8 @@ initParticlesNode.prototype.generateRandomPoint = function(system, system_info)
 	var position      = system.position;
 	var origin_mesh   = system.origin_mesh;
 
-	if (mode == "Point" || mode == "2D Geometry" || origin_mesh.vertices == undefined)
+	if (mode == "Point" || mode == "2D Geometry" || origin_mesh == undefined 
+		|| origin_mesh == undefined ? true : origin_mesh.vertices == undefined)
 	{
 		system_info.point_mode     = true;
 		system_info.external_model = undefined;		
