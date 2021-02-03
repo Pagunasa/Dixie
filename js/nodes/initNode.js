@@ -21,8 +21,10 @@ function initParticlesNode()
 	};
 
 	this.internal = {
-		init_time_pased: 0.0
+		init_time_pased: 0.0,
+		last_id: -1
 	}
+
 
 	/**************************************/
 	/***********Inputs & Outputs***********/
@@ -41,6 +43,11 @@ function initParticlesNode()
 	this.addInput("Texture"        , "texture");
 
 	this.addOutput("Particle system", "particle_system");
+}
+
+initParticlesNode.prototype.toogleTrail = function()
+{
+	this.internal.is_trail = !this.internal.is_trail;
 }
 
 //For recover (in a visual way) the value when a graph is loaded
@@ -199,7 +206,14 @@ initParticlesNode.prototype.onExecute = function()
 	if (system != undefined)
 	{
 		var particles_spawned = 0;
-		var system_info = searchSystem(system.id);
+
+		if(this.internal.last_id != system.id)
+		{
+			this.system_info = searchSystem(system.id);
+			this.internal.last_id = system.id;
+		}
+
+		var system_info = this.system_info;
 
 		if(texture == undefined)
 			system_info.texture = undefined;
@@ -212,7 +226,6 @@ initParticlesNode.prototype.onExecute = function()
 		var particles          = system_info.particles_list;
 		var particles_ids      = system_info.particles_ids;
 		var particles_to_reset = system_info.particles_to_reset;
-		var mesh = searchMesh(system.id);
 		
 		this.internal.init_time_pased += time_interval;
 		//The inverse of the spawn rate is how many ms we have to wait until spawn the next particle

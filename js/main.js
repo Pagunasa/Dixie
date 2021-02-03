@@ -393,7 +393,7 @@ gl.ondraw = function() {
 
 	//Render the particles
 	for(x in system_list){
-		var mesh = searchMesh(system_list[x].mesh_id);
+		var mesh = system_list[x].particles_mesh;
 		
 		if(system_list[x].point_mode)
 		{
@@ -503,7 +503,7 @@ gl.onupdate = function( dt ) {
 		});
 
 		//function that reorder the buffers
-		orderBuffers(particle_ids, particle_list, searchMesh(system.mesh_id));
+		orderBuffers(particle_ids, particle_list, system.particles_mesh);
 	}
 
 	if(graph.status == LGraph.STATUS_RUNNING)

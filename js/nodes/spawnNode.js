@@ -114,8 +114,8 @@ mySpawnNode.prototype.onAdded = function()
 {
 	//Every time that a spawn node is created a new mesh and information about the system have to be added to the list in order to work properly
 	var properties = this.properties;
-	createMesh(this.id, properties.max_particles);
-	this.system = new SystemInfo(this.id, properties.position);
+	//createMesh(this.id, properties.max_particles);
+	this.system = new SystemInfo(this.id, properties.position, properties.max_particles);
 	system_list.push(this.system);
 };
 
@@ -128,7 +128,7 @@ mySpawnNode.prototype.onExecute = function()
 	var position       = properties.position;
 	var mode           = properties.mode;
 	var system         = this.system;
-	var last_status     = this.last_status;
+	var last_status    = this.last_status;
 	var origin_mesh;
 	var origin_2d_geometry;
 
@@ -165,7 +165,7 @@ mySpawnNode.prototype.onExecute = function()
 		}
 			
 		last_status.max_particles = max_particles;	
-		resizeBufferArray(searchMesh(this.id), max_particles);
+		resizeBufferArray(system.particles_mesh, max_particles);
 	}
 
 	//The properties of the node are the output plus some extras
@@ -186,7 +186,7 @@ mySpawnNode.prototype.onExecute = function()
 
 mySpawnNode.prototype.onRemoved = function(){
 	//When the node is deleted is necesary to search in the list and delete is asigned mesh and information
-	searchMesh(this.id, true);
+	//searchMesh(this.id, true);
     searchSystem(this.id, true);
 }
 

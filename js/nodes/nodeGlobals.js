@@ -22,7 +22,7 @@ var default_particle_color = [1,1,1,1];
 /********************************/
 /*************Lists**************/
 /********************************/
-var meshes_list  = [];
+//var meshes_list  = [];
 var forces_list  = [];
 var system_list  = [];
 var objects_list = [];
@@ -206,17 +206,25 @@ function searchSystem(id, remove = false)
 *	@class SystemInfo
 */
 class SystemInfo {
-	constructor(id_, position_) {
+	constructor(id_, position_, max_particles_) {
 		this.id                 = id_;
 		this.mesh_id            = id_;
+		
 		this.particles_ids      = [];
+		
 		this.particles_list     = [];
+		this.particles_mesh     = createMesh(max_particles_);
+
+		this.particles_trail    = [];
+		this.trail_mesh         = undefined;
+
 		this.particles_to_reset = [];
 		this.position           = position_;
 		this.model              = mat4.create();
 		this.point_mode         = true;
 		this.external_model     = undefined;
 		this.color              = [1,1,1,1];
+		this.visible            = true;
 		this.visibility         = 1;
 		this.texture            = undefined;
 		this.coords             = default_coords;
@@ -282,7 +290,7 @@ Particle.prototype.fill = function(properties) {
 *	@params {Number} the id of the mesh
 *	@params {Number} the maximum number of particles
 */
-function createMesh(id, particles){
+function createMesh(particles){
 	var vertices = new Float32Array(particles * 6 * 3); //Save information about the center of the particle
 	var coords   = new Float32Array(particles * 6 * 2); //The "possible changed" coordinates of the particle
 	var icoord   = new Float32Array(particles * 6 * 2); //The original coordinates of the particle
@@ -310,7 +318,9 @@ function createMesh(id, particles){
 		              size     : sizes
 		            }, null, gl.STREAM_DRAW);
 
-	meshes_list.push({id: id, mesh: mesh})
+
+	return mesh;
+	//meshes_list.push({id: id, mesh: mesh})
 }
 
 function orderBuffers(new_order, particles, mesh) {
