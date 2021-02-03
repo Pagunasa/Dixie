@@ -15,6 +15,10 @@ function modifyPropertyNode()
 		new_value: vector_3	
 	};
 
+	this.internal = {
+		last_id: -1
+	}
+
 	this.propValues = ["Speed", "Size", "Color", "Life time"];
 	this.applValues = ["Equalization", "Addition", "Subtraction"];
 	this.modiValues = ["Along life time", "User defined"];
@@ -189,10 +193,16 @@ modifyPropertyNode.prototype.onExecute = function()
 		if(new_value != undefined)
 			properties.new_value = new_value;
 
-		var system_info   = searchSystem(system.id);
+		if(this.internal.last_id != system.id)
+		{
+			this.system_info = searchSystem(system.id);
+			this.internal.last_id = system.id;
+		}
+
+		var system_info = this.system_info;
+
 		var particles     = system_info.particles_list;
 		var particles_ids = system_info.particles_ids;
-		var mesh          = searchMesh(system.id);
 
 		var particles_condition_list;
 		var particle_id;
