@@ -32,6 +32,7 @@ var objects_list = [];
 /********************************/
 var default_centers    = [0,0,0, 0,0,0, 0,0,0, 0,0,0, 0,0,0, 0,0,0];
 var default_coords     = [1,1, 0,1, 1,0, 0,0, 1,0, 0,1];
+var square_vertices    = [0.5,-0.5, -0.5,-0.5, 0.5,0.5, -0.5,0.5, 0.5,0.5, -0.5,-0.5];//[0.5,0.5, -0.5,0.5, 0.5,0, -0.5,0., 0.5,0., -0.5,0.5];
 var default_color      = [1,1,1,1, 1,1,1,1, 1,1,1,1, 1,1,1,1, 1,1,1,1, 1,1,1,1];
 var default_sizes      = [0.25,0.25, 0.25,0.25, 0.25,0.25, 0.25,0.25, 0.25,0.25, 0.25,0.25];
 var default_visibility = [0, 0, 0, 0, 0, 0];
@@ -294,7 +295,7 @@ function createMesh(id, particles){
 		visible.set(default_visibility, i*6);
 		vertices.set(default_centers, i*6*3);
 		coords.set(default_coords, i*6*2);
-		icoord.set(default_coords, i*6*2);
+		icoord.set(square_vertices, i*6*2);
 		colors.set(default_color, i*6*4);
 		sizes.set(default_sizes, i*6*2);
 	}
