@@ -206,19 +206,22 @@ function searchSystem(id, remove = false)
 *	@class SystemInfo
 */
 class SystemInfo {
-	constructor(id_, position_, max_particles_) {
+	constructor(id_, position_, max_particles_, max_trail_particles_) {
 		this.id                 = id_;
 		this.mesh_id            = id_;
 		
-		this.particles_ids      = [];
-		
+		this.particles_ids      = [];		
 		this.particles_list     = [];
 		this.particles_mesh     = createMesh(max_particles_);
 
-		this.particles_trail    = [];
-		this.trail_mesh         = undefined;
+		this.trails             = false;
+		this.trails_ids         = [];
+		this.trails_list        = [];
+		this.trails_mesh        = createMesh(max_trail_particles_);
 
 		this.particles_to_reset = [];
+		this.trails_to_reset    = [];
+
 		this.position           = position_;
 		this.model              = mat4.create();
 		this.point_mode         = true;
@@ -320,7 +323,6 @@ function createMesh(particles){
 
 
 	return mesh;
-	//meshes_list.push({id: id, mesh: mesh})
 }
 
 function orderBuffers(new_order, particles, mesh) {
@@ -431,6 +433,12 @@ function resizeBufferArray(mesh, newSize) {
     			data_size = 6 * 2;
     			data = data_Size; 	
     			default_data = default_sizes;	
+    		}
+    		else if (x == "icoord") {
+    			size = coordsSize;   
+    			data_size = 6 * 2;
+    			data = data_iCoords; 	
+    			default_data = square_vertices;	
     		}
 
         	var nBuff = new Float32Array(size);

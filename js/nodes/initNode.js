@@ -287,6 +287,15 @@ initParticlesNode.prototype.onExecute = function()
 
 		//Default movement of the particles
 		var id;
+		var trails_list = system_info.trails_list;
+		var trails_ids  = system_info.trails_ids;
+		var trails_to_reset =  system_info.trails_to_reset;
+		var trails_prop = {
+				min_speed     : [0,0,0],
+				max_speed     : [0,0,0],
+				min_life_time : 1,
+				max_life_time : 1
+			};
 
 		for (var i = 0; i < particles_ids.length; i++)
 		{
@@ -304,6 +313,66 @@ initParticlesNode.prototype.onExecute = function()
 			{
 				for(var j = 0; j < 3; j++)
 					particle.position[j] += particle.speed[j] * time_interval;
+
+				if(system.trails)
+				{
+					if (system.max_trails > trails_list.length)
+					{
+						trails_prop.min_size = particle.size;
+						trails_prop.max_size = particle.size;
+						trails_prop.color    = particle.color;
+						trails_prop.coords   = particle.coords;
+
+						particle_info = this.generateParticleInfo(trails_prop, system, system_info);
+						particle_info.position = particle.position;
+
+						particle = new Particle();
+						particle.fill(particle_info);
+						trails_ids.push({id : trails_list.length, distance_to_camera : 0.0});
+						trails_list.push(particle);
+					}
+					else if (trails_to_reset.length > 0)
+					{
+						var id = trails_to_reset[0];
+				
+						while(trails_to_reset[0] > trails_list.length - 1)
+						{
+							trails_to_reset.splice(0,1);
+							id = trails_to_reset[0];
+						}
+
+						if(id != undefined)
+		                {
+		     				
+							trails_prop.min_size = particle.size;
+							trails_prop.max_size = particle.size;
+							trails_prop.color    = particle.color;
+							trails_prop.coords   = particle.coords;
+
+							particle_info = this.generateParticleInfo(trails_prop, system, system_info);
+							particle_info.position = particle.position;
+
+		                	particle = trails_list[id];
+							particle.fill(particle_info);
+							trails_to_reset.splice(0,1);
+						}
+					}
+				}
+			}
+		}
+
+		//Modify lifetime of the trails
+		for (var i = 0; i < trails_ids.length; i++)
+		{
+			id = trails_ids[i].id;
+			particle = trails_list[id];
+
+			particle.c_lifetime += time_interval;
+
+			if(particle.c_lifetime >= particle.lifetime && particle.visibility == 1)
+			{
+				particle.visibility = 0;
+				trails_to_reset.push(id);
 			}
 		}
 

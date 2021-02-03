@@ -393,8 +393,9 @@ gl.ondraw = function() {
 
 	//Render the particles
 	for(x in system_list){
-		var mesh = system_list[x].particles_mesh;
-		
+		var mesh        = system_list[x].particles_mesh;
+		var trails_mesh = system_list[x].trails_mesh;
+
 		if(system_list[x].point_mode)
 		{
 			particles_uniforms.u_model = system_list[x].model;
@@ -410,12 +411,24 @@ gl.ondraw = function() {
 		//If a texture is defined then the textured shader is used
 		//but if te texture is undefined the flat will be used 
 		if(system_list[x].texture == undefined)
+		{
 			particleShaderFlat.uniforms( particles_uniforms ).draw( mesh );
+			
+			if(system_list[x].trail)
+				particleShaderFlat.uniforms( particles_uniforms ).draw( trails_mesh );
+		}
 		else
 		{
 			particles_uniforms.u_texture = system_list[x].texture;
 			particles_uniforms.u_texture.bind(0);
 			particleShaderTextured.uniforms( particles_uniforms ).draw( mesh );
+
+			if(system_list[x].trail)
+			{
+				particles_uniforms.u_texture = system_list[x].texture;
+				particles_uniforms.u_texture.bind(0);
+				particleShaderTextured.uniforms( particles_uniforms ).draw( trails_mesh );		
+			}
 		}
 
 		//If the user wants to see the origin of the particles
@@ -458,6 +471,33 @@ gl.ondraw = function() {
 	gl.disable(gl.BLEND);
 }
 
+
+function orderParticles(particle_ids, particle_list, camera, particles_mesh)
+{
+	var particle, distance;
+
+	for (var j = 0; j < particle_ids.length; ++j)
+	{
+		distance = [0,0,0];
+		particle = particle_list[particle_ids[j].id];
+
+		//Compute the distance from the particle position to the camera eye
+		for(var k = 0; k < 3; ++k)
+			distance[k] = particle.position[k] - camera.eye[k];
+
+		//particles_ids saves the id (index in particle list) and the distance to the eye
+		particle_ids[j].distance_to_camera = Math.sqrt((distance[0]*distance[0]+distance[1]*distance[1]+distance[2]*distance[2]));
+	}
+
+	//Ordening (descendent)
+	particle_ids.sort(function(a,b){
+		return b.distance_to_camera - a.distance_to_camera;
+	});
+
+	//function that reorder the buffers
+	orderBuffers(particle_ids, particle_list, particles_mesh);
+}
+
 gl.onupdate = function( dt ) {
 	time_interval = dt;
 
@@ -465,8 +505,8 @@ gl.onupdate = function( dt ) {
 	var system;
 	var particle_list;
 	var particle_ids;
-	var particle;
-	var distance;
+	var trails_list;
+	var trails_ids;
 
 	//The model of the forces and systems is updated
 	for (var i = 0; i < forces_list.length; ++i)
@@ -480,30 +520,16 @@ gl.onupdate = function( dt ) {
 		system        = system_list[i];
 		particle_list = system.particles_list;
 		particle_ids  = system.particles_ids;
+		trails_list   = system.trails_list;
+		trails_ids    = system.trails_ids;
 
 		mat4.setTranslation(system.model, system.position);
 
 		//Update particles distance_to_camera
-		for (var j = 0; j < particle_ids.length; ++j)
-		{
-			distance = [0,0,0];
-			particle = particle_list[particle_ids[j].id];
-
-			//Compute the distance from the particle position to the camera eye
-			for(var k = 0; k < 3; ++k)
-				distance[k] = particle.position[k] - camera.eye[k];
-
-			//particles_ids saves the id (index in particle list) and the distance to the eye
-			particle_ids[j].distance_to_camera = Math.sqrt((distance[0]*distance[0]+distance[1]*distance[1]+distance[2]*distance[2]));
-		}
-
-		//Ordening (descendent)
-		particle_ids.sort(function(a,b){
-			return b.distance_to_camera - a.distance_to_camera;
-		});
-
-		//function that reorder the buffers
-		orderBuffers(particle_ids, particle_list, system.particles_mesh);
+		orderParticles(particle_ids, particle_list, camera, system.particles_mesh);
+		//Update trails distance_to_camera
+		if(system.trail)
+			orderParticles(trails_ids, trails_list, camera, system.trails_mesh);
 	}
 
 	if(graph.status == LGraph.STATUS_RUNNING)

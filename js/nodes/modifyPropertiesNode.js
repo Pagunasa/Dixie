@@ -92,7 +92,7 @@ modifyPropertyNode.prototype.changeProperty = function(v)
 	if(v == "Speed")
 	{
 		this.addInput("New speed", "vec3");
-		properties.new_value = vector_3;
+		properties.new_value = [0,0,0];
 	}
 	else if (v == "Size")
 	{
