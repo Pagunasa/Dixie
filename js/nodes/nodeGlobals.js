@@ -230,6 +230,7 @@ class SystemInfo {
 		this.visible            = true;
 		this.visibility         = 1;
 		this.texture            = undefined;
+		this.trails_texture     = undefined;
 		this.coords             = default_coords;
 	}
 }

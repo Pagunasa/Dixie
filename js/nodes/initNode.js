@@ -1,35 +1,24 @@
-/*
-*	This node is for define how the particle system spawns the particles
-*	@method mySpawnNode
-*/
-function initParticlesNode() 
+function particleDataNode()
 {
-	/**************************************/
-	/***********Node properties************/
-	/**************************************/
 	this.properties = {
-		max_speed: vector_3,
-		min_speed: vector_3,
+		max_speed: [1,1,1],
+		min_speed: [-1,-1,-1],
 
 		max_size: 0.25,
-		min_size: 0.25,
+		min_size: 0.10,
 
 		max_life_time: 10,
-		min_life_time: 10,
+		min_life_time: 5,
 		
-		color: default_particle_color
+		color: [1,1,1,1]
 	};
 
-	this.internal = {
-		init_time_pased: 0.0,
-		last_id: -1
-	}
-
+	//Is outside properties because it can't be edited directly by te user in the properties window...
+	this.texture = undefined;
 
 	/**************************************/
 	/***********Inputs & Outputs***********/
-	/**************************************/
-	this.addInput("Spawner"        , "spawner");
+	/**************************************/	
 	this.addInput("Max speed"      , "vec3");
 	this.addInput("Min speed"      , "vec3");
 	
@@ -42,7 +31,140 @@ function initParticlesNode()
 	this.addInput("Color"          , "color");
 	this.addInput("Texture"        , "texture");
 
+	this.addOutput("Particle data", "p_data");
+}
+
+//For recover (in a visual way) the value when a graph is loaded
+particleDataNode.prototype.onPropertyChanged = function(property)
+{
+	var properties = this.properties;
+
+	switch (property) {
+		case "max_speed":
+			if(properties.max_speed.length != 3)
+				properties.max_speed = [0,0,0];
+		break;
+
+		case "min_speed":
+			if(properties.min_speed.length != 3)
+				properties.min_speed = [0,0,0];
+		break;
+
+		case "max_size":
+			var max_size = properties.max_size;
+			max_size = isNaN(max_size) ? 0 : max_size;
+			properties.max_size = Math.max(max_size, 0.0);
+		break;
+
+		case "min_size":
+			var min_size = properties.min_size;
+			min_size = isNaN(min_size) ? 0 : min_size;
+			properties.min_size = Math.max(min_size, 0.0);
+		break;
+
+		case "max_life_time":
+			var max_life_time = properties.max_life_time;
+			max_life_time = isNaN(max_life_time) ? 0 : max_life_time;
+			properties.max_life_time = Math.max(max_life_time, 0.0);
+		break;
+
+		case "min_life_time":
+			var min_life_time = properties.min_life_time;
+			min_life_time = isNaN(min_life_time) ? 0 : min_life_time;
+			properties.min_life_time = Math.max(min_life_time, 0.0);
+		break;
+
+		case "color":
+			if(properties.color.length != 4)
+				properties.color = [1,1,1,1];
+			else
+				for (var i = 0; i < 4; ++i)
+					properties.color[i] = Math.min(Math.max(properties.color[i], 0.0), 1.0);
+		break;
+	}
+}
+
+particleDataNode.prototype.onExecute = function()
+{
+	var input_max_speed = this.getInputData(0);
+	var input_min_speed = this.getInputData(1);
+
+	var input_max_life_time = this.getInputData(2);
+	var input_min_life_time = this.getInputData(3);
+
+	var input_max_size  = this.getInputData(4);
+	var input_min_size  = this.getInputData(5);
+
+	var input_color     = this.getInputData(6);
+	var input_texture   = this.getInputData(7);
+
+	//Get the properties and the texture
+	var properties = this.properties;
+	var texture  = this.texture;
+
+	//When is executed the inputs are gotten and if they are undefined a default value is setted
+	properties.max_speed = input_max_speed || properties.max_speed;
+	properties.min_speed = input_min_speed || properties.min_speed;
+
+	properties.max_life_time = input_max_life_time || properties.max_life_time;
+	properties.min_life_time = input_min_life_time || properties.min_life_time;
+	
+	properties.max_size = input_max_size || properties.max_size;
+	properties.min_size = input_min_size || properties.min_size;
+
+	properties.color = input_color || properties.color;
+	this.texture = input_texture || undefined;
+
+	this.setOutputData(0, {data: properties, texture: texture});
+}
+
+particleDataNode.title = "Particle Data";
+particleDataNode.title_color = spawnNodeColor;
+particleDataNode.title_text_color = basicTitleColor;
+particleDataNode.title_selected_color = basicSelectedTitleColor;
+
+/*
+*	This node is for define how the particle system spawns the particles
+*	@method mySpawnNode
+*/
+function initParticlesNode() 
+{
+	/**************************************/
+	/***********Node properties************/
+	/**************************************/
+	this.properties = {
+		trail_u_size    : true,
+		trail_u_color   : true,
+		trail_u_texture : true
+	}
+
+	this.internal = {
+		init_time_pased: 0.0,
+		last_id: -1
+	}
+
+	/**************************************/
+	/***********Inputs & Outputs***********/
+	/**************************************/
+	this.addInput("Spawner"        , "spawner");
+	this.addInput("Particle data"  , "p_data");
+
 	this.addOutput("Particle system", "particle_system");
+}
+
+initParticlesNode.prototype.toogleTrailSize = function()
+{
+	this.properties.trail_u_size = !this.properties.trail_u_size;
+}
+
+initParticlesNode.prototype.toogleTrailColor = function()
+{
+	this.properties.trail_u_color = !this.properties.trail_u_color;
+}
+
+initParticlesNode.prototype.toogleTrailTexture = function()
+{
+	this.properties.trail_u_texture = !this.properties.trail_u_texture;
 }
 
 initParticlesNode.prototype.toogleTrail = function()
@@ -50,39 +172,7 @@ initParticlesNode.prototype.toogleTrail = function()
 	this.internal.is_trail = !this.internal.is_trail;
 }
 
-//For recover (in a visual way) the value when a graph is loaded
-initParticlesNode.prototype.onPropertyChanged = function()
-{
-	var max_size = this.properties.max_size;
-	max_size = isNaN(max_size) ? 0 : max_size;
-	this.properties.max_size = Math.max(max_size, 0.0);
-
-	var min_size = this.properties.min_size;
-	min_size = isNaN(min_size) ? 0 : min_size;
-	this.properties.min_size = Math.max(min_size, 0.0);
-
-	var max_life_time = this.properties.max_life_time;
-	max_life_time = isNaN(max_life_time) ? 0 : max_life_time;
-	this.properties.max_life_time = Math.max(max_life_time, 0.0);
-
-	var min_life_time = this.properties.min_life_time;
-	min_life_time = isNaN(min_life_time) ? 0 : min_life_time;
-	this.properties.min_life_time = Math.max(min_life_time, 0.0);
-
-	if(this.properties.max_speed.length != 3)
-		this.properties.max_speed = [0,0,0];
-
-	if(this.properties.min_speed.length != 3)
-		this.properties.min_speed = [0,0,0];
-
-	if(this.properties.color.length != 4)
-		this.properties.color = [1,1,1,1];
-
-	for (var i = 0; i < 4; ++i)
-		this.properties.color[i] = Math.min(Math.max(this.properties.color[i], 0.0), 1.0);
-}
-
-initParticlesNode.prototype.generateParticleInfo = function (properties, system, system_info)
+initParticlesNode.prototype.generateParticleInfo = function (properties, system)
 {
 
 	var max_life_time = Math.max(properties.min_life_time, properties.max_life_time);
@@ -96,7 +186,7 @@ initParticlesNode.prototype.generateParticleInfo = function (properties, system,
 				max_speed     : properties.max_speed,
 				min_life_time : min_life_time,
 				max_life_time : max_life_time,
-				position      : this.generateRandomPoint(system, system_info),
+				position      : properties.position || this.generateRandomPoint(system),
 				color         : properties.color,
 				min_size      : min_size,
 				max_size      : max_size,
@@ -127,11 +217,12 @@ initParticlesNode.prototype.getCoords = function()
 	new_coord[0],new_coord[1], new_coord[2],new_coord[1], new_coord[0],new_coord[3]];
 }
 
-initParticlesNode.prototype.generateRandomPoint = function(system, system_info)
+initParticlesNode.prototype.generateRandomPoint = function(system)
 {
-	var mode          = system.mode;
-	var position      = system.position;
-	var origin_mesh   = system.origin_mesh;
+	var mode        = system.mode;
+	var position    = system.position;
+	var origin_mesh = system.origin_mesh;
+	var system_info = this.system_info;
 
 	if (mode == "Point" || mode == "2D Geometry" || origin_mesh == undefined 
 		|| origin_mesh == undefined ? true : origin_mesh.vertices == undefined)
@@ -169,55 +260,98 @@ initParticlesNode.prototype.generateRandomPoint = function(system, system_info)
 	return random_point;
 }
 
+initParticlesNode.prototype.addParticle = function(particle_data, ids, particles, particles_to_reset, max_particles, system, is_trail = false)
+{
+	var particle_info;
+
+	if( max_particles > particles.length )
+	{
+		if(!is_trail)
+			this.internal.init_time_pased = 0.0;
+		
+		particle_info = this.generateParticleInfo(particle_data, system);
+
+		particle = new Particle();
+		particle.fill(particle_info);
+		ids.push({id : particles.length, distance_to_camera : 0.0});
+		particles.push(particle);
+	}
+	else if (particles_to_reset.length > 0)
+	{
+		if(!is_trail)
+			this.internal.init_time_pased = 0.0;
+		
+		var id = particles_to_reset[0];
+		
+		while(particles_to_reset[0] > particles.length - 1)
+		{
+			particles_to_reset.splice(0,1);
+			id = particles_to_reset[0];
+		}
+
+		if(id != undefined)
+        {
+			particle_info = this.generateParticleInfo(particle_data, system);
+
+        	particle = particles[id];
+			particle.fill(particle_info);
+			particles_to_reset.splice(0,1);
+		}
+	}
+}
+
 initParticlesNode.prototype.onExecute = function() 
 {
 	var system = this.getInputData(0);
-
-	var input_max_speed = this.getInputData(1);
-	var input_min_speed = this.getInputData(2);
-
-	var input_max_life_time = this.getInputData(3);
-	var input_min_life_time = this.getInputData(4);
-
-	var input_max_size  = this.getInputData(5);
-	var input_min_size  = this.getInputData(6);
-
-	var input_color     = this.getInputData(7);
-	var input_texture   = this.getInputData(8);
-
-	//Get the properties
-	var properties = this.properties;
-
-	var texture  = this.texture;
-
-	//When is executed the inputs are gotten and if they are undefined a default value is setted
-	properties.max_speed = input_max_speed || properties.max_speed;
-	properties.min_speed = input_min_speed || properties.min_speed;
-
-	properties.max_life_time = input_max_life_time || properties.max_life_time;
-	properties.min_life_time = input_min_life_time || properties.min_life_time;
-	
-	properties.max_size = input_max_size || properties.max_size;
-	properties.min_size = input_min_size || properties.min_size;
-
-	properties.color   = input_color || properties.color;
-	this.texture = input_texture || undefined;
 
 	if (system != undefined)
 	{
 		var particles_spawned = 0;
 
+		//Retieve the particle and trail data
+		var p_prop  = this.getInputData(1) || {
+			data : { max_speed: [1,1,1],min_speed: [-1,-1,-1],  max_size: 0.25,min_size: 0.10, max_life_time: 10,min_life_time: 5, color: [1,1,1,1] },
+			texture : undefined
+		};
+
+ 		//If there was not default info, then the trail will allways 
+ 		//spawn at the particle position with no speed and with this particle data
+		var t_prop = this.getInputData(2);  
+
+		//Only is necessary to search the system when the id changes
 		if(this.internal.last_id != system.id)
 		{
 			this.system_info = searchSystem(system.id);
 			this.internal.last_id = system.id;
 		}
 
+		//If trails is enabled, then the input is displayed
+		if(system.trails && this.inputs.length != 3)
+		{
+			this.addInput("Particle data (trails)" , "p_data");
+			this.addOutput("Trail system", "particle_system");
+
+			this.trail_u_size    = this.addWidget("toggle", "Trail use particle size"   , true, this.toogleTrailSize.bind(this));
+			this.trail_u_color   = this.addWidget("toggle", "Trail use particle color"  , true, this.toogleTrailColor.bind(this));
+			this.trail_u_texture = this.addWidget("toggle", "Trail use particle texture", true, this.toogleTrailTexture.bind(this));
+		}
+		else if (!system.trails && this.inputs.length == 3)
+		{
+			this.disconnectOutput(1);
+			this.outputs.splice(1,1); 
+
+			this.disconnectInput(2);
+			this.inputs.splice(2,1); 
+			this.size[1] = 46;
+
+			this.widgets = [];
+		}
+
 		var system_info = this.system_info;
 
-		if(texture == undefined)
+		if(p_prop.texture == undefined)
 			system_info.texture = undefined;
-		else if (texture.prop.file != "")
+		else if (p_prop.texture.prop.file != "")
 			system_info.texture = texture.prop.file;
 		else
 			system_info.texture = undefined;
@@ -232,45 +366,9 @@ initParticlesNode.prototype.onExecute = function()
 		this.internal.spawn_period = 1.0 / system.spawn_rate; 
 
 		//Spawn in normal mode
-		if (this.internal.init_time_pased >= this.internal.spawn_period) {
-
-			var particle_info;
-
-			if( system.max_particles > particles.length )
-			{
-				this.internal.init_time_pased = 0.0;
-				
-				particle_info = this.generateParticleInfo(properties, system, system_info);
-
-				particle = new Particle();
-				particle.fill(particle_info);
-				particles_ids.push({id : particles.length, distance_to_camera : 0.0});
-				particles.push(particle);
-			}
-			else if (particles_to_reset.length > 0)
-			{
-				this.internal.init_time_pased = 0.0;
-				var id = particles_to_reset[0];
-				
-				while(particles_to_reset[0] > particles.length - 1)
-				{
-					particles_to_reset.splice(0,1);
-					id = particles_to_reset[0];
-				}
-
-				if(id != undefined)
-                {
-     				
-					particle_info = this.generateParticleInfo(properties, system, system_info);
-
-                	particle = particles[id];
-					particle.fill(particle_info);
-					particles_to_reset.splice(0,1);
-				}
-			}
-
-		}
-
+		if (this.internal.init_time_pased >= this.internal.spawn_period)
+			this.addParticle(p_prop.data, particles_ids, particles, particles_to_reset, system.max_particles, system)
+		
 		//Spawn in waves mode
 		/*if(system.max_particles > particles.length && this.internal.init_time_pased >= 1.0)
 		{
@@ -313,50 +411,16 @@ initParticlesNode.prototype.onExecute = function()
 			{
 				for(var j = 0; j < 3; j++)
 					particle.position[j] += particle.speed[j] * time_interval;
-
+				
 				if(system.trails)
 				{
-					if (system.max_trails > trails_list.length)
-					{
-						trails_prop.min_size = particle.size;
-						trails_prop.max_size = particle.size;
-						trails_prop.color    = particle.color;
-						trails_prop.coords   = particle.coords;
+					trails_prop.min_size = particle.size;
+					trails_prop.max_size = particle.size;
+					trails_prop.color    = particle.color;
+					trails_prop.coords   = particle.coords;
+					trails_prop.position = particle.position;
 
-						particle_info = this.generateParticleInfo(trails_prop, system, system_info);
-						particle_info.position = particle.position;
-
-						particle = new Particle();
-						particle.fill(particle_info);
-						trails_ids.push({id : trails_list.length, distance_to_camera : 0.0});
-						trails_list.push(particle);
-					}
-					else if (trails_to_reset.length > 0)
-					{
-						var id = trails_to_reset[0];
-				
-						while(trails_to_reset[0] > trails_list.length - 1)
-						{
-							trails_to_reset.splice(0,1);
-							id = trails_to_reset[0];
-						}
-
-						if(id != undefined)
-		                {
-		     				
-							trails_prop.min_size = particle.size;
-							trails_prop.max_size = particle.size;
-							trails_prop.color    = particle.color;
-							trails_prop.coords   = particle.coords;
-
-							particle_info = this.generateParticleInfo(trails_prop, system, system_info);
-							particle_info.position = particle.position;
-
-		                	particle = trails_list[id];
-							particle.fill(particle_info);
-							trails_to_reset.splice(0,1);
-						}
-					}
+					this.addParticle(trails_prop, trails_ids, trails_list, trails_to_reset, system.max_trails, system, true)
 				}
 			}
 		}
@@ -376,8 +440,14 @@ initParticlesNode.prototype.onExecute = function()
 			}
 		}
 
-		//The porperties of the node are the output
+		//The system definition is the output
 		this.setOutputData(0, system);
+
+		if(system.trails)
+		{
+			system.modify_trails = true;
+			this.setOutputData(1, system);	
+		}
 	}
 }
 

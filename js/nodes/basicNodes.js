@@ -223,8 +223,6 @@ function textureLoadNode() {
 	}
 	
 	this.data_loaded = false;
-	this.firstChange = true;
-	this.numChanges  = 0;
 	this.numberTextX = 0;
 	this.numberTextY = 0;
 
@@ -249,12 +247,13 @@ textureLoadNode.prototype.changeSubTexture = function(v){
 	this.properties.subtextures = v;
 
 	if (this.properties.subtextures) {
+		this.addWidget("toggle", "Animated texture", false, this.changeSubTexture.bind(this));
 		this.addWidget("number", "Sub textures size x", 0, this.changeSubTextureSizeX.bind(this), {min: 0, max: 10000000, step: 10});
 		this.addWidget("number", "Sub textures size y", 0, this.changeSubTextureSizeY.bind(this), {min: 0, max: 10000000, step: 10});
 		this.size[0] = 260;
 	} else {
-		this.widgets.splice(3,1);
-		this.widgets.splice(2,1);
+		//this.widgets.splice(3,1);
+		this.widgets.splice(2,3);
 		this.size[0] = 210;
 		this.size[1] = 80;
 		this.properties.subtextures_size = [0,0];
@@ -281,12 +280,14 @@ textureLoadNode.prototype.computeSubTextures = function(){
 } 
 
 textureLoadNode.prototype.changeSubTextureSizeX = function(v){
-	this.properties.subtextures_size[0] = v;
+	this.properties.subtextures_size[0] = Math.max(isNaN(v) ? 0 : v, 0);
+	this.widgets[3].value = this.properties.subtextures_size[0];
 	this.computeSubTextures();
 }
 
 textureLoadNode.prototype.changeSubTextureSizeY = function(v){
-	this.properties.subtextures_size[1] = v;
+	this.properties.subtextures_size[1] = Math.max(isNaN(v) ? 0 : v, 0);
+	this.widgets[4].value = this.properties.subtextures_size[1];
 	this.computeSubTextures();
 }
 
@@ -315,62 +316,78 @@ textureLoadNode.prototype.onDrawBackground = function(ctx){
 	ctx.drawImage(this.properties.file.data, (this.size[0]-60)*0.5, this.size[1] - 80, 60, 60);	
 };
 
-textureLoadNode.prototype.onPropertyChanged = function() {
+textureLoadNode.prototype.onPropertyChanged = function(property) {
 	var properties = this.properties;
 
-	if (properties.file == "" && this.firstChange && this.numChanges == 1){
-		this.size[1] = 82;
+	switch(property)
+	{
+		case "default_texture":
+			switch (properties.default_texture)
+			{
+				case "smoke":
+					chargeTexture(this, properties, 'default_textures/particles/smoke.png', 'smoke');
+				break;
+				
+				case "smoke2":
+					chargeTexture(this, properties, 'default_textures/particles/smoke2.png', 'smoke2');
+				break;
+				
+				case "fire":
+					chargeTexture(this, properties, 'default_textures/particles/fire.png', 'fire');
+				break;
+				
+				case "light":
+					chargeTexture(this, properties, 'default_textures/particles/light.png', 'light');
+				break;
 
-		switch (properties.default_texture)
-		{
-			case "smoke":
-				chargeTexture(this, properties, 'default_textures/particles/smoke.png', 'smoke');
-			break;
-			
-			case "smoke2":
-				chargeTexture(this, properties, 'default_textures/particles/smoke2.png', 'smoke2');
-			break;
-			
-			case "fire":
-				chargeTexture(this, properties, 'default_textures/particles/fire.png', 'fire');
-			break;
-			
-			case "light":
-				chargeTexture(this, properties, 'default_textures/particles/light.png', 'light');
-			break;
+				default:
+					createAlert('','','Please reload your texture.','warning',true,true,'pageMessages');
+				break;
+			}
+		break;
 
-			default:
-				createAlert('','','Please reload your texture.','warning',true,true,'pageMessages');
-				this.firstChange = false;	
-			break;
-		}
+		case "subtextures":
+			this.widgets[1].value = properties.subtextures;
+
+			this.widgets.splice(2,3);
+			this.size[0] = 210;
+			this.size[1] = 80;
+
+			if(!properties.subtextures)
+				break;
+
+			this.addWidget("toggle", "Animated texture", false, this.changeSubTexture.bind(this));
+			this.addWidget("number", "Sub textures size x", 0, this.changeSubTextureSizeX.bind(this), {min: 0, max: 10000000, step: 10});
+			this.addWidget("number", "Sub textures size y", 0, this.changeSubTextureSizeY.bind(this), {min: 0, max: 10000000, step: 10});
+
+			this.size[0] = 260;
+
+			if(this.data_loaded)
+			    this.size[1] += 112;
+
+			var subtextures_size = properties.subtextures_size;
+
+			this.properties.subtextures_size[0] = Math.max(0.0, subtextures_size[0]);
+			this.properties.subtextures_size[1] = Math.max(0.0, subtextures_size[1]);
+			this.widgets[3].value = subtextures_size[0];
+			this.widgets[4].value = subtextures_size[1];
+			this.computeSubTextures();
+		break;
+
+		case "subtextures_size":		
+			if(properties.subtextures_size.length != 2)
+				properties.subtextures_size = [0,0];
+			else
+			{
+				var subtextures_size = properties.subtextures_size;
+				this.properties.subtextures_size[0] = Math.max(0.0, subtextures_size[0]);
+				this.properties.subtextures_size[1] = Math.max(0.0, subtextures_size[1]);
+
+				this.widgets[3].value = subtextures_size[0];
+				this.widgets[4].value = subtextures_size[1];
+			}
+		break;
 	}
-
-	this.numChanges++;
-
-	if(properties.subtextures_size.length != 2)
-		properties.subtextures_size = [0,0];
-	
-	if (properties.subtextures) {
-		this.widgets.splice(3,1);
-		this.widgets.splice(2,1);
-
-		this.addWidget("number", "Sub textures size x", 0, this.changeSubTextureSizeX.bind(this), {min: 0, max: 10000000, step: 10});
-		this.addWidget("number", "Sub textures size y", 0, this.changeSubTextureSizeY.bind(this), {min: 0, max: 10000000, step: 10});
-		this.size[0] = 260;
-
-		if(this.data_loaded)
-		    this.size[1] += 112;
-
-		this.properties.subtextures_size[0] = Math.max(0.0, properties.subtextures_size[0]);
-		this.properties.subtextures_size[1] = Math.max(0.0, properties.subtextures_size[1]);
-		this.widgets[2].value = properties.subtextures_size[0];
-		this.widgets[3].value = properties.subtextures_size[1];
-		this.computeSubTextures();
-	}
-
-	this.widgets[1].value = properties.subtextures;
-	this.changeSubTexture(properties.subtextures);
 };
 
 textureLoadNode.prototype.onExecute = function() {

@@ -1,7 +1,3 @@
-function toogleOriginVisibility(){
-	this.system.visible = !this.system.visible;
-}
-
 /*
 *	This node is for define how the particle system spawns the particles
 *	@method mySpawnNode
@@ -12,16 +8,15 @@ function mySpawnNode()
 	/***********Node properties************/
 	/**************************************/
 	this.properties = {
-		//id: 0,						   //The id of the node (is used for search the sistem and the mesh in the lists)
         max_particles: 100,            //Maximum number of particles allowed
         max_trail_particles: 300,
         spawn_rate: 10,     		   //How many particles are spawned every frame
         position: new Float32Array(3), //The origin of the particles (in point mode)
-        mode: "Point",      		   //The mode of spawn
-        //origin_mesh: undefined,        //The mesh from where the particles spawn
-        mesh_mode: "Surface",   //The mode of spawn in the mesh
-        //origin_2d_geometry: undefined, //The geometry 2D from where the particles spawn
-    	color: [1,1,1,1]               //The color of the origin of the particle
+        mode: "Point",      	 	   //The mode of spawn
+        mesh_mode: "Surface",          //The mode of spawn in the mesh
+    	color: [1,1,1,1],              //The color of the origin of the particle
+        show_origin: true,
+        trail: false
     };
    
     this.last_status = {
@@ -29,19 +24,15 @@ function mySpawnNode()
     	max_trail_particles: 300        //Which was the max_trail_particles in the last change
     };
 
-    this.internal = {
-    	trail: false
-    }
-
     this.modeValues = ["Point", "Mesh", "2D Geometry"];
 
 	/**************************************/
 	/***************Widgets****************/
 	/**************************************/
 	//This widget allows to enable/disable the visibility of the origin of the particles
-	this.addWidget("toggle", "Show origin", true, toogleOriginVisibility.bind(this));
+	this.show_widget = this.addWidget("toggle", "Show origin", true, this.toogleOriginVisibility.bind(this));
 	//This widget allows to enable/disable a trail left by the particles
-	this.addWidget("toggle", "Trail particles", false, this.toogleTrail.bind(this));
+	this.trail_widget = this.addWidget("toggle", "Trail particles", false, this.toogleTrail.bind(this));
 	//This widget allows to change the mode for spawning the particles of the system 
 	this.addWidget("combo", "Mode", "Point", this.setValue.bind(this), { values: this.modeValues});
 
@@ -57,10 +48,16 @@ function mySpawnNode()
 	this.addOutput("Spawner", "spawner");
 }
 
+mySpawnNode.prototype.toogleOriginVisibility = function(){
+	var properties              = this.properties;
+	this.properties.show_origin = !properties.show_origin;
+	this.system.visible = properties.show_origin;
+}
+
 mySpawnNode.prototype.toogleTrail = function(v) {
-	var internal = this.internal;
-	internal.trail = !internal.trail;
-	this.system.trail = internal.trail;
+	var properties    = this.properties;
+	this.properties.trail  = !properties.trail;
+	this.system.trail = properties.trail;
 }
 
 
@@ -106,6 +103,12 @@ mySpawnNode.prototype.onPropertyChanged = function()
 
 	this.widgets[1].value = m;
 	this.setValue(m);	 
+
+	this.trail_widget.value = properties.trail;
+	this.system.trail = properties.trail;
+
+	this.show_widget.value = properties.show_origin;
+	this.system.visible = properties.show_origin;
 
 	var max_particles = Math.round(properties.max_particles);
 	max_particles = isNaN(max_particles) ? 0 : max_particles;
@@ -191,7 +194,7 @@ mySpawnNode.prototype.onExecute = function()
 	}
 
 	//Same for the trails
-	if(this.internal.trail && max_trail != last_status.max_trail_particles)
+	if(properties.trail && max_trail != last_status.max_trail_particles)
 	{
 		var particles_trail = system.trails_list;
 
@@ -208,7 +211,8 @@ mySpawnNode.prototype.onExecute = function()
 	//The properties of the node are the output plus some extras
 	var out_data = {
 		id                  : this.id,
-		trails              : this.internal.trail,
+		trails              : properties.trail,
+		modify_trails       : false,
 		max_particles 		: max_particles,
 		max_trails          : max_trail,
 		spawn_rate    		: spawn_rate,

@@ -262,6 +262,7 @@ function addNodes ()
 	
 	LiteGraph.registerNodeType("spawn/spawn"          , mySpawnNode);
 	LiteGraph.registerNodeType("init/init"            , initParticlesNode);
+	LiteGraph.registerNodeType("init/particle data"   , particleDataNode);
 
 	LiteGraph.registerNodeType("forces/gravity"       , gravityNode);
 	LiteGraph.registerNodeType("forces/vortex"        , vortexNode);
