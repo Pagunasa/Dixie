@@ -350,11 +350,13 @@ initParticlesNode.prototype.onExecute = function()
 		var system_info = this.system_info;
 
 		if(p_prop.texture == undefined)
-			system_info.texture = undefined;
+			this.texture = undefined;
 		else if (p_prop.texture.prop.file != "")
-			system_info.texture = p_prop.texture.prop.file;
+			this.texture = p_prop.texture.prop.file;	
 		else
-			system_info.texture = undefined;
+			this.texture = undefined;
+
+		this.system_info.texture = this.texture;
 
 		var particle;
 		var particles          = system_info.particles_list;
