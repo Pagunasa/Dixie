@@ -383,6 +383,9 @@ textureLoadNode.prototype.onPropertyChanged = function(property) {
 				this.properties.subtextures_size[0] = Math.max(0.0, subtextures_size[0]);
 				this.properties.subtextures_size[1] = Math.max(0.0, subtextures_size[1]);
 
+                if(!properties.subtextures)
+				    break;
+
 				this.widgets[3].value = subtextures_size[0];
 				this.widgets[4].value = subtextures_size[1];
 			}

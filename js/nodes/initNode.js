@@ -352,7 +352,7 @@ initParticlesNode.prototype.onExecute = function()
 		if(p_prop.texture == undefined)
 			system_info.texture = undefined;
 		else if (p_prop.texture.prop.file != "")
-			system_info.texture = texture.prop.file;
+			system_info.texture = p_prop.texture.prop.file;
 		else
 			system_info.texture = undefined;
 
