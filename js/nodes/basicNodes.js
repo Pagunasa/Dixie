@@ -218,6 +218,7 @@ function textureLoadNode() {
 	this.properties = { 
 		default_texture: "NONE",
 		subtextures: false,
+		animated: false,
 		subtextures_size: [0,0]
 	}
 	
@@ -240,6 +241,10 @@ function textureLoadNode() {
 	this.addOutput("Texture", "texture");
 };
 
+textureLoadNode.prototype.changeAnimated = function(v){
+	this.properties.animated = v;
+}
+
 textureLoadNode.prototype.changeSubTexture = function(v){
 	if(this.properties.subtextures == v)
 		return;
@@ -247,7 +252,7 @@ textureLoadNode.prototype.changeSubTexture = function(v){
 	this.properties.subtextures = v;
 
 	if (this.properties.subtextures) {
-		this.addWidget("toggle", "Animated texture", false, this.changeSubTexture.bind(this));
+		this.addWidget("toggle", "Animated texture", false, this.changeAnimated.bind(this));
 		this.addWidget("number", "Sub textures size x", 0, this.changeSubTextureSizeX.bind(this), {min: 0, max: 10000000, step: 10});
 		this.addWidget("number", "Sub textures size y", 0, this.changeSubTextureSizeY.bind(this), {min: 0, max: 10000000, step: 10});
 		this.size[0] = 260;
@@ -275,8 +280,8 @@ textureLoadNode.prototype.computeSubTextures = function(){
 	var sizes = this.properties.subtextures_size;
 
 	
-  	this.numberTextX = sizes[0] != 0 ? this.file.width  / sizes[0] : 0;
-  	this.numberTextY = sizes[1] != 0 ? this.file.height / sizes[1] : 0;
+  	this.numberTextX = sizes[0] != 0 ? Math.floor(this.file.width  / sizes[0]) : 0;
+  	this.numberTextY = sizes[1] != 0 ? Math.floor(this.file.height / sizes[1]) : 0;
 } 
 
 textureLoadNode.prototype.changeSubTextureSizeX = function(v){
@@ -390,19 +395,17 @@ textureLoadNode.prototype.onPropertyChanged = function(property) {
 				this.widgets[4].value = subtextures_size[1];
 			}
 		break;
+
+		case "animated":
+			if(!properties.subtextures)
+				break;
+			this.widgets[2].value = this.properties.animated;
+		break;
 	}
 };
 
 textureLoadNode.prototype.onExecute = function() {
-	var properties = this.properties;
-	var p = {
-		default_texture:  properties.default_texture,
-		subtextures:      properties.subtextures,
-		subtextures_size: properties.subtextures_size,
-		file : this.file
-	}
-
-	this.setOutputData(0, {prop: p, ntx: this.numberTextX, nty: this.numberTextY});
+	this.setOutputData(0, {prop: this.properties, file: this.file, ntx: this.numberTextX, nty: this.numberTextY});
 };
 
 textureLoadNode.title = "Load Texture";

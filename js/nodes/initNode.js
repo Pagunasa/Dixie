@@ -190,25 +190,64 @@ initParticlesNode.prototype.generateParticleInfo = function (properties, system)
 				color         : properties.color,
 				min_size      : min_size,
 				max_size      : max_size,
+				texture       : this.texture,
 				coords        : this.getCoords()
 			};
 }
 
-initParticlesNode.prototype.getCoords = function()
+initParticlesNode.prototype.getNextFrame = function(particle)
 {
-	if(this.texture == undefined)
+	var texture = this.texture;
+
+	if(!texture.prop.animated || particle.c_frame < particle.frameRate)
+		return;
+
+	var sizeX = texture.ntx;
+	var sizeY = texture.nty; 
+
+ 	particle.c_frame = 0;
+	particle.frameX++;
+
+	if(particle.frameX == sizeX)
+	{
+		particle.frameY++;
+		particle.frameX = 0;
+	} 
+
+	particle.coords = this.getCoords(particle.frameX, particle.frameY);
+}
+
+initParticlesNode.prototype.getCoords = function(frameX = 0, frameY = 0)
+{
+	var texture = this.texture;
+
+	if(texture == undefined)
 		return default_coords;
 
-	var sizeX = this.texture.ntx;
-	var sizeY = this.texture.nty; 
+	var sizeX = texture.ntx;
+	var sizeY = texture.nty; 
 
 	if(sizeX == 0 && sizeY == 0)
 		return default_coords;
 
+	if(texture.prop.animated)
+	{
+		var iSx = 1/sizeX;
+		var iSy = 1/sizeY;
+  
+		var minX = sizeX != 0 ? frameX * iSx : 0; 
+		var minY = sizeY != 0 ? frameY * iSy : 0; 
+
+		var maxX = sizeX != 0 ? (frameX+1) * iSx : 1; 
+		var maxY = sizeY != 0 ? (frameY+1) * iSy : 1; 
+
+		return [maxX,maxY, minX,maxY, maxX,minY, minX,minY, maxX,minY, minX,maxY];
+	}
+
 	var new_coord = [0,0, 1,1];
 
-	new_coord[0] = sizeX != 0 ? Math.floor(Math.random() * sizeX)/sizeX : 0;
-	new_coord[1] = sizeY != 0 ? Math.floor(Math.random() * sizeY)/sizeY : 0;
+	new_coord[0] = sizeX != 0 ? (Math.random() * sizeX)/sizeX : 0;
+	new_coord[1] = sizeY != 0 ? (Math.random() * sizeY)/sizeY : 0;
 
 	new_coord[2] = sizeX != 0 ? new_coord[0] + (1/sizeX) : 1; 
 	new_coord[3] = sizeY != 0 ? new_coord[1] + (1/sizeY) : 1; 
@@ -351,8 +390,8 @@ initParticlesNode.prototype.onExecute = function()
 
 		if(p_prop.texture == undefined)
 			system_info.texture = undefined;
-		else if (p_prop.texture.prop.file != "")
-			system_info.texture = p_prop.texture.prop.file;
+		else if (p_prop.texture.file != "")
+			system_info.texture = p_prop.texture.file;
 		else
 			system_info.texture = undefined;
 
@@ -403,6 +442,8 @@ initParticlesNode.prototype.onExecute = function()
 			particle = particles[id];
 
 			particle.c_lifetime += time_interval;
+			particle.c_frame += time_interval;
+			this.getNextFrame(particle);
 
 			if(particle.c_lifetime >= particle.lifetime && particle.visibility == 1)
 			{

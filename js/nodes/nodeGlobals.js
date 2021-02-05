@@ -285,6 +285,21 @@ Particle.prototype.fill = function(properties) {
 	this.lifetime   = lifetime;
 	this.c_lifetime = 0.0; //How many life time the particle lived
 	this.visibility = 1;
+
+	this.animated  = false;
+	this.frameRate = 0;
+	this.c_frame   = 0;
+	this.frameX    = 0;  
+	this.frameY    = 0;  
+
+	var texture = properties.texture; 
+	if(texture.prop.animated)
+	{
+		this.animated = true;
+
+		var frame_number = Math.floor(texture.ntx + texture.nty) - 1; 
+		this.frameRate = (lifetime / frame_number);
+	}
 };
 
 
