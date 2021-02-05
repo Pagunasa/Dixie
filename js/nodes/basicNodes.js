@@ -325,19 +325,19 @@ textureLoadNode.prototype.onPropertyChanged = function(property) {
 			switch (properties.default_texture)
 			{
 				case "smoke":
-					chargeTexture(this, properties, 'default_textures/particles/smoke.png', 'smoke');
+					chargeTexture(this, this.properties, 'default_textures/particles/smoke.png', 'smoke');
 				break;
 				
 				case "smoke2":
-					chargeTexture(this, properties, 'default_textures/particles/smoke2.png', 'smoke2');
+					chargeTexture(this, this.properties, 'default_textures/particles/smoke2.png', 'smoke2');
 				break;
 				
 				case "fire":
-					chargeTexture(this, properties, 'default_textures/particles/fire.png', 'fire');
+					chargeTexture(this, this.properties, 'default_textures/particles/fire.png', 'fire');
 				break;
 				
 				case "light":
-					chargeTexture(this, properties, 'default_textures/particles/light.png', 'light');
+					chargeTexture(this, this.properties, 'default_textures/particles/light.png', 'light');
 				break;
 
 				default:
