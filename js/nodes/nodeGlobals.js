@@ -671,7 +671,7 @@ function onShowNodePanel(node){
 }
 
 function chargeTexture(node, node_properties, url, def_text = "NONE"){
-	node_properties.file = GL.Texture.fromURL(url);
+	node.file = GL.Texture.fromURL(url);
 	node_properties.default_texture = def_text;
 	
 	if(!node.data_loaded)

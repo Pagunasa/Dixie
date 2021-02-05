@@ -217,11 +217,11 @@ vector4Node.title_selected_color = basicSelectedTitleColor;
 function textureLoadNode() {
 	this.properties = { 
 		default_texture: "NONE",
-		file: undefined,
 		subtextures: false,
-		subtextures_size: vector_2
+		subtextures_size: [0,0]
 	}
 	
+	this.file = undefined;
 	this.data_loaded = false;
 	this.numberTextX = 0;
 	this.numberTextY = 0;
@@ -269,14 +269,14 @@ textureLoadNode.prototype.computeSubTextures = function(){
 	if (!this.data_loaded)
 		return;
   	//if the data is undedifined is still loading (2nd check)
-  	if(this.properties.file.data == undefined)
+  	if(this.file.data == undefined)
   		return;
 	
 	var sizes = this.properties.subtextures_size;
 
 	
-  	this.numberTextX = sizes[0] != 0 ? this.properties.file.width  / sizes[0] : 0;
-  	this.numberTextY = sizes[1] != 0 ? this.properties.file.height / sizes[1] : 0;
+  	this.numberTextX = sizes[0] != 0 ? this.file.width  / sizes[0] : 0;
+  	this.numberTextY = sizes[1] != 0 ? this.file.height / sizes[1] : 0;
 } 
 
 textureLoadNode.prototype.changeSubTextureSizeX = function(v){
@@ -298,7 +298,7 @@ textureLoadNode.prototype.onDrawBackground = function(ctx){
 	if (!this.data_loaded)
 		return;
   	//if the data is undedifined is still loading (2nd check)
-  	if(this.properties.file.data == undefined)
+  	if(this.file.data == undefined)
   		return;
 
   	//The title is drawed
@@ -313,7 +313,7 @@ textureLoadNode.prototype.onDrawBackground = function(ctx){
 	ctx.stroke();
 
 	//The image is drawed
-	ctx.drawImage(this.properties.file.data, (this.size[0]-60)*0.5, this.size[1] - 80, 60, 60);	
+	ctx.drawImage(this.file.data, (this.size[0]-60)*0.5, this.size[1] - 80, 60, 60);	
 };
 
 textureLoadNode.prototype.onPropertyChanged = function(property) {
@@ -325,19 +325,19 @@ textureLoadNode.prototype.onPropertyChanged = function(property) {
 			switch (properties.default_texture)
 			{
 				case "smoke":
-					chargeTexture(this, this.properties, 'default_textures/particles/smoke.png', 'smoke');
+					chargeTexture(this, properties, 'default_textures/particles/smoke.png', 'smoke');
 				break;
 				
 				case "smoke2":
-					chargeTexture(this, this.properties, 'default_textures/particles/smoke2.png', 'smoke2');
+					chargeTexture(this, properties, 'default_textures/particles/smoke2.png', 'smoke2');
 				break;
 				
 				case "fire":
-					chargeTexture(this, this.properties, 'default_textures/particles/fire.png', 'fire');
+					chargeTexture(this, properties, 'default_textures/particles/fire.png', 'fire');
 				break;
 				
 				case "light":
-					chargeTexture(this, this.properties, 'default_textures/particles/light.png', 'light');
+					chargeTexture(this, properties, 'default_textures/particles/light.png', 'light');
 				break;
 
 				default:
@@ -394,7 +394,15 @@ textureLoadNode.prototype.onPropertyChanged = function(property) {
 };
 
 textureLoadNode.prototype.onExecute = function() {
-	this.setOutputData(0, {prop: this.properties, ntx: this.numberTextX, nty: this.numberTextY});
+	var properties = this.properties;
+	var p = {
+		default_texture:  properties.default_texture,
+		subtextures:      properties.subtextures,
+		subtextures_size: properties.subtextures_size,
+		file : this.file
+	}
+
+	this.setOutputData(0, {prop: p, ntx: this.numberTextX, nty: this.numberTextY});
 };
 
 textureLoadNode.title = "Load Texture";
