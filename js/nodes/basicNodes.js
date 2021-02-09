@@ -426,7 +426,12 @@ textureLoadNode.prototype.onPropertyChanged = function(property) {
 			this.size[1] = 80;
 
 			if(!properties.subtextures)
+			{
+				if(this.data_loaded)
+				    this.size[1] += 112;
+			
 				break;
+			}
 
 			this.addWidgets();
 
