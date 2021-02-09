@@ -219,6 +219,8 @@ function textureLoadNode() {
 		default_texture: "NONE",
 		subtextures: false,
 		animated: false,
+		anim_loop: false,
+		anim_duration: 0,
 		subtextures_size: [0,0]
 	}
 	
@@ -229,44 +231,102 @@ function textureLoadNode() {
 
 	var that = this;
 
-	this.addWidget("button", "Select texture", "", 
-		function()
-		{
-			loadTexture(that);
-		}
-	);
+	this.addWidget("button", "Select texture", "", function(){
+		loadTexture(that);
+	});
 
 	this.addWidget("toggle", "Sub textures", false, this.changeSubTexture.bind(this));
 
 	this.addOutput("Texture", "texture");
 };
 
-textureLoadNode.prototype.changeAnimated = function(v){
-	this.properties.animated = v;
+textureLoadNode.prototype.changeAnimated = function(v, manual_prop = false){
+	var properties = this.properties;
+
+	if(properties.animated == v && !manual_prop)
+		return;
+
+	properties.animated = v;
+
+	if(v){
+		this.animlW = this.addWidget("toggle", "Animation loop", properties.anim_loop, this.changeAnimLoop.bind(this));
+		
+		if(properties.anim_loop)	
+			this.animdW = this.addWidget("number", "Animation time", properties.anim_duration, this.changeAnimDuration.bind(this), {min: 0, max: Number.MAX_SAFE_INTEGER, step:0.01});
+	} else {
+		this.widgets.splice(5,2);
+		this.size[1] = 154;
+	}
+
+	this.size[0] = 260;
+
+	if(this.data_loaded)
+	   	this.size[1] += 112;
 }
 
-textureLoadNode.prototype.changeSubTexture = function(v){
-	if(this.properties.subtextures == v)
+textureLoadNode.prototype.changeAnimLoop = function(v, manual_prop = false){
+	var properties = this.properties;
+
+	if(properties.anim_loop == v && !manual_prop)
+		return;
+
+	properties.anim_loop = v;
+
+	if(v){
+		this.animdW  = this.addWidget("number", "Animation time", properties.anim_duration, this.changeAnimDuration.bind(this), {min: 0, max: Number.MAX_SAFE_INTEGER, step:0.01});
+	} else {
+		this.widgets.splice(6,1);
+		this.size[1] = 178;
+	}
+
+	this.size[0] = 260;
+	if(this.data_loaded)
+	   	this.size[1] += 112;
+}
+
+textureLoadNode.prototype.addWidgets = function() {
+	var properties = this.properties;
+
+	this.subxW   = this.addWidget("number", "Sub textures size x", properties.subtextures_size[0], this.changeSubTextureSizeX.bind(this), {min: 0, max: Number.MAX_SAFE_INTEGER, step: 10});
+	this.subyW   = this.addWidget("number", "Sub textures size y", properties.subtextures_size[1], this.changeSubTextureSizeY.bind(this), {min: 0, max: Number.MAX_SAFE_INTEGER, step: 10});
+
+	this.animW   = this.addWidget("toggle", "Animated texture", properties.animated, this.changeAnimated.bind(this));
+
+	if(properties.animated)
+	{
+		this.animlW = this.addWidget("toggle", "Animation loop", properties.anim_loop, this.changeAnimLoop.bind(this));
+		
+		if(properties.anim_loop)	
+			this.animdW = this.addWidget("number", "Animation time", properties.anim_duration, this.changeAnimDuration.bind(this), {min: 0, max: Number.MAX_SAFE_INTEGER, step:0.01});
+	}
+
+	this.size[0] = 260;
+
+	if(this.data_loaded)
+	    this.size[1] += 112;
+};
+
+textureLoadNode.prototype.changeSubTexture = function(v, manual_prop = false){
+	if(this.properties.subtextures == v && !manual_prop)
 		return;
 
 	this.properties.subtextures = v;
 
 	if (this.properties.subtextures) {
-		this.addWidget("toggle", "Animated texture", false, this.changeAnimated.bind(this));
-		this.addWidget("number", "Sub textures size x", 0, this.changeSubTextureSizeX.bind(this), {min: 0, max: 10000000, step: 10});
-		this.addWidget("number", "Sub textures size y", 0, this.changeSubTextureSizeY.bind(this), {min: 0, max: 10000000, step: 10});
-		this.size[0] = 260;
+		this.addWidgets();
 	} else {
-		//this.widgets.splice(3,1);
-		this.widgets.splice(2,3);
+		this.widgets.splice(2,7);
 		this.size[0] = 210;
 		this.size[1] = 80;
-		this.properties.subtextures_size = [0,0];
-	}
 
-	//Resizing the node in order to avoid that the image goes outside
-	if(this.data_loaded)
-		this.size[1] += 112;
+		if(this.data_loaded)
+	    	this.size[1] += 112;
+	}
+}
+
+textureLoadNode.prototype.afterLoading = function(texture, url){
+	this.file = texture;
+	this.computeSubTextures();
 }
 
 textureLoadNode.prototype.computeSubTextures = function(){			
@@ -278,21 +338,24 @@ textureLoadNode.prototype.computeSubTextures = function(){
   		return;
 	
 	var sizes = this.properties.subtextures_size;
-
 	
   	this.numberTextX = sizes[0] != 0 ? Math.floor(this.file.width  / sizes[0]) : 0;
   	this.numberTextY = sizes[1] != 0 ? Math.floor(this.file.height / sizes[1]) : 0;
 } 
 
+textureLoadNode.prototype.changeAnimDuration = function(v){
+	this.properties.anim_duration = Math.max(isNaN(v) ? 0 : v, 0);
+}
+
 textureLoadNode.prototype.changeSubTextureSizeX = function(v){
 	this.properties.subtextures_size[0] = Math.max(isNaN(v) ? 0 : v, 0);
-	this.widgets[3].value = this.properties.subtextures_size[0];
+	this.subxW.value = this.properties.subtextures_size[0];
 	this.computeSubTextures();
 }
 
 textureLoadNode.prototype.changeSubTextureSizeY = function(v){
 	this.properties.subtextures_size[1] = Math.max(isNaN(v) ? 0 : v, 0);
-	this.widgets[4].value = this.properties.subtextures_size[1];
+	this.subyW.value = this.properties.subtextures_size[1];
 	this.computeSubTextures();
 }
 
@@ -354,28 +417,21 @@ textureLoadNode.prototype.onPropertyChanged = function(property) {
 		case "subtextures":
 			this.widgets[1].value = properties.subtextures;
 
-			this.widgets.splice(2,3);
+			this.widgets.splice(2,5);
 			this.size[0] = 210;
 			this.size[1] = 80;
 
 			if(!properties.subtextures)
 				break;
 
-			this.addWidget("toggle", "Animated texture", false, this.changeSubTexture.bind(this));
-			this.addWidget("number", "Sub textures size x", 0, this.changeSubTextureSizeX.bind(this), {min: 0, max: 10000000, step: 10});
-			this.addWidget("number", "Sub textures size y", 0, this.changeSubTextureSizeY.bind(this), {min: 0, max: 10000000, step: 10});
-
-			this.size[0] = 260;
-
-			if(this.data_loaded)
-			    this.size[1] += 112;
+			this.addWidgets();
 
 			var subtextures_size = properties.subtextures_size;
 
-			this.properties.subtextures_size[0] = Math.max(0.0, subtextures_size[0]);
-			this.properties.subtextures_size[1] = Math.max(0.0, subtextures_size[1]);
-			this.widgets[3].value = subtextures_size[0];
-			this.widgets[4].value = subtextures_size[1];
+			properties.subtextures_size[0] = Math.max(0.0, subtextures_size[0]);
+			properties.subtextures_size[1] = Math.max(0.0, subtextures_size[1]);
+			this.subxW.value = subtextures_size[0];
+			this.subyW.value = subtextures_size[1];
 			this.computeSubTextures();
 		break;
 
@@ -385,21 +441,70 @@ textureLoadNode.prototype.onPropertyChanged = function(property) {
 			else
 			{
 				var subtextures_size = properties.subtextures_size;
-				this.properties.subtextures_size[0] = Math.max(0.0, subtextures_size[0]);
-				this.properties.subtextures_size[1] = Math.max(0.0, subtextures_size[1]);
+				properties.subtextures_size[0] = Math.max(0.0, subtextures_size[0]);
+				properties.subtextures_size[1] = Math.max(0.0, subtextures_size[1]);
 
                 if(!properties.subtextures)
 				    break;
 
-				this.widgets[3].value = subtextures_size[0];
-				this.widgets[4].value = subtextures_size[1];
+				this.subxW.value = subtextures_size[0];
+				this.subyW.value = subtextures_size[1];
+				this.computeSubTextures();
 			}
 		break;
 
 		case "animated":
 			if(!properties.subtextures)
 				break;
-			this.widgets[2].value = this.properties.animated;
+			
+			if(!properties.animated)
+			{
+				this.widgets.splice(5,2);
+				this.size[1] = 154;
+
+				if(this.data_loaded)
+				    this.size[1] += 112;
+			}
+
+			this.changeAnimated(properties.animated, true)
+			this.animW.value = properties.animated;
+		break;
+
+		case "anim_loop":
+			if(!properties.subtextures || !properties.animated)
+				break;
+
+			if(this.animlW == undefined)
+			{
+				this.animlW = this.addWidget("toggle", "Animation loop", properties.anim_loop, this.changeAnimLoop.bind(this));
+				this.size[0] = 260;
+
+				if(this.data_loaded)
+				    this.size[1] += 112;
+			}
+			
+			this.changeAnimLoop(properties.anim_loop, true);
+			this.animlW.value = properties.anim_loop;
+		break;
+
+
+		case "anim_duration":
+			if(!properties.subtextures || !properties.animated || !properties.anim_loop)
+				break;
+
+			var d = properties.anim_duration;
+			properties.anim_duration =  Math.max(isNaN(d) ? 0 : d, 0);
+
+			if(this.animdW == undefined)
+			{
+				this.animdW = this.addWidget("number", "Animation time", properties.anim_duration, this.changeAnimDuration.bind(this), {min: 0, max: Number.MAX_SAFE_INTEGER, step:0.01});
+				this.size[0] = 260;
+
+				if(this.data_loaded)
+				    this.size[1] += 112;
+			}
+			
+			this.animdW.value = properties.anim_duration;
 		break;
 	}
 };

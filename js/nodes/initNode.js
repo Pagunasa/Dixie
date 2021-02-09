@@ -212,6 +212,9 @@ initParticlesNode.prototype.getNextFrame = function(particle)
 	{
 		particle.frameY++;
 		particle.frameX = 0;
+
+		if(particle.frameX == sizeX)
+			particle.frameY = 0;
 	} 
 
 	particle.coords = this.getCoords(particle.frameX, particle.frameY);
@@ -227,7 +230,7 @@ initParticlesNode.prototype.getCoords = function(frameX = 0, frameY = 0)
 	var sizeX = texture.ntx;
 	var sizeY = texture.nty; 
 
-	if(sizeX == 0 && sizeY == 0)
+	if(sizeX == 0 && sizeY == 0 || !this.subTextures)
 		return default_coords;
 
 	if(texture.prop.animated)
@@ -395,7 +398,8 @@ initParticlesNode.prototype.onExecute = function()
 		else
 			system_info.texture = undefined;
 
-		this.texture = p_prop.texture;
+		this.texture      = p_prop.texture;
+		this.subTextures  = this.texture.prop.subtextures;
 
 		var particle;
 		var particles          = system_info.particles_list;

@@ -297,8 +297,16 @@ Particle.prototype.fill = function(properties) {
 	{
 		this.animated = true;
 
+		var t = lifetime;
+
+		if(texture.prop.anim_loop)
+		{
+			var anim_d = texture.prop.anim_duration;
+			t = anim_d == 0 ? lifetime : anim_d;
+		}
+
 		var frame_number = Math.floor(texture.ntx + texture.nty) - 1; 
-		this.frameRate = (lifetime / frame_number);
+		this.frameRate = (t / frame_number);
 	}
 };
 
@@ -686,14 +694,14 @@ function onShowNodePanel(node){
 }
 
 function chargeTexture(node, node_properties, url, def_text = "NONE"){
-	node.file = GL.Texture.fromURL(url);
-	node_properties.default_texture = def_text;
-	
 	if(!node.data_loaded)
 		node.size[1] += 112;
 
 	node.data_loaded = true;
 	texture_modal.modal('hide');
+
+	GL.Texture.fromURL(url, {}, function(t,u){node.afterLoading(t,u)});
+	node_properties.default_texture = def_text;
 }
 
 function loadTexture(node){
