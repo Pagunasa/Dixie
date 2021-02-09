@@ -727,7 +727,7 @@ function loadTexture(node){
 	}
 
 	def_texture_5.onclick = function(){
-		chargeTexture(node, node_properties, 'default_textures/particles/AnimatedExplosion.png', 'light');
+		chargeTexture(node, node_properties, 'default_textures/particles/AnimatedExplosion.png', 'AnimatedExplosion');
 	}
 
 	local_texture.onclick = function(){

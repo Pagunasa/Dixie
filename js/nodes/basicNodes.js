@@ -408,6 +408,10 @@ textureLoadNode.prototype.onPropertyChanged = function(property) {
 					chargeTexture(this, properties, 'default_textures/particles/light.png', 'light');
 				break;
 
+				case "AnimatedExplosion":
+					chargeTexture(this, properties, 'default_textures/particles/AnimatedExplosion.png', 'AnimatedExplosion');
+				break;
+
 				default:
 					createAlert('','','Please reload your texture.','warning',true,true,'pageMessages');
 				break;
