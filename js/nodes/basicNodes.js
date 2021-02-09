@@ -326,6 +326,8 @@ textureLoadNode.prototype.changeSubTexture = function(v, manual_prop = false){
 
 textureLoadNode.prototype.afterLoading = function(texture, url){
 	this.file = texture;
+	node.data_loaded = true;
+
 	this.computeSubTextures();
 }
 

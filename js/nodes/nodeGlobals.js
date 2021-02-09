@@ -698,7 +698,6 @@ function chargeTexture(node, node_properties, url, def_text = "NONE"){
 	if(!node.data_loaded)
 		node.size[1] += 112;
 
-	node.data_loaded = true;
 	texture_modal.modal('hide');
 
 	GL.Texture.fromURL(url, {}, function(t,u){node.afterLoading(t,u)});
