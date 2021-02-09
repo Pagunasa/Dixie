@@ -47,6 +47,7 @@ var def_texture_1 = document.getElementById("def_texture1");
 var def_texture_2 = document.getElementById("def_texture2");
 var def_texture_3 = document.getElementById("def_texture3");
 var def_texture_4 = document.getElementById("def_texture4");
+var def_texture_5 = document.getElementById("def_texture5");
 var local_texture = document.getElementById("texture_local");
 
 
@@ -723,6 +724,10 @@ function loadTexture(node){
 	
 	def_texture_4.onclick = function(){
 		chargeTexture(node, node_properties, 'default_textures/particles/light.png', 'light');
+	}
+
+	def_texture_5.onclick = function(){
+		chargeTexture(node, node_properties, 'default_textures/particles/AnimatedExplosion.png', 'light');
 	}
 
 	local_texture.onclick = function(){
