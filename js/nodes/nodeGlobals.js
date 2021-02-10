@@ -294,6 +294,10 @@ Particle.prototype.fill = function(properties) {
 	this.frameY    = 0;  
 
 	var texture = properties.texture; 
+	
+	if(texture == undefined)
+		return;
+
 	if(texture.prop.animated)
 	{
 		this.animated = true;

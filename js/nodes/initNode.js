@@ -199,6 +199,9 @@ initParticlesNode.prototype.getNextFrame = function(particle)
 {
 	var texture = this.texture;
 
+	if(texture == undefined)
+		return;
+
 	if(!texture.prop.animated || particle.c_frame < particle.frameRate)
 		return;
 

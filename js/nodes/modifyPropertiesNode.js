@@ -11,7 +11,8 @@ function modifyPropertyNode()
 		changed_property: "Speed",
 		application_mode: "Equalization",
 		modification_mode: "Along life time",
-		user_defined_seconds: 5,
+		user_defined_seconds: 2,
+		user_defined_start: 0,
 		new_value: vector_3	
 	};
 
@@ -50,22 +51,34 @@ modifyPropertyNode.prototype.changeModification = function(v)
 	var properties = this.properties;
 
 	properties.modification_mode = v;
-	this.widgets.splice(3,1);
+	this.widgets.splice(3,2);
 
 	if (v == "User defined")
 	{
-		var value = properties.user_defined_seconds;
-		this.secW = this.addWidget("number", "Seconds", value, this.setSeconds.bind(this), {min: 0, max: 100000, step: 0.1});
+		var duration = properties.user_defined_seconds;
+		var start    = properties.user_defined_start;
+
+		this.staW = this.addWidget("number", "Starts at", start,    this.setStart.bind(this), {min: 0, max: 100000, step: 0.1});
+		this.secW = this.addWidget("number", "Duration" , duration, this.setDuration.bind(this), {min: 0, max: 100000, step: 0.1});
 	}
 	else
 		this.size[1] = 166;
 	
 }
 
-modifyPropertyNode.prototype.setSeconds = function(v)
+modifyPropertyNode.prototype.setStart = function(v)
 {
 	if(isNaN(v))
-		v = 5;
+		v = 0;
+
+	this.properties.user_defined_start = v;
+	this.staW.value = v;
+}
+
+modifyPropertyNode.prototype.setDuration = function(v)
+{
+	if(isNaN(v))
+		v = 2;
 
 	this.properties.user_defined_seconds = v;
 	this.secW.value = v;
@@ -112,55 +125,77 @@ modifyPropertyNode.prototype.changeProperty = function(v)
 }
 
 //For recover (in a visual way) the values when a graph is loaded
-modifyPropertyNode.prototype.onPropertyChanged = function()
+modifyPropertyNode.prototype.onPropertyChanged = function(property)
 {
 	var properties = this.properties;
-
-	var p = properties.changed_property;
-	var a = properties.application_mode;
-	var m = properties.modification_mode;
-
-	if(!this.propValues.includes(p))
-		p = "Size";
-
-	if(this.propW.value != p)
-	{
-		this.propW.value = p;
-		this.changeProperty(p);
-	}
-
-	if(!this.applValues.includes(a))
-		a = "Equalization";
 	
-	if(this.applW.value != a)
+	switch(property)
 	{
-		this.applW.value = a;
-		this.changeApplication(a);
+		case "changed_property":
+			var p = properties.changed_property;
+			
+			if(!this.propValues.includes(p))
+				p = "Size";
+
+			if(this.propW.value != p)
+			{
+				this.propW.value = p;
+				this.changeProperty(p);
+			}
+		break;
+
+		case "application_mode":
+			var a = properties.application_mode;
+
+			if(!this.applValues.includes(a))
+				a = "Equalization";
+			
+			if(this.applW.value != a)
+			{
+				this.applW.value = a;
+				this.changeApplication(a);
+			}
+		break;
+
+		case "modification_mode":
+			var m = properties.modification_mode;
+
+			if(!this.modiValues.includes(m))
+				m = "Along life time";
+
+			if(this.modiW.value != m)
+			{
+				this.modiW.value = m;
+				this.changeModification(m);
+			}
+		break;
+
+		case "user_defined_seconds":
+			properties.user_defined_seconds = Math.max(properties.user_defined_seconds, 0.0);
+
+			if(this.secW != undefined)
+				this.setDuration(properties.user_defined_seconds);
+		break;
+
+		case "user_defined_start":
+			properties.user_defined_start = Math.max(properties.user_defined_start, 0.0);
+
+			if(this.staW != undefined)
+				this.setStart(properties.user_defined_start);
+		break;
+
+		case "new_value":
+			if(properties.changed_property == "Speed" && properties.new_value.length != 3)
+				properties.new_value = [0,0,0];
+
+			if(properties.changed_property == "Color" && properties.new_value.length != 4)
+				properties.new_value = [1,1,1,1];
+
+			if((properties.changed_property == "Size" || properties.changed_property == "Life time") 
+				&& (isNaN(properties.new_value) || properties.new_value < 0))
+				properties.new_value = 0;
+		break;
 	}
-
-	if(!this.modiValues.includes(m))
-		m = "Along life time";
-
-	if(this.modiW.value != m)
-	{
-		this.modiW.value = m;
-		this.changeModification(m);
-	}
-
-	properties.user_defined_seconds = Math.max(properties.user_defined_seconds, 0.0);
-
-	if(this.secW != undefined)
-		this.setSeconds(properties.user_defined_seconds);
-
-	if(properties.changed_property == "Speed" && properties.new_value.length != 3)
-		properties.new_value = [0,0,0];
-
-	if(properties.changed_property == "Color" && properties.new_value.length != 4)
-		properties.new_value = [1,1,1,1];
-
-	if((properties.changed_property == "Size" || properties.changed_property == "Life time") 
-		&& (isNaN(properties.new_value) || properties.new_value < 0))
-		properties.new_value = 0;
 }
 
 modifyPropertyNode.prototype.computeChangeEquation = function(lifetime)
@@ -241,8 +276,8 @@ modifyPropertyNode.prototype.onExecute = function()
 				e = particle.lifetime;
 			else if (properties.modification_mode == "User defined")
 			{
-				e = properties.user_defined_seconds;
-				//if(x > e) continue; //That means that the condition is already meeted
+				e = properties.user_defined_seconds + properties.user_defined_start;
+				if(x < properties.user_defined_start) continue; //That means that the condition is already meeted
 			}
 
 			var modifier = Math.clamp(x / e, 0.0, 1.0); //The clamp is mandatory for avoid computacion errors

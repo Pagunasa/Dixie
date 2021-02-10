@@ -30,11 +30,11 @@ function mySpawnNode()
 	/***************Widgets****************/
 	/**************************************/
 	//This widget allows to enable/disable the visibility of the origin of the particles
-	this.show_widget = this.addWidget("toggle", "Show origin", true, this.toogleOriginVisibility.bind(this));
+	this.show_widget  = this.addWidget("toggle", "Show origin", true, this.toogleOriginVisibility.bind(this));
 	//This widget allows to enable/disable a trail left by the particles
 	this.trail_widget = this.addWidget("toggle", "Trail particles", false, this.toogleTrail.bind(this));
 	//This widget allows to change the mode for spawning the particles of the system 
-	this.addWidget("combo", "Mode", "Point", this.setValue.bind(this), { values: this.modeValues});
+	this.mode_widget  = this.addWidget("combo", "Mode", "Point", this.setValue.bind(this), { values: this.modeValues});
 
 	/**************************************/
 	/***********Inputs & Outputs***********/
@@ -93,43 +93,78 @@ mySpawnNode.prototype.setValue = function(v) {
 
 
 //For recover (in a visual way) the value when a graph is loaded
-mySpawnNode.prototype.onPropertyChanged = function()
+mySpawnNode.prototype.onPropertyChanged = function(property)
 {
 	var properties = this.properties;
-	var m = properties.mode;
 
-	if(!this.modeValues.includes(m))
-		m = "Point";
+	switch(property)
+	{
+		case "max_particles":
+			var max_particles = Math.round(properties.max_particles);
+			max_particles = isNaN(max_particles) ? 0 : max_particles;
+			properties.max_particles = Math.max(max_particles, 0.0);
+		break;
 
-	this.widgets[1].value = m;
-	this.setValue(m);	 
+		case "max_trail_particles":
+			var max_trail_particles =Math.round(properties.max_trail_particles);
+			max_trail_particles = isNaN(max_trail_particles) ? 0 : max_trail_particles;
+			properties.max_trail_particles = Math.max(max_trail_particles, 0.0);
+		break;
 
-	this.trail_widget.value = properties.trail;
-	this.system.trail = properties.trail;
+		case "spawn_rate":
+			var spawn_rate = properties.spawn_rate;
+			spawn_rate = isNaN(spawn_rate) ? 0 : spawn_rate;
+			properties.spawn_rate = Math.max(spawn_rate, 0.0);
+		break;
 
-	this.show_widget.value = properties.show_origin;
-	this.system.visible = properties.show_origin;
+		case "position":
+			if(properties.position.length != 3)
+				properties.position = [0,0,0];
+		break;
 
-	var max_particles = Math.round(properties.max_particles);
-	max_particles = isNaN(max_particles) ? 0 : max_particles;
-	properties.max_particles = Math.max(max_particles, 0.0);
+		case "mode":
+			var m = properties.mode;
 
-	var max_trail_particles =Math.round(properties.max_trail_particles);
-	max_trail_particles = isNaN(max_trail_particles) ? 0 : max_trail_particles;
-	properties.max_trail_particles = Math.max(max_trail_particles, 0.0);
+			if(!this.modeValues.includes(m))
+				m = "Point";
 
-	var spawn_rate = properties.spawn_rate;
-	spawn_rate = isNaN(spawn_rate) ? 0 : spawn_rate;
-	properties.spawn_rate = Math.max(spawn_rate, 0.0);
+			this.mode_widget.value = m;
+			this.setValue(m);	
+		break;
 
-	if(properties.position.length != 3)
-		properties.position = [0,0,0];
+		case "mesh_mode":
+		break;
 
-	if(properties.color.length != 4)
-		properties.color = [1,1,1,1];
+		case "color":
+			if(properties.color.length != 4)
+				properties.color = [1,1,1,1];
 
-	for (var i = 0; i < 4; ++i)
-		properties.color[i] = Math.min(Math.max(properties.color[i], 0.0), 1.0);
+			for (var i = 0; i < 4; ++i)
+				properties.color[i] = Math.min(Math.max(properties.color[i], 0.0), 1.0);
+		break;
+
+		case "show_origin":
+			this.show_widget.value = properties.show_origin;
+
+			if(this.system == undefined)
+			{
+				this.system = new SystemInfo(graph.last_node_id+1, properties.position, properties.max_particles, properties.max_trail_particles);
+				system_list.push(this.system);	
+			}
+			this.system.visible = properties.show_origin;
+		break;
+
+		case "trail":
+			this.trail_widget.value = properties.trail;
+
+			if(this.system == undefined)
+			{
+				this.system = new SystemInfo(graph.last_node_id+1, properties.position, properties.max_particles, properties.max_trail_particles);
+				system_list.push(this.system);	
+			}
+			this.system.trail = properties.trail;
+		break;
+	}
 }
 
 
@@ -137,8 +172,12 @@ mySpawnNode.prototype.onAdded = function()
 {
 	//Every time that a spawn node is created a new mesh and information about the system have to be added to the list in order to work properly
 	var properties = this.properties;
-	this.system = new SystemInfo(this.id, properties.position, properties.max_particles, properties.max_trail_particles);
-	system_list.push(this.system);
+
+	if(this.system == undefined)
+	{
+		this.system = new SystemInfo(this.id, properties.position, properties.max_particles, properties.max_trail_particles);
+		system_list.push(this.system);	
+	}
 };
 
 mySpawnNode.prototype.onExecute = function() 
