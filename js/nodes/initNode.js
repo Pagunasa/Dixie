@@ -398,8 +398,10 @@ initParticlesNode.prototype.onExecute = function()
 		else
 			system_info.texture = undefined;
 
-		this.texture      = p_prop.texture;
-		this.subTextures  = this.texture.prop.subtextures;
+		this.texture = p_prop.texture;
+		
+		if(this.texture != undefined)
+			this.subTextures  = this.texture.prop.subtextures;
 
 		var particle;
 		var particles          = system_info.particles_list;
