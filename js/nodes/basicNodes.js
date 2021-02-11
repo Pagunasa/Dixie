@@ -221,13 +221,12 @@ function textureLoadNode() {
 		animated: false,
 		anim_loop: false,
 		anim_duration: 0,
-		subtextures_size: [0,0]
+		textures_x: 1,
+		textures_y: 1
 	}
 	
 	this.file = undefined;
 	this.data_loaded = false;
-	this.numberTextX = 0;
-	this.numberTextY = 0;
 
 	var that = this;
 
@@ -287,8 +286,8 @@ textureLoadNode.prototype.changeAnimLoop = function(v, manual_prop = false){
 textureLoadNode.prototype.addWidgets = function() {
 	var properties = this.properties;
 
-	this.subxW   = this.addWidget("number", "Sub textures size x", properties.subtextures_size[0], this.changeSubTextureSizeX.bind(this), {min: 0, max: Number.MAX_SAFE_INTEGER, step: 10});
-	this.subyW   = this.addWidget("number", "Sub textures size y", properties.subtextures_size[1], this.changeSubTextureSizeY.bind(this), {min: 0, max: Number.MAX_SAFE_INTEGER, step: 10});
+	this.subxW   = this.addWidget("number", "Textures in x", properties.textures_x, this.changeTexturesX.bind(this), {min: 1, max: Number.MAX_SAFE_INTEGER, step: 10});
+	this.subyW   = this.addWidget("number", "Textures in y", properties.textures_y, this.changeTexturesY.bind(this), {min: 1, max: Number.MAX_SAFE_INTEGER, step: 10});
 
 	this.animW   = this.addWidget("toggle", "Animated texture", properties.animated, this.changeAnimated.bind(this));
 
@@ -327,39 +326,21 @@ textureLoadNode.prototype.changeSubTexture = function(v, manual_prop = false){
 textureLoadNode.prototype.afterLoading = function(texture, url){
 	this.file = texture;
 	this.data_loaded = true;
-    this.size[1] += 112;
-
-	this.computeSubTextures();
+    //this.size[1] += 112;
 }
-
-textureLoadNode.prototype.computeSubTextures = function(){			
-	//if the data is not loaded we don't have anithing to show
-	if (!this.data_loaded)
-		return;
-  	//if the data is undedifined is still loading (2nd check)
-  	if(this.file.data == undefined)
-  		return;
-	
-	var sizes = this.properties.subtextures_size;
-	
-  	this.numberTextX = sizes[0] != 0 ? Math.floor(this.file.width  / sizes[0]) : 0;
-  	this.numberTextY = sizes[1] != 0 ? Math.floor(this.file.height / sizes[1]) : 0;
-} 
 
 textureLoadNode.prototype.changeAnimDuration = function(v){
-	this.properties.anim_duration = Math.max(isNaN(v) ? 0 : v, 0);
+	this.properties.anim_duration = Math.max(isNaN(v) ? 1 : v, 1);
 }
 
-textureLoadNode.prototype.changeSubTextureSizeX = function(v){
-	this.properties.subtextures_size[0] = Math.max(isNaN(v) ? 0 : v, 0);
-	this.subxW.value = this.properties.subtextures_size[0];
-	this.computeSubTextures();
+textureLoadNode.prototype.changeTexturesX = function(v){
+	this.properties.textures_x = Math.floor(Math.max(isNaN(v) ? 1 : v, 1));
+	this.subxW.value = this.properties.textures_x;
 }
 
-textureLoadNode.prototype.changeSubTextureSizeY = function(v){
-	this.properties.subtextures_size[1] = Math.max(isNaN(v) ? 0 : v, 0);
-	this.subyW.value = this.properties.subtextures_size[1];
-	this.computeSubTextures();
+textureLoadNode.prototype.changeTexturesY = function(v){
+	this.properties.textures_y = Math.floor(Math.max(isNaN(v) ? 1 : v, 1));
+	this.subyW.value = this.properties.textures_y;
 }
 
 //In order to show to the users the loaded texture it's mandatory to
@@ -438,31 +419,19 @@ textureLoadNode.prototype.onPropertyChanged = function(property) {
 
 			this.addWidgets();
 
-			var subtextures_size = properties.subtextures_size;
-
-			properties.subtextures_size[0] = Math.max(0.0, subtextures_size[0]);
-			properties.subtextures_size[1] = Math.max(0.0, subtextures_size[1]);
-			this.subxW.value = subtextures_size[0];
-			this.subyW.value = subtextures_size[1];
-			this.computeSubTextures();
+			properties.textures_x = Math.floor(Math.max(0.0, properties.textures_x));
+			properties.textures_y = Math.floor(Math.max(0.0, properties.textures_y));
+			this.subxW.value = properties.textures_x;
+			this.subyW.value = properties.textures_y;
+			//this.computeSubTextures();
 		break;
 
-		case "subtextures_size":		
-			if(properties.subtextures_size.length != 2)
-				properties.subtextures_size = [0,0];
-			else
-			{
-				var subtextures_size = properties.subtextures_size;
-				properties.subtextures_size[0] = Math.max(0.0, subtextures_size[0]);
-				properties.subtextures_size[1] = Math.max(0.0, subtextures_size[1]);
+		case "textures_x":
+			this.changeTexturesX(properties.textures_x);
+		break;
 
-                if(!properties.subtextures)
-				    break;
-
-				this.subxW.value = subtextures_size[0];
-				this.subyW.value = subtextures_size[1];
-				this.computeSubTextures();
-			}
+		case "textures_y":
+			this.changeTexturesY(properties.textures_y);
 		break;
 
 		case "animated":
@@ -522,7 +491,7 @@ textureLoadNode.prototype.onPropertyChanged = function(property) {
 };
 
 textureLoadNode.prototype.onExecute = function() {
-	this.setOutputData(0, {prop: this.properties, file: this.file, ntx: this.numberTextX, nty: this.numberTextY});
+	this.setOutputData(0, {prop: this.properties, file: this.file});
 };
 
 textureLoadNode.title = "Load Texture";

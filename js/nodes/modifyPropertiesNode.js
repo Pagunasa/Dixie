@@ -294,12 +294,17 @@ modifyPropertyNode.prototype.onExecute = function()
 			*/
 			if(properties.changed_property == "Speed")
 			{
+				var temp = [0,0,0];
+				temp[0]  = final_value[0];
+				temp[1]  = final_value[1];
+				temp[2]  = final_value[2];
+				
 				if(properties.application_mode == "Addition")
 					for (var j = 0; j < 3; ++j)
-						final_value[j] += particle.iSpeed[j];
+						temp[j] = particle.iSpeed[j] + final_value[j];
 				else if(properties.application_mode == "Subtraction")
 					for (var j = 0; j < 3; ++j)
-						final_value[j] -= particle.iSpeed[j];
+						temp[j] = particle.iSpeed[j] - final_value[j];
 
 				for (var j = 0; j < 3; ++j)
 					particle.speed[j] = final_value[j] * modifier + particle.iSpeed[j] * (1.0 - modifier);

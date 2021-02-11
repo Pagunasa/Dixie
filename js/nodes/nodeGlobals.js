@@ -32,7 +32,7 @@ var objects_list = [];
 /********************************/
 var default_centers    = [0,0,0, 0,0,0, 0,0,0, 0,0,0, 0,0,0, 0,0,0];
 var default_coords     = [1,1, 0,1, 1,0, 0,0, 1,0, 0,1];
-var square_vertices    = [-0.5,0.5, 0.5,0.5, -0.5,-0.5, 0.5,-0.5, -0.5,-0.5, 0.5,0.5];//[0.5,0.5, -0.5,0.5, 0.5,0, -0.5,0., 0.5,0., -0.5,0.5];
+var square_vertices    = [0.5,0.5, -0.5,0.5, 0.5,-0.5, -0.5,-0.5, 0.5,-0.5, -0.5,0.5];//[0.5,0.5, -0.5,0.5, 0.5,0, -0.5,0., 0.5,0., -0.5,0.5];
 var default_color      = [1,1,1,1, 1,1,1,1, 1,1,1,1, 1,1,1,1, 1,1,1,1, 1,1,1,1];
 var default_sizes      = [0.25,0.25, 0.25,0.25, 0.25,0.25, 0.25,0.25, 0.25,0.25, 0.25,0.25];
 var default_visibility = [0, 0, 0, 0, 0, 0];
@@ -303,14 +303,15 @@ Particle.prototype.fill = function(properties) {
 		this.animated = true;
 
 		var t = lifetime;
+		var t_prop = texture.prop;
 
 		if(texture.prop.anim_loop)
 		{
-			var anim_d = texture.prop.anim_duration;
+			var anim_d = t_prop.anim_duration;
 			t = anim_d == 0 ? lifetime : anim_d;
 		}
 
-		var frame_number = Math.floor(texture.ntx + texture.nty) - 1; 
+		var frame_number = Math.floor(t_prop.textures_x + t_prop.textures_y) - 1; 
 		this.frameRate = (t / frame_number);
 	}
 };

@@ -112,7 +112,7 @@ particleDataNode.prototype.onExecute = function()
 	properties.max_size = input_max_size || properties.max_size;
 	properties.min_size = input_min_size || properties.min_size;
 
-	properties.color = input_color || properties.color;
+	properties.color = input_color || [1,1,1,1];
 	this.texture = input_texture || undefined;
 
 	this.setOutputData(0, {data: properties, texture: texture});
@@ -205,8 +205,8 @@ initParticlesNode.prototype.getNextFrame = function(particle)
 	if(!texture.prop.animated || particle.c_frame < particle.frameRate)
 		return;
 
-	var sizeX = texture.ntx;
-	var sizeY = texture.nty; 
+	var sizeX = texture.prop.textures_x;
+	var sizeY = texture.prop.textures_y; 
 
  	particle.c_frame = 0;
 	particle.frameX++;
@@ -230,8 +230,8 @@ initParticlesNode.prototype.getCoords = function(frameX = 0, frameY = 0)
 	if(texture == undefined)
 		return default_coords;
 
-	var sizeX = texture.ntx;
-	var sizeY = texture.nty; 
+	var sizeX = texture.prop.textures_x;
+	var sizeY = texture.prop.textures_y; 
 
 	if(sizeX == 0 && sizeY == 0 || !this.subTextures)
 		return default_coords;
@@ -241,22 +241,22 @@ initParticlesNode.prototype.getCoords = function(frameX = 0, frameY = 0)
 		var iSx = 1/sizeX;
 		var iSy = 1/sizeY;
   
-		var minX = sizeX != 0 ? frameX * iSx : 0; 
-		var minY = sizeY != 0 ? frameY * iSy : 0; 
+		var minX = sizeX != 1 ? frameX * iSx : 0; 
+		var minY = sizeY != 1 ? frameY * iSy : 0; 
 
-		var maxX = sizeX != 0 ? (frameX+1) * iSx : 1; 
-		var maxY = sizeY != 0 ? (frameY+1) * iSy : 1; 
+		var maxX = sizeX != 1 ? (frameX+1) * iSx : 1; 
+		var maxY = sizeY != 1 ? (frameY+1) * iSy : 1; 
 
 		return [maxX,maxY, minX,maxY, maxX,minY, minX,minY, maxX,minY, minX,maxY];
 	}
 
 	var new_coord = [0,0, 1,1];
 
-	new_coord[0] = sizeX != 0 ? Math.floor(Math.random() * sizeX)/sizeX : 0;
-	new_coord[1] = sizeY != 0 ? Math.floor(Math.random() * sizeY)/sizeY : 0;
+	new_coord[0] = sizeX != 1 ? Math.floor(Math.random() * sizeX)/sizeX : 0;
+	new_coord[1] = sizeY != 1 ? Math.floor(Math.random() * sizeY)/sizeY : 0;
 
-	new_coord[2] = sizeX != 0 ? new_coord[0] + (1/sizeX) : 1; 
-	new_coord[3] = sizeY != 0 ? new_coord[1] + (1/sizeY) : 1; 
+	new_coord[2] = sizeX != 1 ? new_coord[0] + (1/sizeX) : 1; 
+	new_coord[3] = sizeY != 1 ? new_coord[1] + (1/sizeY) : 1; 
 
 	return [new_coord[2],new_coord[3], new_coord[0],new_coord[3], new_coord[2],new_coord[1], 
 	new_coord[0],new_coord[1], new_coord[2],new_coord[1], new_coord[0],new_coord[3]];
