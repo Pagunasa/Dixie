@@ -335,12 +335,16 @@ textureLoadNode.prototype.changeAnimDuration = function(v){
 
 textureLoadNode.prototype.changeTexturesX = function(v){
 	this.properties.textures_x = Math.floor(Math.max(isNaN(v) ? 1 : v, 1));
-	this.subxW.value = this.properties.textures_x;
+	
+	if(this.subxW != undefined)
+		this.subxW.value = this.properties.textures_x;
 }
 
 textureLoadNode.prototype.changeTexturesY = function(v){
 	this.properties.textures_y = Math.floor(Math.max(isNaN(v) ? 1 : v, 1));
-	this.subyW.value = this.properties.textures_y;
+
+	if(this.subyW != undefined)
+		this.subyW.value = this.properties.textures_y;
 }
 
 //In order to show to the users the loaded texture it's mandatory to
