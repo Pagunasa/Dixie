@@ -368,7 +368,7 @@ gl.ondraw = function() {
 
 	gl.enable(gl.BLEND );
 	gl.blendEquation(gl.FUNC_ADD);
-	gl.blendFunc(gl.SRC_ALPHA, gl.ONE);
+	//gl.blendFunc(gl.SRC_ALPHA, gl.ONE);
 	//gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
 	gl.enable(gl.DEPTH_TEST);
 	gl.depthFunc(gl.LESS);
@@ -403,40 +403,47 @@ gl.ondraw = function() {
 	};
 
 	//Render the particles
-	for(x in system_list){
-		var mesh        = system_list[x].particles_mesh;
-		var trails_mesh = system_list[x].trails_mesh;
+	for(var i = 0; i < system_list.length; ++i){
+		var system = system_list[i];
 
-		if(system_list[x].point_mode)
+		if(system.max_particles <= 0)
+			continue;
+
+		gl.blendFunc(system.src_bfact, system.dst_bfact);
+
+		var mesh        = system.particles_mesh;
+		var trails_mesh = system.trails_mesh;
+
+		if(system.point_mode)
 		{
-			particles_uniforms.u_model = system_list[x].model;
-			system_uniforms.u_model    = system_list[x].model;
+			particles_uniforms.u_model = system.model;
+			system_uniforms.u_model    = system.model;
 		}
 		else
 		{
-			particles_uniforms.u_model = system_list[x].external_model;
-			system_uniforms.u_model    = system_list[x].external_model;
+			particles_uniforms.u_model = system.external_model;
+			system_uniforms.u_model    = system.external_model;
 		}
 
 		//First all the particles of the system are rendered
 		//If a texture is defined then the textured shader is used
 		//but if te texture is undefined the flat will be used 
-		if(system_list[x].texture == undefined)
+		if(system.texture == undefined)
 		{
 			particleShaderFlat.uniforms( particles_uniforms ).draw( mesh );
 			
-			if(system_list[x].trail)
+			if(system.trail)
 				particleShaderFlat.uniforms( particles_uniforms ).draw( trails_mesh );
 		}
 		else
 		{
-			particles_uniforms.u_texture = system_list[x].texture;
+			particles_uniforms.u_texture = system.texture;
 			particles_uniforms.u_texture.bind(0);
 			particleShaderTextured.uniforms( particles_uniforms ).draw( mesh );
 
-			if(system_list[x].trail)
+			if(system.trail)
 			{
-				particles_uniforms.u_texture = system_list[x].texture;
+				particles_uniforms.u_texture = system.texture;
 				particles_uniforms.u_texture.bind(0);
 				particleShaderTextured.uniforms( particles_uniforms ).draw( trails_mesh );		
 			}
@@ -444,10 +451,10 @@ gl.ondraw = function() {
 
 		//If the user wants to see the origin of the particles
 		//then it will be rendered using the default texture
-		if(!system_list[x].visible)
+		if(!system.visible)
 			continue;
 		
-		system_uniforms.u_color = system_list[x].color;
+		system_uniforms.u_color = system.color;
 		system_uniforms.u_texture.bind(0);
 		texturedShader.uniforms( system_uniforms ).draw( default_forces_mesh, GL.POINTS );
 	}

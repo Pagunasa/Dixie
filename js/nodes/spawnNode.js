@@ -16,6 +16,8 @@ function mySpawnNode()
         mesh_mode: "Surface",          //The mode of spawn in the mesh
     	color: [1,1,1,1],              //The color of the origin of the particle
         show_origin: true,
+        src_bfact: "Source alpha",
+        dst_bfact: "One",
         trail: false
     };
    
@@ -25,6 +27,9 @@ function mySpawnNode()
     };
 
     this.modeValues = ["Point", "Mesh", "2D Geometry"];
+    this.blending_factors = ["Zero","One","Source color","One minus source color","Destination color","One minus destination color",
+    "Source alpha", "One minus source alpha", "Destination alpha", "One minus destination alpha", "Constant color", "One minus constant color",
+    "Constant alpha", "One minus constant alpha", "Source alpha saturate"];
 
 	/**************************************/
 	/***************Widgets****************/
@@ -33,8 +38,11 @@ function mySpawnNode()
 	this.show_widget  = this.addWidget("toggle", "Show origin", true, this.toogleOriginVisibility.bind(this));
 	//This widget allows to enable/disable a trail left by the particles
 	this.trail_widget = this.addWidget("toggle", "Trail particles", false, this.toogleTrail.bind(this));
+	//This two widgets allow us to change the blending function for the system
+	this.srcbl_widget = this.addWidget("combo", "Source bending factor", "Source alpha", this.setSrcFactor.bind(this), { values: this.blending_factors });
+	this.dstbl_widget = this.addWidget("combo", "Destination blending factor", "One", this.setDstFactor.bind(this), { values: this.blending_factors });
 	//This widget allows to change the mode for spawning the particles of the system 
-	this.mode_widget  = this.addWidget("combo", "Mode", "Point", this.setValue.bind(this), { values: this.modeValues});
+	this.mode_widget  = this.addWidget("combo", "Mode", "Point", this.setSpawnMode.bind(this), { values: this.modeValues});
 
 	/**************************************/
 	/***********Inputs & Outputs***********/
@@ -46,6 +54,137 @@ function mySpawnNode()
 	this.addInput("Position"     , "vec3");
 
 	this.addOutput("Spawner", "spawner");
+}
+
+mySpawnNode.prototype.setSrcFactor = function(v){
+	if(!this.blending_factors.includes(v))
+		v = "Source Alpha";
+
+	this.properties.src_bfact = v;
+	this.srcbl_widget.value   = v;
+	this.setBlendFactors(v)
+}
+
+mySpawnNode.prototype.setDstFactor = function(v){
+	if(!this.blending_factors.includes(v))
+		v = "One";
+
+	this.properties.dst_bfact = v;
+	this.dstbl_widget.value   = v;
+	this.setBlendFactors(v, true)
+}
+
+mySpawnNode.prototype.setBlendFactors = function(value, dst = false)
+{
+	var system = this.system;
+
+	switch(value)
+	{
+		case "Zero":
+			if(dst)
+				system.dst_bfact = gl.ZERO;		
+			else
+				system.src_bfact = gl.ZERO;
+		break;
+
+		case "One":
+			if(dst)
+				system.dst_bfact = gl.ONE;		
+			else
+				system.src_bfact = gl.ONE;
+		break;
+
+		case "Source color":
+			if(dst)
+				system.dst_bfact = gl.SRC_COLOR;		
+			else
+				system.src_bfact = gl.SRC_COLOR;
+		break;
+
+		case "One minus source color":
+			if(dst)
+				system.dst_bfact = gl.ONE_MINUS_SRC_COLOR;		
+			else
+				system.src_bfact = gl.ONE_MINUS_SRC_COLOR;
+		break;
+
+		case "Destination color":
+			if(dst)
+				system.dst_bfact = gl.DST_COLOR;		
+			else
+				system.src_bfact = gl.DST_COLOR;
+		break;
+
+		case "One minus destination color":
+			if(dst)
+				system.dst_bfact = gl.ONE_MINUS_DST_COLOR;		
+			else
+				system.src_bfact = gl.ONE_MINUS_DST_COLOR;
+		break;
+
+		case "Source alpha":
+			if(dst)
+				system.dst_bfact = gl.SRC_ALPHA;		
+			else
+				system.src_bfact = gl.SRC_ALPHA;
+		break;
+
+		case "One minus source alpha":
+			if(dst)
+				system.dst_bfact = gl.ONE_MINUS_SRC_ALPHA;		
+			else
+				system.src_bfact = gl.ONE_MINUS_SRC_ALPHA;
+		break;
+
+		case "Destination alpha":
+			if(dst)
+				system.dst_bfact = gl.DST_ALPHA;		
+			else
+				system.src_bfact = gl.DST_ALPHA;
+		break;
+
+		case "One minus destination alpha":
+			if(dst)
+				system.dst_bfact = gl.ONE_MINUS_DST_ALPHA;		
+			else
+				system.src_bfact = gl.ONE_MINUS_DST_ALPHA;
+		break;
+
+		case "Constant color":
+			if(dst)
+				system.dst_bfact = gl.CONSTANT_COLOR;		
+			else
+				system.src_bfact = gl.CONSTANT_COLOR;
+		break;
+
+		case "One minus constant color":
+			if(dst)
+				system.dst_bfact = gl.ONE_MINUS_CONSTANT_COLOR;		
+			else
+				system.src_bfact = gl.ONE_MINUS_CONSTANT_COLOR;
+		break;
+
+		case "Constant alpha":
+			if(dst)
+				system.dst_bfact = gl.CONSTANT_ALPHA;		
+			else
+				system.src_bfact = gl.CONSTANT_ALPHA;
+		break;
+
+		case "One minus constant alpha":
+			if(dst)
+				system.dst_bfact = gl.ONE_MINUS_CONSTANT_ALPHA;		
+			else
+				system.src_bfact = gl.ONE_MINUS_CONSTANT_ALPHA;
+		break;
+
+		case "Source alpha saturate":
+			if(dst)
+				system.dst_bfact = gl.SRC_ALPHA_SATURATE;		
+			else
+				system.src_bfact = gl.SRC_ALPHA_SATURATE;
+		break;
+	}
 }
 
 mySpawnNode.prototype.toogleOriginVisibility = function(){
@@ -60,8 +199,7 @@ mySpawnNode.prototype.toogleTrail = function(v) {
 	this.system.trail = properties.trail;
 }
 
-
-mySpawnNode.prototype.setValue = function(v) {
+mySpawnNode.prototype.setSpawnMode = function(v) {
 	if (this.properties.mode == v)
 		return;
 
@@ -70,25 +208,25 @@ mySpawnNode.prototype.setValue = function(v) {
 	this.disconnectInput(4);
 	this.inputs.splice(4,1);
 	//if a change is maked and a seconf widget exist in the node, it must be deleted
-	this.widgets.splice(3,1); 
+	this.widgets.splice(5,1); 
 
 	if (v == "Point"){
 		this.addInput("Position", "vec3"); //if the mode is point the new input must be a vector 3
-		this.size[1] = 190;
+		this.size[1] = 234;
 	}
 	else if (v == "Mesh")
 	{
-		//this.widgets.splice(3,1); //if a change is maked and a seconf widget exist in the node, it must be deleted
 		this.addInput("Mesh", "mesh"); //if the mode is mesh the new input must be a mesh
 		//This widget allow to change the spawn mode of the mesh
 		this.addWidget("combo", "Mesh Spawn Mode", "Surface", function(){}, { values:["Surface", "Volume"] });
-		this.size[0] = 252;
 	}
 	else if (v == "2D Geometry")
 	{
 		this.addInput("Geometry", "2dGeometry"); //if the mode is 2D geometry  the new input must be that geometry
-		this.size[1] = 190;
+		this.size[1] = 234;
 	}
+
+	this.size[0] = 389;
 }
 
 
@@ -103,6 +241,14 @@ mySpawnNode.prototype.onPropertyChanged = function(property)
 			var max_particles = Math.round(properties.max_particles);
 			max_particles = isNaN(max_particles) ? 0 : max_particles;
 			properties.max_particles = Math.max(max_particles, 0.0);
+
+			if(this.system == undefined)
+			{
+				this.system = new SystemInfo(graph.last_node_id+1, properties.position, properties.max_particles, properties.max_trail_particles);
+				system_list.push(this.system);	
+			}
+			else
+				this.system.max_particles = properties.max_particles;
 		break;
 
 		case "max_trail_particles":
@@ -129,7 +275,7 @@ mySpawnNode.prototype.onPropertyChanged = function(property)
 				m = "Point";
 
 			this.mode_widget.value = m;
-			this.setValue(m);	
+			this.setSpawnMode(m);	
 		break;
 
 		case "mesh_mode":
@@ -164,6 +310,14 @@ mySpawnNode.prototype.onPropertyChanged = function(property)
 			}
 			this.system.trail = properties.trail;
 		break;
+
+		case "dst_bfact":
+			this.setDstFactor(this.properties.dst_bfact);
+		break;
+
+		case "src_bfact":
+			this.setSrcFactor(this.properties.src_bfact);
+		break;
 	}
 }
 
@@ -172,6 +326,7 @@ mySpawnNode.prototype.onAdded = function()
 {
 	//Every time that a spawn node is created a new mesh and information about the system have to be added to the list in order to work properly
 	var properties = this.properties;
+	this.size[0] = 389;
 
 	if(this.system == undefined)
 	{
@@ -182,15 +337,15 @@ mySpawnNode.prototype.onAdded = function()
 
 mySpawnNode.prototype.onExecute = function() 
 {
-	var properties     = this.properties;
-	var max_particles  = properties.max_particles;
-	var max_trail      = properties.max_trail_particles;
-	var spawn_rate     = properties.spawn_rate;
-	var color          = properties.color;
-	var position       = properties.position;
-	var mode           = properties.mode;
-	var system         = this.system;
-	var last_status    = this.last_status;
+	var properties    = this.properties;
+	var max_particles = properties.max_particles;
+	var max_trail     = properties.max_trail_particles;
+	var spawn_rate    = properties.spawn_rate;
+	var color         = properties.color;
+	var position      = properties.position;
+	var mode          = properties.mode;
+	var system        = this.system;
+	var last_status   = this.last_status;
 	var origin_mesh;
 	var origin_2d_geometry;
 
@@ -221,6 +376,7 @@ mySpawnNode.prototype.onExecute = function()
 	if (max_particles != last_status.max_particles)
 	{	
 		var particles_list = system.particles_list;
+		this.system.max_particles = properties.max_particles;
 
 		if(max_particles < last_status.max_particles)	
 		{

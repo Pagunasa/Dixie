@@ -210,9 +210,10 @@ class SystemInfo {
 	constructor(id_, position_, max_particles_, max_trail_particles_) {
 		this.id                 = id_;
 		this.mesh_id            = id_;
-		
+
 		this.particles_ids      = [];		
 		this.particles_list     = [];
+		this.max_particles      = max_particles_;
 		this.particles_mesh     = createMesh(max_particles_);
 
 		this.trails             = false;
@@ -233,6 +234,9 @@ class SystemInfo {
 		this.texture            = undefined;
 		this.trails_texture     = undefined;
 		this.coords             = default_coords;
+
+		this.src_bfact          = gl.SRC_ALPHA;
+		this.dst_bfact          = gl.ONE;
 	}
 }
 
