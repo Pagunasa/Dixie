@@ -269,16 +269,8 @@ initParticlesNode.prototype.generateRandomPoint = function(system)
 	var origin_mesh = system.origin_mesh;
 	var system_info = this.system_info;
 
-	if (mode == "Point" || mode == "2D Geometry" || origin_mesh == undefined 
-		|| origin_mesh == undefined ? true : origin_mesh.vertices == undefined)
-	{
-		system_info.point_mode     = true;
-		system_info.external_model = undefined;		
+	if(system_info.point_mode)
 		return position;
-	}
-
-	system_info.point_mode     = false;
-	system_info.external_model = origin_mesh.model;
 
 	var triangle_num = origin_mesh.triangle_num;
 
@@ -301,6 +293,8 @@ initParticlesNode.prototype.generateRandomPoint = function(system)
 
 	for (var i = 0; i < 3; ++i)
 		random_point[i] = points[i] * ambda1 + points[i+3] * ambda2 + points[i+6] * ambda3;
+
+	mat4.multiplyVec3(random_point, system_info.external_model, random_point)
 
 	return random_point;
 }
@@ -402,9 +396,24 @@ initParticlesNode.prototype.onExecute = function()
 			system_info.texture = undefined;
 
 		this.texture = p_prop.texture;
-		
+
 		if(this.texture != undefined)
 			this.subTextures  = this.texture.prop.subtextures;
+
+		var mode        = system.mode;
+		var origin_mesh = system.origin_mesh;
+
+		if (mode == "Point" || mode == "2D Geometry" || origin_mesh == undefined 
+			|| origin_mesh == undefined ? true : origin_mesh.vertices == undefined)
+		{
+			system_info.point_mode     = true;
+			system_info.external_model = undefined;		
+		} 
+		else 
+		{
+			system_info.external_model = origin_mesh.model;
+			system_info.point_mode     = false;
+		}
 
 		var particle;
 		var particles          = system_info.particles_list;

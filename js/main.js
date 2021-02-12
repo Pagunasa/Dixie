@@ -25,6 +25,7 @@ var camera;
 var time_interval;
 
 var is_graph_running;
+var identity = mat4.IDENTITY;
 
 /* Demos */
 //Default start
@@ -368,10 +369,10 @@ gl.ondraw = function() {
 
 	gl.enable(gl.BLEND );
 	gl.blendEquation(gl.FUNC_ADD);
-	//gl.blendFunc(gl.SRC_ALPHA, gl.ONE);
-	//gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
 	gl.enable(gl.DEPTH_TEST);
 	gl.depthFunc(gl.LESS);
+
+	gl.depthMask(false);
 
 	var object_uniforms = {
 		u_mvp: camera.mvp,
@@ -421,7 +422,7 @@ gl.ondraw = function() {
 		}
 		else
 		{
-			particles_uniforms.u_model = system.external_model;
+			particles_uniforms.u_model = identity;
 			system_uniforms.u_model    = system.external_model;
 		}
 
@@ -525,6 +526,7 @@ gl.onupdate = function( dt ) {
 	var particle_ids;
 	var trails_list;
 	var trails_ids;
+	var distance;
 
 	//The model of the forces and systems is updated
 	for (var i = 0; i < forces_list.length; ++i)
@@ -543,12 +545,22 @@ gl.onupdate = function( dt ) {
 
 		mat4.setTranslation(system.model, system.position);
 
+		distance = [0,0,0];
+		for(var k = 0; k < 3; ++k)
+			distance[k] = system.position[k] - camera.eye[k];
+
+		system.distance_to_camera = Math.sqrt((distance[0]*distance[0]+distance[1]*distance[1]+distance[2]*distance[2]));;
+
 		//Update particles distance_to_camera
 		orderParticles(particle_ids, particle_list, camera, system.particles_mesh);
 		//Update trails distance_to_camera
 		if(system.trail)
 			orderParticles(trails_ids, trails_list, camera, system.trails_mesh);
 	}
+
+	system_list.sort(function(a,b){
+		return b.distance_to_camera - a.distance_to_camera;
+	});
 
 	if(graph.status == LGraph.STATUS_RUNNING)
 	graph.runStep();

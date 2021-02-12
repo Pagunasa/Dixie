@@ -210,6 +210,7 @@ class SystemInfo {
 	constructor(id_, position_, max_particles_, max_trail_particles_) {
 		this.id                 = id_;
 		this.mesh_id            = id_;
+		this.distance_to_camera = 0;
 
 		this.particles_ids      = [];		
 		this.particles_list     = [];
