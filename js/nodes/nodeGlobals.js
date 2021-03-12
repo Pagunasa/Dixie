@@ -974,7 +974,7 @@ function loadMesh(node){
 	
 	//Plane
 	def_mesh_3.onclick = function(){
-		node.onMeshLoaded(GL.Mesh.plane());
+		node.onMeshLoaded(GL.Mesh.plane(), true);
 		node.properties.name = "plane";
 		node.last_name = node.properties.name;
 		node.size[1]   = node.n_size;

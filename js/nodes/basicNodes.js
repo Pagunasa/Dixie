@@ -636,7 +636,7 @@ function meshLoadNode() {
 	this.addOutput("Mesh"  , "mesh");
 }
 
-meshLoadNode.prototype.onMeshLoaded = function(loaded_mesh)
+meshLoadNode.prototype.onMeshLoaded = function(loaded_mesh, plane = false)
 {
 	if(loaded_mesh == undefined)
 	{
@@ -654,7 +654,7 @@ meshLoadNode.prototype.onMeshLoaded = function(loaded_mesh)
 
 	this.object.mesh  = loaded_mesh;
 	this.mesh         = this.object.mesh
-	this.triangle_num = this.mesh.vertexBuffers.vertices.data.length / 9; //3 coordinates by 3 points of a triangle	
+	this.triangle_num = this.mesh.vertexBuffers.vertices.data.length / (plane ? 6 : 9); //3 coordinates by 3 points of a triangle or 2 coordinates (plane) by 3 points of a triangle 	
 }
 
 meshLoadNode.prototype.onAdded = function()
@@ -773,7 +773,7 @@ meshLoadNode.prototype.onPropertyChanged = function(property)
 						break;
 
 						case "plane":
-							this.onMeshLoaded(GL.Mesh.plane());
+							this.onMeshLoaded(GL.Mesh.plane(), true);
 						break;
 
 						case "dodo":
@@ -865,6 +865,7 @@ meshLoadNode.prototype.onExecute = function()
 
 	this.setOutputData(0, {
 		id: this.id, 
+		name: this.properties.name,
 		triangle_num: this.triangle_num, 
 		vertices: this.mesh != undefined ? this.mesh.vertexBuffers.vertices.data : undefined, 
 		model: this.model

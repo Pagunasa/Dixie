@@ -325,8 +325,14 @@ initParticlesNode.prototype.generateRandomPoint = function(system)
 	ambda3 = 1 - ambda1 - ambda2;
 
 	//Then I pick a random triangle and his asigned points
-	var triangle = Math.floor(Math.random()*triangle_num) * 9;
-	var points = origin_mesh.vertices.slice(triangle, triangle+9);
+	var div_value = origin_mesh.name != "plane" ? 9 : 6;
+	var triangle = Math.floor(Math.random()*triangle_num) * div_value;
+	var points;
+
+	if(div_value == 9)
+		points = origin_mesh.vertices.slice(triangle, triangle + div_value);
+	else
+		points = origin_mesh.vertices.slice(triangle == 0 ? 0 : 3, triangle == 0 ? 9 : 12);
 
 	var random_point = [0,0,0];
 
