@@ -1,17 +1,27 @@
 /*
-*	This node is for define how the particle system spawns the particles
-*	@method mySpawnNode
+*	This node is for create a condition and test if the particles meet it
+*	@method createConditionNode
 */
-function createConditionNode() 
-{
+function createConditionNode() {
 	/**************************************/
 	/***********Node properties************/
 	/**************************************/
 	this.properties = {
 		system_property: "Speed",
 		condition      : "Equals",
+		is_one_time    : false,
 		value          : vector_3
 	};
+
+    this.constructor.desc = "&nbsp;&nbsp;&nbsp;&nbsp; This node defines a condition and checks for every particle in the system if it's meted.\
+    It will only check for a sub emitter particles if the connection comes from a init node that initializes his particles.";
+
+    this.prop_desc = {
+    	system_property: "The tested property of the particle",            
+        condition:       "What kind of operator will be used for the check",
+        is_one_time:     "If only can be meted one time per particle",
+        value:           "The value we want to use for the check"
+    }
 
 	this.w1Values = ["Speed", "Life time", "Colision number", "Size"];
 	this.w2Values = ["Equals", "Greater than", "Less than", "Greater than or equals", "Less than or equals", "No equals"];
@@ -24,7 +34,9 @@ function createConditionNode()
 		{values: this.w1Values});
 	this.w2 = this.addWidget("combo", "Condition", "Equals", this.changeCondition.bind(this), 
 		{values: this.w2Values});
-	
+	this.w3 = this.addWidget("toggle", "One time condition", false, this.changeConditionTime.bind(this), 
+		{values: this.w2Values});
+
 	/**************************************/
 	/***********Inputs & Outputs***********/
 	/**************************************/
@@ -57,6 +69,13 @@ createConditionNode.prototype.onPropertyChanged = function()
 		this.changeCondition(co);
 		this.w2.value = co;
 	}
+
+	this.w3.value = properties.is_one_time;
+}
+
+createConditionNode.prototype.changeConditionTime = function(v)
+{
+	this.properties.is_one_time = v;
 }
 
 createConditionNode.prototype.changeCondition = function(v)
@@ -65,7 +84,6 @@ createConditionNode.prototype.changeCondition = function(v)
 
 	if(v == "Greater than or equals" || v == "Less than or equals")
 		this.size[0] = 270;
-
 }
 
 createConditionNode.prototype.changeProperty = function(v)
@@ -108,27 +126,36 @@ createConditionNode.prototype.changeProperty = function(v)
 createConditionNode.prototype.onExecute = function() 
 {
 	var properties = this.properties;
-	var system = this.getInputData(0);
+	var system_input = this.getInputData(0);
 	var condition_list = [];
 
 	//When is executed the inputs are gotten and if they are undefined a default value is setted
 	properties.value = this.getInputData(1) || properties.value;
 	
-	if (system != undefined)
+	if (system_input != undefined)
 	{
-		var system_info   = searchSystem(system.id);
-		var particles     = system_info.particles_list;
-		var particles_ids  = system_info.particles_ids;
+		var system        = system_input.data;
+		var particles     = system.particles_list;
 		var value_to_test = properties.value;
 		var tested_value;
+		var meet_time;
 		var particle;
-		var id;
+		var ids, id;
 
-		for (var i = 0; i < particles_ids.length; i++)
+		if(system_input.type == "emitter")
+			ids = system.particles_ids;
+		else if(system_input.type == "sub_emitter")
+			ids = system.sub_emittors[system_input.index].ids;
+
+		for (var i = 0; i < ids.length; i++)
 		{
 			tested_value = 0;
-			id = particles_ids[i].id;
+			id = ids[i].id;
 			particle = particles[id];
+			meet_time = particle.c_lifetime;
+
+			if(properties.is_one_time && particle.conditions_meet.includes(this.id))
+				continue;
 
 			switch (properties.system_property)
 			{
@@ -162,32 +189,50 @@ createConditionNode.prototype.onExecute = function()
 			{
 				case "Equals":
 					if (tested_value == value_to_test)
-						condition_list.push({id : id, index: i});
+					{
+						condition_list.push({id : id, index: i, meet_at: meet_time});
+						particle.conditions_meet.push(this.id);
+					}
 				break;
 
 				case "Greater than":
 					if (tested_value > value_to_test)
-						condition_list.push({id : id, index: i});
+					{
+						condition_list.push({id : id, index: i, meet_at: meet_time});
+						particle.conditions_meet.push(this.id);
+					}
 				break;
 
 				case "Less than":
 					if (tested_value < value_to_test)
-						condition_list.push({id : id, index: i});
+					{
+						condition_list.push({id : id, index: i, meet_at: meet_time});
+						particle.conditions_meet.push(this.id);
+					}
 				break;
 			
 				case "Greater than or equals":
 					if (tested_value >= value_to_test)
-						condition_list.push({id : id, index: i});
+					{
+						condition_list.push({id : id, index: i, meet_at: meet_time});
+						particle.conditions_meet.push(this.id);
+					}
 				break;
 
 				case "Less than or equals":
 					if (tested_value <= value_to_test)
-						condition_list.push({id : id, index: i});
+					{
+						condition_list.push({id : id, index: i, meet_at: meet_time});
+						particle.conditions_meet.push(this.id);
+					}
 				break;
 
 				case "No equals":
 					if (tested_value != value_to_test)
-						condition_list.push({id : id, index: i});
+					{
+						condition_list.push({id : id, index: i, meet_at: meet_time});
+						particle.conditions_meet.push(this.id);
+					}
 				break;
 			}
 		}
@@ -204,11 +249,10 @@ createConditionNode.title_selected_color = basicSelectedTitleColor;
 
 
 /*
-*	This node is for define how the particle system spawns the particles
-*	@method mySpawnNode
+*	This node is for merge two conditions
+*	@method mergeConditionsNode
 */
-function mergeConditionsNode() 
-{
+function mergeConditionsNode() {
 	/**************************************/
 	/***********Node properties************/
 	/**************************************/
@@ -217,6 +261,12 @@ function mergeConditionsNode()
 	};
 
 	this.vValues = ["And", "Or"];
+
+    this.constructor.desc = "&nbsp;&nbsp;&nbsp;&nbsp; This node allows merging two conditions and checks what particles met the new condition.";
+
+    this.prop_desc = {
+    	merge_mode: "What kind of merge will be used, with And the particle must meet both conditions and with Or just one"
+    }
 
 	/**************************************/
 	/***************Widgets****************/
@@ -267,10 +317,8 @@ mergeConditionsNode.prototype.onExecute = function()
 			if (lenght1 > 0 && lenght2 > 0)
 				for(var i = 0; i < lenght1; ++i){
 				    for (var j = 0; j < lenght2; ++j){
-				        if(condition_1[i] == condition_2[j] && !condition_list.includes(condition_1[i])) //The includes is for avoid duplications
+				        if(condition_1[i].id == condition_2[j].id && !condition_list.includes(condition_1[i])) //The includes is for avoid duplications
 				            condition_list.push(condition_1[i]);
-				        else if (condition_2[j] > condition_1[i]) //We can do this because the conditions list is allways in ascendent order
-				            break;
 				    }
 				}
 		break;

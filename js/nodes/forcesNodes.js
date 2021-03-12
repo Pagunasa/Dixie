@@ -2,7 +2,8 @@
 * 	This method enables/disables the visibility of the force
 *	@method toogleForceVisibility
 */
-function toogleForceVisibility(){
+function toogleForceVisibility()
+{
 	this.force.visible = !this.force.visible;
 }
 
@@ -11,15 +12,27 @@ function toogleForceVisibility(){
 *	This node is for define a constant force that is applied to all particles
 *	@method gravityNode
 */
-function gravityNode() 
-{
+function gravityNode() {
 	/**************************************/
 	/***********Node properties************/
 	/**************************************/
 	this.properties = {
 		direction: vector_3,
-		strength: 10
+		strength: 1
 	};
+
+	this.last_state = {
+		direction: vector_3,
+		direction_normalized: vector_3
+	}
+
+    this.constructor.desc = "&nbsp;&nbsp;&nbsp;&nbsp; This node creates a global force that affects all the particles of a given system.\
+     It will only affect a sub emitter if the connection comes from a init node that initializes his particles.";
+
+    this.prop_desc = {
+    	direction: "The direction in which the particles will be moved",            
+        strength:  "The strength that will displace the particles"
+    }
 
 	/**************************************/
 	/***********Inputs & Outputs***********/
@@ -32,31 +45,45 @@ function gravityNode()
 }
 
 //For recover (in a visual way) the values when a graph is loaded
-gravityNode.prototype.onPropertyChanged = function()
+gravityNode.prototype.onPropertyChanged = function(property)
 {
 	var properties = this.properties;
 
-	var strength = properties.strength;
-	properties.strength = isNaN(strength) ? 10 : strength;
+	switch (property)
+	{
+		case "strength":
+			var strength = properties.strength;
+			properties.strength = isNaN(strength) ? 1 : strength;
+		break;
 
-	if (properties.direction.length != 3)
-		properties.direction = [0,0,0];
+		case "direction":
+			if (properties.direction.length != 3)
+				properties.direction = [0,0,0];
+		break;
+	}
 }
 
 gravityNode.prototype.onExecute = function() 
 {
-	var system = this.getInputData(0);
-	var properties = this.properties;
+	var system_input = this.getInputData(0);
+	var properties   = this.properties;
 
 	//When is executed the inputs are gotten and if they are undefined a default value is setted
-	properties.direction = this.getInputData(1) || vector_3;
+	properties.direction = this.getInputData(1) || properties.direction;
 	properties.strength  = this.getInputData(2) || properties.strength;
 
-	if (system != undefined)
+	if (system_input != undefined)
 	{
-		var particles = searchSystem(system.id).particles_list;
-		
-		if(particles.length > 0)
+		var system    = system_input.data;
+		var particles = system.particles_list;
+		var ids;
+
+		if(system_input.type == "emitter")
+			ids = system.particles_ids;
+		else if(system_input.type == "sub_emitter")
+			ids = system.sub_emittors[system_input.index].ids;
+
+		if(ids.length > 0)
 		{	
 			var particle;
 			var direction = properties.direction;
@@ -66,9 +93,9 @@ gravityNode.prototype.onExecute = function()
 			direction[1] = direction[1] * strength;
 			direction[2] = direction[2] * strength;
 
-			for (var i = 0; i < particles.length; i++)
+			for (var i = 0; i < ids.length; i++)
 			{
-				particle = particles[i];
+				particle = particles[ids[i].id];
 				
 				//For the gravity only is needed to add to the position of the particle the direction
 				for(var j = 0; j < 3; j++)
@@ -91,8 +118,7 @@ gravityNode.title_selected_color = basicSelectedTitleColor;
 *	This node is for define a vortes that is applied at all particles inside his area of effect (defined by the scale)
 *	@method vortexNode
 */
-function vortexNode() 
-{
+function vortexNode() {
 	/**************************************/
 	/***********Node properties************/
 	/**************************************/
@@ -102,6 +128,17 @@ function vortexNode()
 		scale: 10,
 		color: [1,1,1,1]
 	};
+
+    this.constructor.desc = "&nbsp;&nbsp;&nbsp;&nbsp; This node creates a circular force that affects the particles of a given system\
+    depending on how far they are from the origin of the vortex.\
+    It will only affect a sub emitter if the connection comes from a init node that initializes his particles.";
+
+    this.prop_desc = {
+    	position:      "The origin of the vortex",            
+        angular_speed: "The rotative strength that will displace the particles",
+        scale:         "The vortex area of effect",
+        color:         "The color of the vortex origin"
+    }
 
 	/**************************************/
 	/***************Widgets****************/
@@ -143,18 +180,20 @@ vortexNode.prototype.onPropertyChanged = function()
 			properties.color[i] = Math.min(Math.max(properties.color[i], 0.0), 1.0);
 }
 
-vortexNode.prototype.onAdded = function() {
+vortexNode.prototype.onAdded = function() 
+{
  	this.force = addForce(this.id, this.properties.position, "vortex")
 };
 
-vortexNode.prototype.onRemoved = function() {
+vortexNode.prototype.onRemoved = function() 
+{
  	searchForce(this.id, true);
 };
 
 vortexNode.prototype.onExecute = function() 
 {
 	var properties = this.properties;
-	var system = this.getInputData(0);
+	var system_input = this.getInputData(0);
 
 	//When is executed the inputs are gotten and if they are undefined a default value is setted
 	properties.position       = this.getInputData(1)             || properties.position;
@@ -167,11 +206,18 @@ vortexNode.prototype.onExecute = function()
 	this.force.position = properties.position;
 	this.force.color    = properties.color;
 
-	if (system != undefined)
+	if (system_input != undefined)
 	{
-		var particles = searchSystem(system.id).particles_list;
-		
-		if(particles.length > 0)
+		var system    = system_input.data;
+		var particles = system.particles_list;
+		var ids;
+
+		if(system_input.type == "emitter")
+			ids = system.particles_ids;
+		else if(system_input.type == "sub_emitter")
+			ids = system.sub_emittors[system_input.index].ids;
+
+		if(ids.length > 0)
 		{
 			var particle;
 			var position = properties.position;
@@ -181,9 +227,9 @@ vortexNode.prototype.onExecute = function()
 			var v_vortex;
 			var distance_factor;
 
-			for (var i = 0; i < particles.length; i++)
+			for (var i = 0; i < ids.length; i++)
 			{
-				particle = particles[i];
+				particle = particles[ids[i].id];
 				
 				//First to all the distance between the particle and the vortex is calculated
 				for(var j = 0; j < 3; j++)
@@ -214,8 +260,7 @@ vortexNode.title_selected_color = basicSelectedTitleColor;
 *	This node is for define a constant force that is applied to all particles
 *	@method magnetNode
 */
-function magnetNode() 
-{
+function magnetNode() {
 	/**************************************/
 	/***********Node properties************/
 	/**************************************/
@@ -225,6 +270,17 @@ function magnetNode()
 		scale: 10,
 		color: [1,1,1,1]
 	};
+
+    this.constructor.desc = "&nbsp;&nbsp;&nbsp;&nbsp; This node defines a point that creates a force repelling or attracting the\
+    particles of a given system depending on how far they are from their origin.\
+    It will only affect a sub emitter if the connection comes from a init node that initializes his particles.";
+
+    this.prop_desc = {
+    	position: "The origin of the magnet point",            
+        strength: "The strength that will displace the particles. If is positive will reppel and negative attract",
+        scale:    "The magnet point area of effect",
+        color:    "The color of the magnet point origin"
+    }
 
 	/**************************************/
 	/***************Widgets****************/
@@ -266,17 +322,19 @@ magnetNode.prototype.onPropertyChanged = function()
 			properties.color[i] = Math.min(Math.max(properties.color[i], 0.0), 1.0);
 }
 
-magnetNode.prototype.onAdded = function() {
+magnetNode.prototype.onAdded = function() 
+{
 	this.force = addForce(this.id, this.properties.position, "magnet")
 };
 
-magnetNode.prototype.onRemoved = function() {
+magnetNode.prototype.onRemoved = function() 
+{
  	searchForce(this.id, true);
 };
 
 magnetNode.prototype.onExecute = function() 
 {
-	var system = this.getInputData(0);
+	var system_input = this.getInputData(0);
 	var properties = this.properties;
 
 	//When is executed the inputs are gotten and if they are undefined a default value is setted
@@ -290,11 +348,18 @@ magnetNode.prototype.onExecute = function()
 	this.force.position = properties.position;
 	this.force.color    = properties.color;
 
-	if (system != undefined)
+	if (system_input != undefined)
 	{
-		var particles = searchSystem(system.id).particles_list;
-		
-		if(particles.length > 0)
+		var system    = system_input.data;
+		var particles = system.particles_list;
+		var ids;
+
+		if(system_input.type == "emitter")
+			ids = system.particles_ids;
+		else if(system_input.type == "sub_emitter")
+			ids = system.sub_emittors[system_input.index].ids;
+
+		if(ids.length > 0)
 		{
 			var particle;
 			var position = properties.position;
@@ -304,9 +369,9 @@ magnetNode.prototype.onExecute = function()
 			var new_pos  = [0,0,0];
 			var distance_factor;
 
-			for (var i = 0; i < particles.length; i++)
+			for (var i = 0; i < ids.length; i++)
 			{
-				particle = particles[i];
+				particle = particles[ids[i].id];
 				
 				//First to all the distance between the particle and the magnet point is calculated
 				for(var j = 0; j < 3; j++)
@@ -330,94 +395,3 @@ magnetNode.title = "Magnet Point";
 magnetNode.title_color = forcesNodeColor;
 magnetNode.title_text_color = basicTitleColor;
 magnetNode.title_selected_color = basicSelectedTitleColor;
-
-
-/*
-*	This node is for define a noise that will affect all the particles of the system
-*	@method mySpawnNode
-*/
-function noiseNode() 
-{
-	/**************************************/
-	/***********Node properties************/
-	/**************************************/
-	this.properties = {
-		noise_texture: undefined
-	};
-
-	/**************************************/
-	/***********Inputs & Outputs***********/
-	/**************************************/
-	this.addInput("Particle system", "particle_system");
-	this.addInput("Noise texture"  , "texture");
-
-	this.addOutput("Particle system", "particle_system");
-}
-
-noiseNode.prototype.onExecute = function() 
-{
-	var system = this.getInputData(0);
-
-	//When is executed the inputs are gotten and if they are undefined a default value is setted
-	this.properties.noise_texture = this.getInputData(1) || undefined;
-
-	if (system != undefined)
-	{
-		//TO DO
-	}
-
-	//The porperties of the node are the output
-	this.setOutputData(0, system);
-}
-
-noiseNode.title = "Noise";
-noiseNode.title_color = forcesNodeColor;
-noiseNode.title_text_color = basicTitleColor;
-noiseNode.title_selected_color = basicSelectedTitleColor;
-
-
-/*
-*	This node is for create a path that the particles will follow
-*	@method mySpawnNode
-*/
-function pathNode() 
-{
-	/**************************************/
-	/***********Node properties************/
-	/**************************************/
-	this.properties = {
-		path: undefined,
-		strength: 10
-	};
-
-	/**************************************/
-	/***********Inputs & Outputs***********/
-	/**************************************/
-	this.addInput("Particle system", "particle_system");
-	this.addInput("Path"           , "path");
-	this.addInput("Strength"       , "number");
-
-	this.addOutput("Particle system", "particle_system");
-}
-
-pathNode.prototype.onExecute = function() 
-{
-	var system = this.getInputData(0);
-
-	//When is executed the inputs are gotten and if they are undefined a default value is setted
-	this.properties.path     = this.getInputData(1) || undefined;
-	this.properties.strength = this.getInputData(2) || 10;
-
-	if (system != undefined)
-	{
-		//TO DO
-	}
-
-	//The porperties of the node are the output
-	this.setOutputData(0, system);
-}
-
-pathNode.title = "Path";
-pathNode.title_color = forcesNodeColor;
-pathNode.title_text_color = basicTitleColor;
-pathNode.title_selected_color = basicSelectedTitleColor;

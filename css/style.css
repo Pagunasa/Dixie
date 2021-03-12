@@ -211,6 +211,10 @@ html,body {
 	margin-right: 5px;
 }
 
+.icon-margin-2{
+	margin-right: 10px;
+}
+
 .no-padding {
 	padding: 0px !important;
 }
@@ -351,6 +355,7 @@ html,body {
 	opacity: 0.5;
 	display: block;
 	margin: 10px;
+	max-width: 800px;
 }
 
 .dialog .separator {
@@ -373,7 +378,7 @@ html,body {
     display: inline-block;
     text-align: left;
     vertical-align: top;
-    width: 120px;
+    width: 155px;
 	padding-left: 4px;
 	overflow: hidden;
 }
@@ -383,7 +388,7 @@ html,body {
     text-align: right;
 	color: #AAA;
 	background-color: #1A1A1A;
-    width: calc( 100% - 122px );
+    width: calc( 100% - 155px );
 	max-height: 300px;
     padding: 4px;
 	padding-right: 12px;
@@ -418,14 +423,134 @@ html,body {
     color: black;
 }
 
-
-
-
-.img-max {
-	width:  80px;
-	height: 80px;
+#nodeDisplay {
+	max-width: 80%;
 }
 
-#mesh_local {
+.node_properties {
+	max-height: 900px;
+	overflow: auto;
+}
+
+@media only screen and (max-height: 1050px) {
+	.node_properties {
+		max-height: 700px;
+		overflow: auto;
+	}
+}
+
+@media only screen and (max-height: 750px) {
+	.node_properties {
+		max-height: 450px;
+		overflow: auto;
+	}
+}
+
+@media only screen and (max-height: 722px) {
+	.node_properties {
+		max-height: 400px;
+		overflow: auto;
+	}
+}
+
+@media only screen and (max-height: 689px) {
+	.node_properties {
+		max-height: 389px;
+		overflow: auto;
+	}
+}
+
+@media only screen and (max-height: 664px) {
+	.node_properties {
+		max-height: 340px;
+		overflow: auto;
+	}
+}
+
+@media only screen and (max-height: 616px) {
+	.node_properties {
+		max-height: 300px;
+		overflow: auto;
+	}
+}
+
+@media only screen and (max-height: 571px) {
+	.node_properties {
+		max-height: 250px;
+		overflow: auto;
+	}
+}
+
+@media only screen and (max-height: 522px) {
+	.node_properties {
+		max-height: 200px;
+		overflow: auto;
+	}
+}
+
+@media only screen and (max-height: 478px) {
+	.node_properties {
+		max-height: 100px;
+		overflow: auto;
+	}
+}
+
+@media only screen and (max-height: 371px) {
+	.node_properties {
+		max-height: 50px;
+		overflow: auto;
+	}
+}
+
+/* width */
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  background: var(--quinary-color); 
+}
+ 
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: var(--primary-color); 
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: var(--secondary-color); 
+}
+
+.tooltiptext {
+  visibility: hidden;
+  width: 400px;
+  background-color: #2A2A2AAB;
+  color: #AAA;
+  text-align: center;
+  border-radius: 6px;
+  padding: 5px 0;
+  
+  /* Position the tooltip */
+  position: absolute;
+  z-index: 1;
+  left: 13%;
+  margin-left: -60px;
+}
+
+.property:hover .tooltiptext {
+  visibility: visible;
+}
+
+.img-max {
+	max-width:  100px;
+	max-height: 80px;
+}
+
+#mesh_custom {
+	margin-top: 16px;
+}
+
+#mesh_url {
 	margin-top: 16px;
 }

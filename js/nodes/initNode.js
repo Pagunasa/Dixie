@@ -1,5 +1,8 @@
-function particleDataNode()
-{
+/*
+*	This node is for define te values of the particles
+*	@method particleDataNode
+*/
+function particleDataNode() {
 	this.properties = {
 		max_speed: [1,1,1],
 		min_speed: [-1,-1,-1],
@@ -15,21 +18,36 @@ function particleDataNode()
 
 	//Is outside properties because it can't be edited directly by te user in the properties window...
 	this.texture = undefined;
+    
+    this.constructor.desc = "&nbsp;&nbsp;&nbsp;&nbsp; This node allows defining the values of the particles and assigns a texture to them.";
+
+    this.prop_desc = {
+    	max_speed: "The maximum speed of the particle",            
+        min_speed: "The minimum speed of the particle",     		   
+        
+        max_size:  "The maximum size of the particle",
+        min_size:  "The minimum size of the particle",
+        
+        max_life_time: "The maximum lifetime of the particle in seconds",
+    	min_life_time: "The minimum lifetime of the particle in seconds",
+
+        color: "The color of the particle"
+    }
 
 	/**************************************/
 	/***********Inputs & Outputs***********/
 	/**************************************/	
-	this.addInput("Max speed"      , "vec3");
-	this.addInput("Min speed"      , "vec3");
+	this.addInput("Max speed"     , "vec3");
+	this.addInput("Min speed"     , "vec3");
 	
-	this.addInput("Max life time"  , "number");
-	this.addInput("Min life time"  , "number");
+	this.addInput("Max life time" , "number");
+	this.addInput("Min life time" , "number");
 
-	this.addInput("Max size"       , "number");
-	this.addInput("Min size"       , "number");
+	this.addInput("Max size"      , "number");
+	this.addInput("Min size"      , "number");
 	
-	this.addInput("Color"          , "color");
-	this.addInput("Texture"        , "texture");
+	this.addInput("Color"         , "color");
+	this.addInput("Texture"       , "texture");
 
 	this.addOutput("Particle data", "p_data");
 }
@@ -98,9 +116,8 @@ particleDataNode.prototype.onExecute = function()
 	var input_color     = this.getInputData(6);
 	var input_texture   = this.getInputData(7);
 
-	//Get the properties and the texture
+	//Get the properties 
 	var properties = this.properties;
-	var texture  = this.texture;
 
 	//When is executed the inputs are gotten and if they are undefined a default value is setted
 	properties.max_speed = input_max_speed || properties.max_speed;
@@ -113,9 +130,9 @@ particleDataNode.prototype.onExecute = function()
 	properties.min_size = input_min_size || properties.min_size;
 
 	properties.color = input_color || [1,1,1,1];
-	this.texture = input_texture || undefined;
+	this.texture = input_texture || {file: undefined, id: undefined};
 
-	this.setOutputData(0, {data: properties, texture: texture});
+	this.setOutputData(0, {data: properties, texture: this.texture});
 }
 
 particleDataNode.title = "Particle Data";
@@ -124,57 +141,35 @@ particleDataNode.title_text_color = basicTitleColor;
 particleDataNode.title_selected_color = basicSelectedTitleColor;
 
 /*
-*	This node is for define how the particle system spawns the particles
-*	@method mySpawnNode
+*	This node is for set the values of every particle of the system and set a default movement 
+*	@method initParticlesNode
 */
-function initParticlesNode() 
-{
+function initParticlesNode() {
 	/**************************************/
 	/***********Node properties************/
 	/**************************************/
-	this.properties = {
-		trail_u_size    : true,
-		trail_u_color   : true,
-		trail_u_texture : true
-	}
-
 	this.internal = {
 		init_time_pased: 0.0,
-		last_id: -1
+		last_id: -1,
+		last_sub_id: -1,
+		last_texture: ""
 	}
+
+    this.constructor.desc = "&nbsp;&nbsp;&nbsp;&nbsp; This node initializes every particle of the emitter or sub emitter,\
+    given some particle data in the case that no data is given some default values will be used.";
 
 	/**************************************/
 	/***********Inputs & Outputs***********/
 	/**************************************/
-	this.addInput("Spawner"        , "spawner");
+	this.addInput("Emitter"        , "emitter");
 	this.addInput("Particle data"  , "p_data");
 
 	this.addOutput("Particle system", "particle_system");
 }
 
-initParticlesNode.prototype.toogleTrailSize = function()
-{
-	this.properties.trail_u_size = !this.properties.trail_u_size;
-}
-
-initParticlesNode.prototype.toogleTrailColor = function()
-{
-	this.properties.trail_u_color = !this.properties.trail_u_color;
-}
-
-initParticlesNode.prototype.toogleTrailTexture = function()
-{
-	this.properties.trail_u_texture = !this.properties.trail_u_texture;
-}
-
-initParticlesNode.prototype.toogleTrail = function()
-{
-	this.internal.is_trail = !this.internal.is_trail;
-}
-
+//Here is returned and object that have all the information for a particle
 initParticlesNode.prototype.generateParticleInfo = function (properties, system)
 {
-
 	var max_life_time = Math.max(properties.min_life_time, properties.max_life_time);
 	var min_life_time = Math.min(properties.min_life_time, properties.max_life_time);
 
@@ -190,16 +185,18 @@ initParticlesNode.prototype.generateParticleInfo = function (properties, system)
 				color         : properties.color,
 				min_size      : min_size,
 				max_size      : max_size,
+				origin_id     : properties.origin_id,
 				texture       : this.texture,
 				coords        : this.getCoords()
 			};
 }
 
+//In the case that the particle is animated, this function allows to get the next frame
 initParticlesNode.prototype.getNextFrame = function(particle)
 {
 	var texture = this.texture;
 
-	if(texture == undefined)
+	if(texture.file == undefined)
 		return;
 
 	if(!texture.prop.animated || particle.c_frame < particle.frameRate)
@@ -225,55 +222,96 @@ initParticlesNode.prototype.getNextFrame = function(particle)
 
 initParticlesNode.prototype.getCoords = function(frameX = 0, frameY = 0)
 {
-	var texture = this.texture;
+	var texture    = this.texture;
+	var texture_id = this.texture_id;
+	var atlas      = this.system_info.atlas;
+ 	var uvs, minuv_x, minuv_y, maxuv_x, maxuv_y;
+    var minX, minY, maxX, maxY;
 
-	if(texture == undefined)
+    //If there wasn't an atlas, the coordinates are the default ones
+	if(atlas == undefined)
 		return default_coords;
 
+	//If is undefined the id will always be 0, a white texture with Alpha 1
+	if(texture.file == undefined)
+	{
+		uvs =  this.system_info.uvs[0];
+		minuv_x = uvs[0];
+		minuv_y = uvs[1];
+		maxuv_x = uvs[2];
+		maxuv_y = uvs[3];
+
+		return[maxuv_x,maxuv_y, minuv_x,maxuv_y, maxuv_x,minuv_y, minuv_x,minuv_y, maxuv_x,minuv_y, minuv_x,maxuv_y]; 
+	}
+
+	//Get the number of subtextures of the texture
 	var sizeX = texture.prop.textures_x;
 	var sizeY = texture.prop.textures_y; 
+	uvs       = this.system_info.uvs[texture_id];
 
+	//If there wasn't subtextures
 	if(sizeX == 0 && sizeY == 0 || !this.subTextures)
-		return default_coords;
+	{
+		minuv_x = uvs[0];
+		minuv_y = uvs[1];
+		maxuv_x = uvs[2];
+		maxuv_y = uvs[3];
 
+		return[maxuv_x,maxuv_y, minuv_x,maxuv_y, maxuv_x,minuv_y, minuv_x,minuv_y, maxuv_x,minuv_y, minuv_x,maxuv_y]; 
+	}
+
+	//If the texture is animated then get the corresponding frame
 	if(texture.prop.animated)
 	{
 		var iSx = 1/sizeX;
 		var iSy = 1/sizeY;
   
-		var minX = sizeX != 1 ? frameX * iSx : 0; 
-		var minY = sizeY != 1 ? frameY * iSy : 0; 
+		minX = sizeX != 1 ? frameX * iSx : 0; 
+		minY = sizeY != 1 ? frameY * iSy : 0; 
 
-		var maxX = sizeX != 1 ? (frameX+1) * iSx : 1; 
-		var maxY = sizeY != 1 ? (frameY+1) * iSy : 1; 
+		maxX = sizeX != 1 ? (frameX+1) * iSx : 1; 
+		maxY = sizeY != 1 ? (frameY+1) * iSy : 1; 
+
+		//Interpolation (in order to get the correct frame)
+		minX = lerp(uvs[0], uvs[2], minX);
+		minY = lerp(uvs[1], uvs[3], minY);
+		maxX = lerp(uvs[0], uvs[2], maxX);
+		maxY = lerp(uvs[1], uvs[3], maxY);
 
 		return [maxX,maxY, minX,maxY, maxX,minY, minX,minY, maxX,minY, minX,maxY];
 	}
 
-	var new_coord = [0,0, 1,1];
+	//Get the basic Uvs in the case that the texture isn't animated or have subtextures
+	minX = sizeX != 1 ? Math.floor(Math.random() * sizeX)/sizeX : 0;
+	minY = sizeY != 1 ? Math.floor(Math.random() * sizeY)/sizeY : 0;
 
-	new_coord[0] = sizeX != 1 ? Math.floor(Math.random() * sizeX)/sizeX : 0;
-	new_coord[1] = sizeY != 1 ? Math.floor(Math.random() * sizeY)/sizeY : 0;
+	maxX = sizeX != 1 ? minX + (1/sizeX) : 1; 
+	maxY = sizeY != 1 ? minY + (1/sizeY) : 1; 
 
-	new_coord[2] = sizeX != 1 ? new_coord[0] + (1/sizeX) : 1; 
-	new_coord[3] = sizeY != 1 ? new_coord[1] + (1/sizeY) : 1; 
+	//Interpolation (in order to get the correct frame)
+	minX = lerp(uvs[0], uvs[2], minX);
+	minY = lerp(uvs[1], uvs[3], minY);
+	maxX = lerp(uvs[0], uvs[2], maxX);
+	maxY = lerp(uvs[1], uvs[3], maxY);
 
-	return [new_coord[2],new_coord[3], new_coord[0],new_coord[3], new_coord[2],new_coord[1], 
-	new_coord[0],new_coord[1], new_coord[2],new_coord[1], new_coord[0],new_coord[3]];
+	return [maxX,maxY, minX,maxY, maxX,minY, minX,minY, maxX,minY, minX,maxY];
 }
 
+//If the particle origin is a mesh, then this function will bring a random point 
+//of the mesh, and if the origin is a point will return this point
 initParticlesNode.prototype.generateRandomPoint = function(system)
 {
-	var mode        = system.mode;
+	var origin      = system.origin;
 	var position    = system.position;
 	var origin_mesh = system.origin_mesh;
 	var system_info = this.system_info;
 
-	if(system_info.point_mode)
+	if(origin == "Point" || origin_mesh == undefined || origin_mesh.vertices == undefined)
 		return position;
 
 	var triangle_num = origin_mesh.triangle_num;
 
+	//I generate a random ambdas
 	var ambda1 = Math.random();
 	var ambda2 = Math.random();
 	var ambda3;
@@ -286,42 +324,51 @@ initParticlesNode.prototype.generateRandomPoint = function(system)
 
 	ambda3 = 1 - ambda1 - ambda2;
 
+	//Then I pick a random triangle and his asigned points
 	var triangle = Math.floor(Math.random()*triangle_num) * 9;
 	var points = origin_mesh.vertices.slice(triangle, triangle+9);
 
 	var random_point = [0,0,0];
 
+	//Apply the barycenter coordinate formula to get the point
 	for (var i = 0; i < 3; ++i)
 		random_point[i] = points[i] * ambda1 + points[i+3] * ambda2 + points[i+6] * ambda3;
 
+	//And finaly I multiply the new point by the mesh model 
 	mat4.multiplyVec3(random_point, system_info.external_model, random_point)
 
 	return random_point;
 }
 
-initParticlesNode.prototype.addParticle = function(particle_data, ids, particles, particles_to_reset, max_particles, system, is_trail = false)
+//This function is the one that add new particles to the system, first will add particles until 
+//the maximum number is archieved and then start to reuse the dead particles 
+//Return -1 if the particle is added and his id is reused
+initParticlesNode.prototype.addParticle = function(particle_data, ids, particles, particles_to_reset, max_particles, system, type)
 {
 	var particle_info;
 
-	if( max_particles > particles.length )
+	if( max_particles > ids.length )
 	{
-		if(!is_trail)
-			this.internal.init_time_pased = 0.0;
+		
+		this.internal.init_time_pased = 0.0;
 		
 		particle_info = this.generateParticleInfo(particle_data, system);
 
 		particle = new Particle();
 		particle.fill(particle_info);
+		particle.id   = particles.length;
+		particle.type = type;
 		ids.push({id : particles.length, distance_to_camera : 0.0});
 		particles.push(particle);
+
+		return -1;
 	}
 	else if (particles_to_reset.length > 0)
 	{
-		if(!is_trail)
-			this.internal.init_time_pased = 0.0;
+		this.internal.init_time_pased = 0.0;
 		
 		var id = particles_to_reset[0];
-		
+					
 		while(particles_to_reset[0] > particles.length - 1)
 		{
 			particles_to_reset.splice(0,1);
@@ -335,180 +382,222 @@ initParticlesNode.prototype.addParticle = function(particle_data, ids, particles
         	particle = particles[id];
 			particle.fill(particle_info);
 			particles_to_reset.splice(0,1);
+
+			return id;
 		}
 	}
 }
 
+initParticlesNode.prototype.spawnEmitter = function(system, system_input, p_prop)
+{
+	var particle;
+	var particles             = system.particles_list;
+	var particles_ids         = system.particles_ids;
+	var particles_to_reset    = system.particles_to_reset;
+	var sub_emission_to_reset = system.sub_emission_to_reset;
+
+	//Spawn in normal mode
+	if (system.spawn_mode == "Linear" && this.internal.init_time_pased >= this.internal.spawn_period)
+		this.addParticle(p_prop.data, particles_ids, particles, particles_to_reset, system.max_particles, system, "emitter")
+	//Spawn in waves mode
+	if (system.spawn_mode == "Waves" && this.internal.init_time_pased >= system.spawn_rate)
+		for (var i = 0; i < system.particles_per_wave; ++i)
+			this.addParticle(p_prop.data, particles_ids, particles, particles_to_reset, system.max_particles, system, "emitter")	
+
+	this.moveParticles(system, particles_ids, particles, particles_to_reset);
+	system_input.ids = particles_ids;
+	return;
+}
+
+initParticlesNode.prototype.moveParticles = function(system, ids, particles, to_reset)
+{
+	var id, particle;
+
+	//Default movement of the particles
+	for (var i = 0; i < ids.length; i++)
+	{
+		id       = ids[i].id;
+		particle = particles[id];
+
+		if(particle.visibility == 0)
+			continue;
+
+		particle.c_lifetime += time_interval;
+		particle.c_frame += time_interval;
+		this.getNextFrame(particle);
+
+		if(particle.c_lifetime >= particle.lifetime && particle.visibility == 1)
+		{
+			particle.visibility = 0;
+			to_reset.push(id);
+		}
+		else
+		{
+			particle.aSpeed = [0,0,0];
+
+			for(var j = 0; j < 3; j++)
+			{
+				particle.position[j] += particle.speed[j] * time_interval;
+				particle.aSpeed[j]   += particle.speed[j];
+			}
+		}
+	}
+}
+
+initParticlesNode.prototype.spawnSubEmitter = function(system, system_input, p_prop)
+{
+	var particle;
+	var particles             = system.particles_list;
+	var sub_emittor           = this.sub_emitter;
+	var sub_emission_ids      = sub_emittor.ids;
+	var sub_emission_to_reset = sub_emittor.to_reset;
+
+	var condition             = system_input.condition;
+
+	//If there was no condition, then by default the emissions will spawn when the particle dies
+    if(condition == undefined)
+    {
+    	condition = [];
+      	var particles_ids = system.particles_ids;
+		var id, diff;
+		for (var i = 0; i < particles_ids.length; ++i)
+		{
+			id = particles_ids[i].id;
+			particle = particles[id];
+		    diff = particle.lifetime - particle.c_lifetime;
+		    if(diff <= time_interval && particle.visibility != 0)
+		        condition.push({id: id})
+		}
+    }
+
+    //For every particle that meets the condition spawn (if possible) the particles
+	for (var i = 0; i < condition.length; ++i)
+	{
+		particle = particles[condition[i].id];
+		p_prop.data.position = particle.position;
+
+		for (var j = 0; j < sub_emittor.particles_per_wave; ++j)
+			this.addParticle(p_prop.data, sub_emission_ids, particles, sub_emission_to_reset,
+			system.max_particles * sub_emittor.max_particles, system, "sub_emitter");
+	}
+
+	this.moveParticles(system, sub_emission_ids, particles, sub_emission_to_reset);
+	sub_emittor.ids = sub_emission_ids;
+}
+
 initParticlesNode.prototype.onExecute = function() 
 {
-	var system = this.getInputData(0);
+	var system_input = this.getInputData(0);
 
-	if (system != undefined)
+	if (system_input != undefined)
 	{
+		var type = system_input.type; 
+
+		if (type == "sub_emitter" && system_input.id == -1)
+			return;
+
 		var particles_spawned = 0;
 
-		//Retieve the particle and trail data
+		//Retieve the particle data
 		var p_prop  = this.getInputData(1) || {
 			data : { max_speed: [1,1,1],min_speed: [-1,-1,-1],  max_size: 0.25,min_size: 0.10, max_life_time: 10,min_life_time: 5, color: [1,1,1,1] },
-			texture : undefined
+			texture : { file: undefined }
 		};
 
- 		//If there was not default info, then the trail will allways 
- 		//spawn at the particle position with no speed and with this particle data
-		var t_prop = this.getInputData(2);  
-
-		//Only is necessary to search the system when the id changes
-		if(this.internal.last_id != system.id)
+		//Only is necessary to update the system when the id changes
+		if(this.internal.last_id != system_input.id)
 		{
-			this.system_info = searchSystem(system.id);
-			this.internal.last_id = system.id;
+			this.system_info = system_input.data;
+			this.internal.last_id = system_input.id;
 		}
 
-		//If trails is enabled, then the input is displayed
-		if(system.trails && this.inputs.length != 3)
+		var system = this.system_info;
+
+		if (type == "sub_emitter" && this.internal.last_sub_id != system_input.id)
 		{
-			this.addInput("Particle data (trails)" , "p_data");
-			this.addOutput("Trail system", "particle_system");
-
-			this.trail_u_size    = this.addWidget("toggle", "Trail use particle size"   , true, this.toogleTrailSize.bind(this));
-			this.trail_u_color   = this.addWidget("toggle", "Trail use particle color"  , true, this.toogleTrailColor.bind(this));
-			this.trail_u_texture = this.addWidget("toggle", "Trail use particle texture", true, this.toogleTrailTexture.bind(this));
-		}
-		else if (!system.trails && this.inputs.length == 3)
-		{
-			this.disconnectOutput(1);
-			this.outputs.splice(1,1); 
-
-			this.disconnectInput(2);
-			this.inputs.splice(2,1); 
-			this.size[1] = 46;
-
-			this.widgets = [];
+			var sub_emittors = system.sub_emittors;
+			this.sub_emitter = sub_emittors[system_input.index];
 		}
 
-		var system_info = this.system_info;
+		var sub_emitter = this.sub_emitter;
 
 		if(p_prop.texture == undefined)
-			system_info.texture = undefined;
-		else if (p_prop.texture.file != "")
-			system_info.texture = p_prop.texture.file;
+		{
+			if( system_input.type == "emitter" )
+				system.texture.file = undefined;
+			else if ( system_input.type == "sub_emitter")
+				sub_emitter.texture.file = undefined;
+
+			if(this.internal.last_texture != "")
+			{
+				system.texture_change = true;
+				this.internal.last_texture = "";
+			}	
+		}
+		else if (p_prop.texture.file != "" && p_prop.texture.file != undefined)
+		{
+			if( system_input.type == "emitter" )
+				system.texture.file = p_prop.texture.file;
+			else if ( system_input.type == "sub_emitter")
+				sub_emitter.texture.file = p_prop.texture.file;
+
+			if(this.internal.last_texture != p_prop.texture.file.data.src)
+			{
+				system.texture_change = true;
+				this.internal.last_texture = p_prop.texture.file.data.src;
+			}	
+		}
 		else
-			system_info.texture = undefined;
-
-		this.texture = p_prop.texture;
-
-		if(this.texture != undefined)
-			this.subTextures  = this.texture.prop.subtextures;
-
-		var mode        = system.mode;
-		var origin_mesh = system.origin_mesh;
-
-		if (mode == "Point" || mode == "2D Geometry" || origin_mesh == undefined 
-			|| origin_mesh == undefined ? true : origin_mesh.vertices == undefined)
 		{
-			system_info.point_mode     = true;
-			system_info.external_model = undefined;		
-		} 
-		else 
-		{
-			system_info.external_model = origin_mesh.model;
-			system_info.point_mode     = false;
+			if( system_input.type == "emitter" )
+				system.texture.file = undefined;
+			else if ( system_input.type == "sub_emitter")
+				sub_emitter.texture.file = undefined;
+
+			if(this.internal.last_texture != "")
+			{
+				system.texture_change = true;
+				this.internal.last_texture = "";
+			}
 		}
 
-		var particle;
-		var particles          = system_info.particles_list;
-		var particles_ids      = system_info.particles_ids;
-		var particles_to_reset = system_info.particles_to_reset;
+		this.texture = p_prop.texture;
+        
+        if(type == "emitter")
+		    this.texture_id = system.texture.id;
+        else if ( system_input.type == "sub_emitter")
+            this.texture_id = sub_emitter.texture.id;
+
+        /************************************/
+        //REVISAR 
+		if(this.texture.file != undefined)
+			this.subTextures  = p_prop.texture.subtextures;
+
+		if(this.texture.file != undefined)
+			this.subTextures  = this.texture.prop.subtextures;
+		//REVISAR
+        /************************************/ 
+
+		var origin      = system.origin;
+		var origin_mesh = system.origin_mesh;
+
+		if (origin == "Point"	|| origin_mesh == undefined ? true : origin_mesh.vertices == undefined)
+			system.external_model = undefined;		
+		else 
+			system.external_model = origin_mesh.model;
 		
 		this.internal.init_time_pased += time_interval;
 		//The inverse of the spawn rate is how many ms we have to wait until spawn the next particle
 		this.internal.spawn_period = 1.0 / system.spawn_rate; 
 
-		//Spawn in normal mode
-		if (this.internal.init_time_pased >= this.internal.spawn_period)
-			this.addParticle(p_prop.data, particles_ids, particles, particles_to_reset, system.max_particles, system)
-		
-		//Spawn in waves mode
-		/*if(system.max_particles > particles.length && this.internal.init_time_pased >= 1.0)
-		{
-			this.internal.init_time_pased = 0.0;
-			
-			for (particles_spawned; particles_spawned <= system.spawn_rate; particles_spawned++)
-			{
-				var particle = new Particle();
-				particle.fill(this.properties);
-				particles.push(particle);
-				updateVisibility(mesh, particles.length - 1, 1.0);
-			}
-		}*/
+		//If it was an emitter then the particles have to spawn normaly 
+		if( system_input.type == "emitter" )
+			this.spawnEmitter(system, system_input, p_prop);
+		else if ( system_input.type == "sub_emitter")
+			this.spawnSubEmitter(system, system_input, p_prop);
 
-		//Default movement of the particles
-		var id;
-		var trails_list = system_info.trails_list;
-		var trails_ids  = system_info.trails_ids;
-		var trails_to_reset =  system_info.trails_to_reset;
-		var trails_prop = {
-				min_speed     : [0,0,0],
-				max_speed     : [0,0,0],
-				min_life_time : 1,
-				max_life_time : 1
-			};
-
-		for (var i = 0; i < particles_ids.length; i++)
-		{
-			id = particles_ids[i].id;
-			particle = particles[id];
-
-			particle.c_lifetime += time_interval;
-			particle.c_frame += time_interval;
-			this.getNextFrame(particle);
-
-			if(particle.c_lifetime >= particle.lifetime && particle.visibility == 1)
-			{
-				particle.visibility = 0;
-				particles_to_reset.push(id);
-			}
-			else
-			{
-				for(var j = 0; j < 3; j++)
-					particle.position[j] += particle.speed[j] * time_interval;
-				
-				if(system.trails)
-				{
-					trails_prop.min_size = particle.size;
-					trails_prop.max_size = particle.size;
-					trails_prop.color    = particle.color;
-					trails_prop.coords   = particle.coords;
-					trails_prop.position = particle.position;
-
-					this.addParticle(trails_prop, trails_ids, trails_list, trails_to_reset, system.max_trails, system, true)
-				}
-			}
-		}
-
-		//Modify lifetime of the trails
-		for (var i = 0; i < trails_ids.length; i++)
-		{
-			id = trails_ids[i].id;
-			particle = trails_list[id];
-
-			particle.c_lifetime += time_interval;
-
-			if(particle.c_lifetime >= particle.lifetime && particle.visibility == 1)
-			{
-				particle.visibility = 0;
-				trails_to_reset.push(id);
-			}
-		}
-
-		//The system definition is the output
-		this.setOutputData(0, system);
-
-		if(system.trails)
-		{
-			system.modify_trails = true;
-			this.setOutputData(1, system);	
-		}
+		//The system is the output
+		this.setOutputData(0, system_input);
 	}
 }
 

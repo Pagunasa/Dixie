@@ -2,7 +2,6 @@
 * This file is not mine, all the honour is for Sechelski for make this amazing code. If you want to see the original one just go to:
 * https://codepen.io/codysechelski/pen/dYVwjb
 */
-
 function createAlert(title, summary, details, severity, dismissible, autoDismiss, appendToId) {
   var iconMap = {
     info: "fa fa-info-circle",

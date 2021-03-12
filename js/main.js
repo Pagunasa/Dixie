@@ -25,7 +25,13 @@ var camera;
 var time_interval;
 
 var is_graph_running;
+var emergency_stop = false;
 var identity = mat4.IDENTITY;
+
+var switchGrid, switchLines; 
+var backgroundColor = [0,0,0,0.5];
+var gridColor       = [1,1,1,0.25];
+var linesColor      = [1,1,1,0.5];
 
 /* Demos */
 //Default start
@@ -46,6 +52,9 @@ var spawner_text;
 var vortex_text;
 var magnet_text;
 var particle_text;
+
+/*   Default Meshes      */
+var grid;
 
 /*
 * 	Change the width of both canvases depending of the division button position.
@@ -129,6 +138,9 @@ function initDivisionButton ()
 		if (divisionButton.drag == true)
 			divisionButton.drag = false;
 	});
+
+	switchGrid  = document.getElementById('switchGrid');
+	switchLines = document.getElementById('switchLines');
 }
 
 /*
@@ -214,6 +226,7 @@ function initMenuButtons ()
 	playButton.onclick = function() {
 		graph.start();
 		is_graph_running = true;
+    	emergency_stop  = false;
 	}
 
 	stopButton.onclick = function() {
@@ -262,30 +275,25 @@ function addNodes ()
 	LiteGraph.registerNodeType("basic/random number"  , randomNumberNode);
 	LiteGraph.registerNodeType("basic/load texture"   , textureLoadNode);
 	LiteGraph.registerNodeType("basic/load mesh"      , meshLoadNode);
-	LiteGraph.registerNodeType("basic/2D geometry"    , geometry2DNode);
 	LiteGraph.registerNodeType("basic/equation"       , equationNode);
 	LiteGraph.registerNodeType("basic/vector 2"       , vector2Node);
 	LiteGraph.registerNodeType("basic/vector 3"       , vector3Node);
 	LiteGraph.registerNodeType("basic/vector 4"       , vector4Node);
 	LiteGraph.registerNodeType("basic/color picker"   , colorPickerNode);
 	
-	LiteGraph.registerNodeType("spawn/spawn"          , mySpawnNode);
+	LiteGraph.registerNodeType("spawn/emitter"        , mySpawnNode);
+	LiteGraph.registerNodeType("spawn/sub emitter"    , subEmitterNode);
 	LiteGraph.registerNodeType("init/init"            , initParticlesNode);
 	LiteGraph.registerNodeType("init/particle data"   , particleDataNode);
 
 	LiteGraph.registerNodeType("forces/gravity"       , gravityNode);
 	LiteGraph.registerNodeType("forces/vortex"        , vortexNode);
 	LiteGraph.registerNodeType("forces/magnet point"  , magnetNode);
-	LiteGraph.registerNodeType("forces/noise"         , noiseNode);
-	LiteGraph.registerNodeType("forces/path"          , pathNode);
 
 	LiteGraph.registerNodeType("conditions/create condition", createConditionNode);
 	LiteGraph.registerNodeType("conditions/merge conditions", mergeConditionsNode);
 
 	LiteGraph.registerNodeType("modify/modify property", modifyPropertyNode);
-	
-	LiteGraph.registerNodeType("collisions/collisions"            , collisionsNode);
-	LiteGraph.registerNodeType("collisions/collidable object list", collidableObjectsListNode);
 }
 
 /*
@@ -296,30 +304,30 @@ function init ()
 {
 	//Inicialization of the graph canvas
 	graph = new LGraph();
-	graphCanvas = new LGraphCanvas( '#graphCanvas', graph );
+	graphCanvas = new LGraphCanvas('#graphCanvas', graph);
 	is_graph_running = false;
 	graph.stop(); //by default always will be stoped
 	addNodes();
 
-	//Inicialization of the litegl canvas
-	gl = GL.create( {width:100, height:100} );
-	particleCanvas = document.getElementById( 'particleContainer' );
-	particleCanvas.appendChild( gl.canvas );
-	particleCanvas.children[0].classList.add( 'gl-canvas' );
+	//Inicialization of the litegl canvas (Webgl2)
+	gl = GL.create({version:2, width:100, height:100});
+	particleCanvas = document.getElementById('particleContainer');
+	particleCanvas.appendChild(gl.canvas);
+	particleCanvas.children[0].classList.add('gl-canvas');
 
 	//Canvas containers inicilization
-	graphLi = $( '#graphLi' );
-	glLi = $( '#particleLi' );
-	root = $( '#root' );
+	graphLi = $('#graphLi');
+	glLi    = $('#particleLi');
+	root    = $('#root');
 	widthCanvasContainer = root.width();	
-	navbar = document.getElementById( 'menu' );
+	navbar = document.getElementById('menu');
 
 	//buttons inicialization
-	glCanvasOptionsButton = document.getElementById( 'glOptionButton' );
+	glCanvasOptionsButton = document.getElementById('glOptionButton');
 	initMenuButtons();
 	initDivisionButton();
 
-	camera = new Camera( gl ); /**************************************************/
+	camera = new Camera(gl, [0,0,0], [-0.36,7.36,16.74]); /**************************************************/
 
 	//Set the default mesh for the forces
 	default_forces_mesh = new GL.Mesh({vertices: [0,0,0]});
@@ -333,6 +341,9 @@ function init ()
 	//Loading of the default demos 
 	demo = {};
 	graph.configure( demo ); //by default charging the first demo
+
+	//Loading the grid
+	grid = Mesh.grid({size: 1000, lines: 200});
 
 	resizeElements(); //First time that the application is executed we need to resize both canvases
 
@@ -353,16 +364,96 @@ init();
 /*************************************************/
 /****************SHADER DEFINITION****************/
 /*************************************************/
-var flatShader     =  new GL.Shader( vs_basic, fs_flat );
-var texturedShader =  new GL.Shader( vs_basic, fs_point_texture );
+var flatShader     =  new GL.Shader(vs_basic_point, fs_point_flat);
+var texturedShader =  new GL.Shader(vs_basic_point, fs_point_texture);
 
-var particleShaderTextured =  new GL.Shader( vs_particles, fs_texture );
-var particleShaderFlat     =  new GL.Shader( vs_particles, fs_flat_p  );
+var particleShaderTextured =  new GL.Shader(vs_particles, fs_texture);
+var particleShaderFlat     =  new GL.Shader(vs_particles, fs_flat_p);
+
+var linesShader = new GL.Shader(vs_basic_point, fs_lines_flat);
+var fogShader   = new GL.Shader(vs_fog, fs_fog);
+
+function updateColorBack(picker)
+{
+	var channels = picker.channels;
+
+    backgroundColor[0] = channels.r / 255.0;
+    backgroundColor[1] = channels.g / 255.0;
+    backgroundColor[2] = channels.b / 255.0;
+    backgroundColor[3] = 0.0;//channels.a;
+}
+
+function updateColorGrid(picker)
+{
+	var channels = picker.channels;
+
+    gridColor[0] = channels.r / 255.0;
+    gridColor[1] = channels.g / 255.0;
+    gridColor[2] = channels.b / 255.0;
+    gridColor[3] = channels.a;
+}
+
+function updateColorLine(picker)
+{
+	var channels = picker.channels;
+
+    linesColor[0] = channels.r / 255.0;
+    linesColor[1] = channels.g / 255.0;
+    linesColor[2] = channels.b / 255.0;
+    linesColor[3] = channels.a;
+}
 
 /*************************************************/
 /********************RENDER***********************/
 /*************************************************/
+var num_frames      = 0;
+var num_slow_frames = 0;
+var max_slow_frames = 10;
+var update_frames   = 10;
+var ordeningMade    = false;
+var object_uniforms, system_uniforms, particles_uniforms, forces_uniforms, grid_uniforms;
+
+function setUniforms() {
+	object_uniforms = {
+		u_mvp: camera.mvp,
+		u_model: mat4.IDENTITY,
+		u_color: linesColor
+	}
+
+	grid_uniforms = {
+		u_mvp: camera.mvp,
+		u_model: mat4.IDENTITY,
+		u_color: gridColor,
+		u_fogColor: backgroundColor,
+		u_fogFarNear: [0.1, 270.0]
+	}
+
+	//default sytem uniforms
+	system_uniforms = { 
+		u_mvp: camera.mvp,
+		u_texture: spawner_text,
+		u_model: undefined
+	};
+
+	//default particles uniforms
+	particles_uniforms = { 
+		u_viewprojection : camera.vp,
+		u_mvp            : camera.mvp,
+		u_right          : camera.getRightVector(),
+		u_up             : camera.getUpVector(),
+		u_model          : undefined
+	};
+
+	//default forces uniforms
+	forces_uniforms = {
+		u_mvp: camera.mvp,
+		u_model: undefined
+	}
+}
+
 gl.ondraw = function() {
+
+	num_frames++;
 
 	gl.clear(gl.COLOR_BUFFER_BIT);
 	gl.clear(gl.DEPTH_BUFFER_BIT);
@@ -372,36 +463,18 @@ gl.ondraw = function() {
 	gl.enable(gl.DEPTH_TEST);
 	gl.depthFunc(gl.LESS);
 
+	gl.clearColor(backgroundColor[0], backgroundColor[1], backgroundColor[2], backgroundColor[3]);
+
+	setUniforms();
+
+	gl.depthMask(true);
+	gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
+
+	//Render of the grid
+	if(switchGrid.checked && camera.eye[1] < 0)
+		fogShader.uniforms(grid_uniforms).draw(grid, GL.LINES);
+
 	gl.depthMask(false);
-
-	var object_uniforms = {
-		u_mvp: camera.mvp,
-		u_model: undefined,
-		u_color: [1,1,1,1]
-	}
-
-	for (x in objects_list) {
-		var object = objects_list[x];
-
-		object_uniforms.u_model = object.model;
-		//flatShader.uniforms( object_uniforms ).draw( object.mesh );
-	}
-
-	//default particles uniforms
-	var particles_uniforms = { 
-		u_viewprojection : camera.vp,
-		u_mvp            : camera.mvp,
-		u_right          : camera.getRightVector(),
-		u_up             : camera.getUpVector(),
-		u_model          : undefined
-	};
-
-	//default sytem uniforms
-	var system_uniforms = { 
-		u_mvp: camera.mvp,
-		u_texture: spawner_text,
-		u_model: undefined
-	};
 
 	//Render the particles
 	for(var i = 0; i < system_list.length; ++i){
@@ -410,60 +483,52 @@ gl.ondraw = function() {
 		if(system.max_particles <= 0)
 			continue;
 
+		//Draw the lines!!
+		if(switchLines.checked == true)
+		{
+			gl.depthMask(true);
+			linesShader.uniforms(object_uniforms).draw(system.line_mesh, GL.LINES);
+			gl.depthMask(false);	
+		}
+
 		gl.blendFunc(system.src_bfact, system.dst_bfact);
 
-		var mesh        = system.particles_mesh;
-		var trails_mesh = system.trails_mesh;
+		var mesh = system.particles_mesh;
 
-		if(system.point_mode)
+		if(system.origin == "Point")
 		{
 			particles_uniforms.u_model = system.model;
 			system_uniforms.u_model    = system.model;
 		}
-		else
+		else if(system.origin == "Mesh")
 		{
 			particles_uniforms.u_model = identity;
-			system_uniforms.u_model    = system.external_model;
+			system_uniforms.u_model    = system.external_model;		
 		}
 
 		//First all the particles of the system are rendered
-		//If a texture is defined then the textured shader is used
-		//but if te texture is undefined the flat will be used 
-		if(system.texture == undefined)
-		{
-			particleShaderFlat.uniforms( particles_uniforms ).draw( mesh );
-			
-			if(system.trail)
-				particleShaderFlat.uniforms( particles_uniforms ).draw( trails_mesh );
-		}
+		//If a atlas is defined then the textured shader is used
+		//but if is undefined the flat shader will be used 
+		if(system.atlas == undefined)
+			particleShaderFlat.uniforms(particles_uniforms).draw(mesh);
 		else
 		{
-			particles_uniforms.u_texture = system.texture;
+			particles_uniforms.u_texture = system.atlas;
 			particles_uniforms.u_texture.bind(0);
-			particleShaderTextured.uniforms( particles_uniforms ).draw( mesh );
-
-			if(system.trail)
-			{
-				particles_uniforms.u_texture = system.texture;
-				particles_uniforms.u_texture.bind(0);
-				particleShaderTextured.uniforms( particles_uniforms ).draw( trails_mesh );		
-			}
+			particleShaderTextured.uniforms(particles_uniforms).draw(mesh);
+			particles_uniforms.u_texture.unbind(0);
 		}
 
 		//If the user wants to see the origin of the particles
 		//then it will be rendered using the default texture
-		if(!system.visible)
-			continue;
-		
-		system_uniforms.u_color = system.color;
-		system_uniforms.u_texture.bind(0);
-		texturedShader.uniforms( system_uniforms ).draw( default_forces_mesh, GL.POINTS );
-	}
-
-	//default forces uniforms
-	var forces_uniforms = {
-		u_mvp: camera.mvp,
-		u_model: undefined
+		if(system.visible && system.origin == "Point")
+		{
+			system_uniforms.u_color = system.color;
+			system_uniforms.u_model = system.model;
+			system_uniforms.u_texture.bind(0);
+			texturedShader.uniforms(system_uniforms).draw(default_forces_mesh, GL.POINTS);
+			system_uniforms.u_texture.unbind(0);
+		}
 	}
 
 	for (x in forces_list){
@@ -483,50 +548,154 @@ gl.ondraw = function() {
 			forces_uniforms.u_texture = magnet_text;
 
 		forces_uniforms.u_texture.bind(0);
-		texturedShader.uniforms( forces_uniforms ).draw( default_forces_mesh, GL.POINTS );
+		texturedShader.uniforms(forces_uniforms).draw(default_forces_mesh, GL.POINTS);
+		forces_uniforms.u_texture.unbind(0);
 	}
+
+	gl.depthMask(true);
+	gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
+
+	//Render of the grid
+	if(switchGrid.checked && camera.eye[1] > 0)
+		fogShader.uniforms(grid_uniforms).draw(grid, GL.LINES);
+
+	for (var i = 0; i < objects_list.length; ++i) {
+		var object = objects_list[i];
+
+		object_uniforms.u_model = object.model;
+		object_uniforms.u_color = object.color;
+		if(object.mesh != undefined)
+			flatShader.uniforms(object_uniforms).draw(object.mesh);
+	}
+
 
 	gl.disable(gl.DEPTH_TEST);
 	gl.disable(gl.BLEND);
 }
 
-
-function orderParticles(particle_ids, particle_list, camera, particles_mesh)
+/*
+* 	Ordination of the particles & saving the actual position, depending on how far from the camera they are.
+*	@method orderParticles
+*/
+function orderParticles(system, particle_ids, subem_ids, particle_list, camera, particles_mesh)
 {
-	var particle, distance;
+	var particle, distance, all_ids;
 
-	for (var j = 0; j < particle_ids.length; ++j)
-	{
-		distance = [0,0,0];
-		particle = particle_list[particle_ids[j].id];
+	//only order the particles every 10 frames and when the graph is running
+	if(num_frames >= update_frames && !emergency_stop)
+	{	
 
-		//Compute the distance from the particle position to the camera eye
-		for(var k = 0; k < 3; ++k)
-			distance[k] = particle.position[k] - camera.eye[k];
+		ordeningMade = true;
 
-		//particles_ids saves the id (index in particle list) and the distance to the eye
-		particle_ids[j].distance_to_camera = Math.sqrt((distance[0]*distance[0]+distance[1]*distance[1]+distance[2]*distance[2]));
+		for (var j = 0; j < particle_ids.length; ++j)
+		{
+			distance = [0,0,0];
+			particle = particle_list[particle_ids[j].id];
+
+			//Compute the distance from the particle position to the camera eye
+			for(var k = 0; k < 3; ++k)
+				distance[k] = particle.position[k] - camera.eye[k];
+
+			//particles_ids saves the id (index in particle list) and the distance to the eye
+			particle_ids[j].distance_to_camera = Math.sqrt((distance[0]*distance[0]+distance[1]*distance[1]+distance[2]*distance[2]));
+		}
+
+		for (var j = 0; j < subem_ids.length; ++j)
+		{
+			distance = [0,0,0];
+			particle = particle_list[subem_ids[j].id];
+
+			//Compute the distance from the particle position to the camera eye
+			for(var k = 0; k < 3; ++k)
+				distance[k] = particle.position[k] - camera.eye[k];
+
+			//particles_ids saves the id (index in particle list) and the distance to the eye
+			subem_ids[j].distance_to_camera = Math.sqrt((distance[0]*distance[0]+distance[1]*distance[1]+distance[2]*distance[2]));
+		}
+
+		//Ordening (descendent)
+		particle_ids.sort(function(a,b){
+			return b.distance_to_camera - a.distance_to_camera;
+		});
+
+		//Ordening (descendent)
+		subem_ids.sort(function(a,b){
+			return b.distance_to_camera - a.distance_to_camera;
+		});
+
+		all_ids = particle_ids.concat(subem_ids);
+		all_ids.sort(function(a,b){
+			return b.distance_to_camera - a.distance_to_camera;
+		});
+		system.all_ids = all_ids;
+
+		system.orderBuffers(particle_list);
+		return;
 	}
 
-	//Ordening (descendent)
-	particle_ids.sort(function(a,b){
-		return b.distance_to_camera - a.distance_to_camera;
-	});
-
-	//function that reorder the buffers
-	orderBuffers(particle_ids, particle_list, particles_mesh);
+	//If the graph is stoped don't order anything!!
+    if(!emergency_stop)
+    {
+    	if(system.all_ids == undefined)
+    	{
+	    	all_ids = particle_ids.concat(subem_ids);
+			all_ids.sort(function(a,b){
+				return b.distance_to_camera - a.distance_to_camera;
+			});	
+			system.all_ids = all_ids;
+    	}
+		
+		//function that reorder the buffers
+	    system.orderBuffers(particle_list);
+	    return;
+	}
 }
 
+
+function mergeSubEmittorsIds(system, sub_emittors)
+{
+	system.sub_emission_ids = [];
+	var ids;
+
+	for(var i = 0; i < sub_emittors.length; ++i)
+	{
+		ids = sub_emittors[i].ids;
+		for(var j = 0; j < ids.length; ++j)
+			system.sub_emission_ids.push(ids[j]);
+	}
+
+    return system.sub_emission_ids;
+}
+
+/*************************************************/
+/********************UPDATE***********************/
+/*************************************************/
 gl.onupdate = function( dt ) {
 	time_interval = dt;
 
-	var force;
-	var system;
-	var particle_list;
-	var particle_ids;
-	var trails_list;
-	var trails_ids;
+	//If time interval is greater than 5 seconds, then the systems goes very slow and is better to stop it
+	if(time_interval >= 0.4 && !emergency_stop)
+    {
+    	num_slow_frames++;
+
+    	if(num_slow_frames == max_slow_frames)
+    	{
+    		num_slow_frames = 0;
+    		createAlert('Holy Guacamole!','Low FPS','The fps are very low, check what you do...','danger',true,false,'pageMessages')
+    		graph.stop();
+    		emergency_stop   = true;
+			is_graph_running = false;
+    	}
+    }
+    else
+    {
+    	num_slow_frames = 0;
+    }
+
+	var force, system;
+	var particle_list, particle_ids, subem_ids;
 	var distance;
+	var textures, changes, mergerOut, sub_emittor;
 
 	//The model of the forces and systems is updated
 	for (var i = 0; i < forces_list.length; ++i)
@@ -535,13 +704,13 @@ gl.onupdate = function( dt ) {
 		mat4.setTranslation(force.model, force.position);
 	}
 
+	//And the systems are ordered depending on the distance to the camera, the textures are recovered 
 	for (var i = 0; i < system_list.length; ++i)
 	{
 		system        = system_list[i];
 		particle_list = system.particles_list;
 		particle_ids  = system.particles_ids;
-		trails_list   = system.trails_list;
-		trails_ids    = system.trails_ids;
+        subem_ids     = mergeSubEmittorsIds(system, system.sub_emittors);
 
 		mat4.setTranslation(system.model, system.position);
 
@@ -552,10 +721,47 @@ gl.onupdate = function( dt ) {
 		system.distance_to_camera = Math.sqrt((distance[0]*distance[0]+distance[1]*distance[1]+distance[2]*distance[2]));;
 
 		//Update particles distance_to_camera
-		orderParticles(particle_ids, particle_list, camera, system.particles_mesh);
-		//Update trails distance_to_camera
-		if(system.trail)
-			orderParticles(trails_ids, trails_list, camera, system.trails_mesh);
+		orderParticles(system, particle_ids, subem_ids, particle_list, camera, system.particles_mesh);
+		
+		if(system.texture_change)
+		{
+			textures = [];
+
+			if(system.texture.file != undefined)
+			{
+				system.texture.id = 1;
+				textures.push(system.texture.file);
+			}
+			else
+				system.texture.id = 0;
+
+			for(var j = 0; j < system.sub_emittors.length; ++j)
+			{
+				sub_emittor = system.sub_emittors[j];
+
+				if(sub_emittor.texture.file != undefined)
+				{
+					textures.push(sub_emittor.texture.file);
+					sub_emittor.texture.id = j + 1 + system.texture.id;
+				}
+				else
+					sub_emittor.texture.id = 0;
+			}
+			
+			//Merge the textures (Atlas creation)
+			mergerOut = TextureMerger(textures);
+
+			system.atlas = mergerOut[0];
+			system.uvs   = mergerOut[1];
+
+			system.texture_change = false;
+		}
+	}
+
+	if (ordeningMade)
+	{
+		num_frames = 0;
+		ordeningMade = false;
 	}
 
 	system_list.sort(function(a,b){

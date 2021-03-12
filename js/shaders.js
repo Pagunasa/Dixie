@@ -1,49 +1,69 @@
 /*	Guillem Martínez Jiménez		
 *   In this file you can find the main behaviour of the camera
 */
-
-var vs_basic = '\
-				precision highp float;\
-				attribute vec3 a_vertex;\
+var vs_basic_point = '#version 300 es \n \
 				\
-				varying vec3 v_world_position;\
-				varying vec2 v_coord;\
+				precision highp float;\
+				in float a_visible;\
+				in vec3 a_vertex;\
+				\
+				out vec3 v_world_position;\
+				out vec2 v_coord;\
+				out float v_visible;\
 				\
 				uniform mat4 u_mvp;\
 				uniform mat4 u_model;\
 				\
 				void main() {\
 					v_world_position = (u_model * vec4(a_vertex, 1.0)).xyz;\
+					v_visible = a_visible;\
 					gl_Position = u_mvp * vec4(v_world_position, 1.0);\
 					gl_PointSize = 200.0 / gl_Position.z;\
 				}';
 
-var fs_flat = '\
+var fs_point_flat =  '#version 300 es \n \
+				precision highp float;\
+				out vec4 fragColor;\
+				\
 				precision highp float;\
 				uniform vec4 u_color;\
 				\
 				void main() {\
-					gl_FragColor = u_color;\
+					fragColor = u_color;\
+				}';
+
+var fs_lines_flat =  '#version 300 es \n \
+				precision highp float;\
+				in float v_visible;\
+				out vec4 fragColor;\
+				\
+				precision highp float;\
+				uniform vec4 u_color;\
+				\
+				void main() {\
+					if (v_visible == 0.0) discard;\
+					fragColor = u_color;\
 				}';
 
 //For doing the billboard I follow the next tutorial
 //http://www.opengl-tutorial.org/intermediate-tutorials/billboards-particles/billboards/
-var vs_particles = '\
+var vs_particles = '#version 300 es \n \
+					\
 					precision highp float;\
 					\
-					attribute vec3 a_vertex;\
-					attribute vec3 a_normal;\
-					attribute vec2 a_coord;\
-					attribute vec2 a_icoord;\
-					attribute vec4 a_color;\
-					attribute vec2 a_size;\
-					attribute float a_visible;\
+					in vec3 a_vertex;\
+					in vec3 a_normal;\
+					in vec2 a_coord;\
+					in vec2 a_icoord;\
+					in vec4 a_color;\
+					in vec2 a_size;\
+					in float a_visible;\
 					\
-					varying vec4 v_color;\
-					varying vec3 v_normal;\
-					varying vec3 v_pos;\
-					varying vec2 v_coord;\
-					varying float v_visible;\
+					out vec4 v_color;\
+					out vec3 v_normal;\
+					out vec3 v_pos;\
+					out vec2 v_coord;\
+					out float v_visible;\
 					\
 					uniform mat4 u_viewprojection;\
 					uniform mat4 u_mvp;\
@@ -62,40 +82,82 @@ var vs_particles = '\
 					}';
 
 
-var fs_flat_p = '\
+var fs_flat_p ='#version 300 es \n \
+				\
 				precision highp float;\
-				varying vec4 v_color;\
-				varying float v_visible;\
+				in vec4 v_color;\
+				in float v_visible;\
+				out vec4 fragColor;\
 				\
 				void main() {\
 					if (v_visible == 0.0) discard;\
-					gl_FragColor = v_color;\
+					fragColor = v_color;\
 				}';
 
-var fs_texture = '\
+var fs_texture =   '#version 300 es \n \
+					\
 					precision highp float;\
-					varying vec4 v_color;\
-					varying vec2 v_coord;\
-					varying float v_visible;\
+					in vec4 v_color;\
+					in vec2 v_coord;\
+					in float v_visible;\
+					out vec4 fragColor;\
 					uniform sampler2D u_texture;\
 					\
 					void main() {\
 						if (v_visible == 0.0) discard;\
-						vec4 color = v_color * texture2D(u_texture, v_coord);\
+						vec4 color = v_color * texture(u_texture, v_coord);\
 						if (color.a < 0.1)\
 							discard;\
-						gl_FragColor = color;\
+						fragColor = color;\
 					}';
 
 
-var fs_point_texture = '\
-					precision highp float;\
-					uniform vec4 u_color;\
-					uniform sampler2D u_texture;\
-					\
-					void main() {\
-						vec4 color = u_color * texture2D(u_texture, gl_PointCoord);\
-						if (color.a < 0.1)\
-							discard;\
-						gl_FragColor = color;\
-					}';
+var fs_point_texture = '#version 300 es \n \
+						\
+						precision highp float;\
+						uniform vec4 u_color;\
+						uniform sampler2D u_texture;\
+						out vec4 fragColor;\
+						\
+						void main() {\
+							vec4 color = u_color * texture(u_texture, gl_PointCoord);\
+							if (color.a < 0.1)\
+								discard;\
+							fragColor = color;\
+						}';
+
+
+var vs_fog = '#version 300 es \n \
+				\
+				precision highp float;\
+				in vec3 a_vertex;\
+				\
+				out vec3 v_world_position;\
+				out float v_fogDepth;\
+				\
+				uniform mat4 u_mvp;\
+				uniform mat4 u_model;\
+				\
+				void main() {\
+					v_world_position = (u_model * vec4(a_vertex, 1.0)).xyz;\
+					vec4 pos = u_mvp * vec4(v_world_position, 1.0);\
+					v_fogDepth  = (pos.z);\
+					gl_Position = pos;\
+				}';
+
+var fs_fog =   '#version 300 es \n \
+				\
+				precision highp float;\
+				\
+				uniform vec4 u_color;\
+				uniform vec4 u_fogColor;\
+				uniform vec2 u_fogFarNear;\
+				\
+				in float v_fogDepth;\
+				\
+				out vec4 fragColor;\
+				\
+				void main() {\
+					float fogAmount = smoothstep(u_fogFarNear.x, u_fogFarNear.y, v_fogDepth);\
+					fragColor = mix(u_color, u_fogColor, fogAmount);\
+				}';

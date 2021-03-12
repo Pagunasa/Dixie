@@ -54,21 +54,35 @@ var local_texture = document.getElementById("texture_local");
 /********************************/
 /*************Meshes*************/
 /********************************/
-var mesh_modal = $('#meshesModal');
-var def_mesh_1 = document.getElementById("def_mesh1");
-var def_mesh_2 = document.getElementById("def_mesh2");
-var def_mesh_3 = document.getElementById("def_mesh3");
-var def_mesh_4 = document.getElementById("def_mesh4");
-var def_mesh_5 = document.getElementById("def_mesh5");
-var def_mesh_6 = document.getElementById("def_mesh6");
-var def_mesh_7 = document.getElementById("def_mesh7");
-var def_mesh_8 = document.getElementById("def_mesh8");
-var def_mesh_9 = document.getElementById("def_mesh9");
+var mesh_modal  = $('#meshesModal');
+var def_mesh_1  = document.getElementById("def_mesh1");
+var def_mesh_2  = document.getElementById("def_mesh2");
+var def_mesh_3  = document.getElementById("def_mesh3");
+var def_mesh_4  = document.getElementById("def_mesh4");
+var def_mesh_5  = document.getElementById("def_mesh5");
+var def_mesh_6  = document.getElementById("def_mesh6");
+var def_mesh_7  = document.getElementById("def_mesh7");
+var def_mesh_8  = document.getElementById("def_mesh8");
+var def_mesh_9  = document.getElementById("def_mesh9");
+var url_mesh    = document.getElementById("mesh_url");
+var custom_mesh = document.getElementById("mesh_custom");
 
+function lerpVec(s, e, x){
+	var out = [];
+
+	if(s.length != e.length)
+		return;
+
+	for(var i = 0; i < s.length; ++i)
+		out.push(s[i] * ( 1 - x ) + e[i] * x);
+
+	return out; 
+}
 
 function lerp(s, e, x){
-	return s * ( 1 - x ) + e * x; 
+	return s * ( 1 - x ) + e * x;
 }
+
 
 /*
 * 	This method returns the cross product of two vectors
@@ -207,24 +221,12 @@ function searchSystem(id, remove = false)
 *	@class SystemInfo
 */
 class SystemInfo {
-	constructor(id_, position_, max_particles_, max_trail_particles_) {
+	constructor(id_, position_, max_particles_) {
 		this.id                 = id_;
 		this.mesh_id            = id_;
 		this.distance_to_camera = 0;
 
-		this.particles_ids      = [];		
-		this.particles_list     = [];
-		this.max_particles      = max_particles_;
-		this.particles_mesh     = createMesh(max_particles_);
-
-		this.trails             = false;
-		this.trails_ids         = [];
-		this.trails_list        = [];
-		this.trails_mesh        = createMesh(max_trail_particles_);
-
-		this.particles_to_reset = [];
-		this.trails_to_reset    = [];
-
+		this.total_particles    = 0;
 		this.position           = position_;
 		this.model              = mat4.create();
 		this.point_mode         = true;
@@ -232,15 +234,63 @@ class SystemInfo {
 		this.color              = [1,1,1,1];
 		this.visible            = true;
 		this.visibility         = 1;
-		this.texture            = undefined;
-		this.trails_texture     = undefined;
 		this.coords             = default_coords;
 
 		this.src_bfact          = gl.SRC_ALPHA;
 		this.dst_bfact          = gl.ONE;
+
+		//Textures
+		this.texture            = {file: undefined, id: undefined};
+		this.texture_change     = false;
+		this.atlas              = undefined;
+		this.uvs 				= [];
+
+		//Spawn Info
+		this.spawn_rate			= 0;
+		this.spawn_mode			= "Linear";
+		this.particles_per_wave = 0;
+		this.origin 			= "Point";
+		this.origin_mesh        = undefined;
+
+		//Ids list
+		this.particles_ids      = [];	
+
+		//Reset list
+		this.particles_to_reset = [];
+	
+		//Max elements
+		this.max_particles      = max_particles_;
+		this.sub_emission_part  = 0;
+		this.max_subemissions   = 0;
+		this.sub_emittors       = [];
+
+		this.particles_list     = [];
+		this.particles_mesh     = createMesh(max_particles_);
+		this.line_mesh  	    = createLineMesh(max_particles_);
 	}
 }
 
+/*
+* 	This class is for save information about every system
+*	@class SystemInfo
+*/
+class SubEmitterInfo {
+	constructor(id_, max_particles_, spawn_rate_, particles_per_wave_) {
+		this.id = id_;
+
+		//Spawn Info
+		this.spawn_rate			= spawn_rate_;
+		this.spawn_mode			= "Waves";
+		this.particles_per_wave = particles_per_wave_;
+		this.origin 			= "Point";
+		this.texture            = {file: undefined, id: undefined};
+
+		this.ids      = []; //Ids list	
+		this.to_reset = []; //Reset list
+	
+		this.max_particles = max_particles_; //Max elements
+	}
+}
 
 function randomNumber(min, max){
   return Math.random() * (max - min) + min;
@@ -256,7 +306,7 @@ class Particle {
 	}
 }
 
-Particle.prototype.fill = function(properties) {
+Particle.prototype.fill = function(properties, is_Trail = false) {
 	var speed = new Float32Array(3);
 	speed[0]  = randomNumber(properties.min_speed[0], properties.max_speed[0]);
 	speed[1]  = randomNumber(properties.min_speed[1], properties.max_speed[1]);
@@ -284,7 +334,9 @@ Particle.prototype.fill = function(properties) {
 	this.iSize = s;
 	
 	this.speed  = speed;
+	this.aSpeed = [0,0,0];
 	this.iSpeed = [0,0,0];
+
 	for (var i = 0; i < 3; ++i)
 		this.iSpeed[i] = speed[i];
 
@@ -298,9 +350,29 @@ Particle.prototype.fill = function(properties) {
 	this.frameX    = 0;  
 	this.frameY    = 0;  
 
+	/************************/
+	/********CONDITION*******/
+	/************************/
+	this.conditions_meet = [];
+
+	/************************/
+	/*********TRAILS*********/
+	/************************/
+	if(!is_Trail)
+	{
+		this.num_trails = 0;
+		this.trails = [];
+		//In this array I will save the last 2 positions of the particle 
+		//var p = this.position.slice(0);
+		//this.old_positions.unshift(p);
+		//this.old_positions.unshift(p);
+	}
+	else
+		this.parent_particle = properties.origin_id; 
+
 	var texture = properties.texture; 
 	
-	if(texture == undefined)
+	if(texture.file == undefined)
 		return;
 
 	if(texture.prop.animated)
@@ -319,6 +391,7 @@ Particle.prototype.fill = function(properties) {
 		var frame_number = Math.floor(t_prop.textures_x + t_prop.textures_y) - 1; 
 		this.frameRate = (t / frame_number);
 	}
+
 };
 
 
@@ -339,11 +412,11 @@ function createMesh(particles){
 	for(var i = 0; i < particles; i ++)
 	{
 		visible.set(default_visibility, i*6);
-		vertices.set(default_centers, i*6*3);
-		coords.set(default_coords, i*6*2);
-		icoord.set(square_vertices, i*6*2);
-		colors.set(default_color, i*6*4);
-		sizes.set(default_sizes, i*6*2);
+		vertices.set(default_centers,   i*6*3);
+		coords.set(default_coords,      i*6*2);
+		icoord.set(square_vertices,     i*6*2);
+		colors.set(default_color,       i*6*4);
+		sizes.set(default_sizes,        i*6*2);
 	}
 
 	var mesh = new GL.Mesh();
@@ -356,12 +429,34 @@ function createMesh(particles){
 		              size     : sizes
 		            }, null, gl.STREAM_DRAW);
 
+	return mesh;
+}
+
+/*
+* 	This method is for create a mesh
+*	@method createMesh
+*	@params {Number} the id of the mesh
+*	@params {Number} the maximum number of particles
+*/
+function createLineMesh(particles){
+	var vertices = new Float32Array(particles * 2 * 3); //Save information about the center of the particle
+	var visible  = new Float32Array(particles * 2 * 3); //Save information about the center of the particle
+
+	for(var i = 0; i < particles; i ++)
+		visible.set(default_visibility, i*6);
+
+	var mesh = new GL.Mesh();
+	mesh.addBuffers({vertices : vertices, visible : visible}, null, gl.STREAM_DRAW);
 
 	return mesh;
 }
 
-function orderBuffers(new_order, particles, mesh) {
-	var length = new_order.length;
+SystemInfo.prototype.orderBuffers = function(particles){
+	var all_ids  = this.all_ids;
+	var mesh     = this.particles_mesh;
+	var lineMesh = this.line_mesh;
+
+	var length  = all_ids.length;
 
 	//If there are no particles then retun
 	if(length == 0)
@@ -373,11 +468,15 @@ function orderBuffers(new_order, particles, mesh) {
 	var visibility_data  = mesh.getBuffer("visible").data;
 	var color_data       = mesh.getBuffer("colors").data;
 	var size_data        = mesh.getBuffer("size").data;
-	var coord_data       = mesh.getBuffer("coords").data;;
+	var coord_data       = mesh.getBuffer("coords").data;
+
+	var line_vertex_data  = lineMesh.getBuffer("vertices").data;
+	var line_visible_data = lineMesh.getBuffer("visible").data;
+	var pos = 0;
 
 	for (var i = 0; i < length; ++i)
 	{
-		id = new_order[i].id;
+		id = all_ids[i].id;
 		particle = particles[id];
 
 		for(var j = 0; j < 18; ++j)
@@ -393,9 +492,30 @@ function orderBuffers(new_order, particles, mesh) {
 		
 		for(var j = 0; j < 24; ++j)
 			color_data[i*24 + j] = particle.color[j % 4];
+
+		if(switchLines.checked)
+		{
+			line_vertex_data[pos]   = particle.position[0];
+			line_vertex_data[pos+1] = particle.position[1] 
+			+ (particle.position[1] < 0 ? (particle.size*0.5) : -(particle.size*0.5)) 
+			+ (this.origin == "Point" ? this.position[1] : 0); 
+			line_vertex_data[pos+2] = particle.position[2];
+
+			line_vertex_data[pos+3] = particle.position[0];
+			line_vertex_data[pos+4] = 0;
+			line_vertex_data[pos+5] = particle.position[2];
+
+			for(var j = 0; j < 6; ++j)
+				line_visible_data[pos+j] = particle.visibility;
+
+			pos += 6;
+		}
 	}
 
 	mesh.upload();
+
+	if(switchLines.checked)
+		lineMesh.upload();
 }
 
 /*
@@ -404,7 +524,11 @@ function orderBuffers(new_order, particles, mesh) {
 *	@params {Mesh} the mesh
 *	@params {Number} the new maximum 
 */
-function resizeBufferArray(mesh, newSize) {
+SystemInfo.prototype.resizeBufferArray = function(particles){
+	var mesh      = this.particles_mesh;
+	var line_mesh = this.line_mesh; 
+	var newSize   = this.total_particles;
+
 	var data_Vertex  = mesh.getBuffer("vertices").data;
 	var data_Visible = mesh.getBuffer("visible").data;
 	var data_Coords  = mesh.getBuffer("coords").data;
@@ -412,15 +536,17 @@ function resizeBufferArray(mesh, newSize) {
 	var data_Colors  = mesh.getBuffer("colors").data;
 	var data_Size    = mesh.getBuffer("size").data;
 
+	var data_linesVertex  = line_mesh.getBuffer("vertices").data;
+	var data_linesVisible = line_mesh.getBuffer("visible").data;
+
 	var vertexSize  = newSize * 6 * 3;
 	var coordsSize  = newSize * 6 * 2;
 	var colorsSize  = newSize * 6 * 4;
 	var visibleSize = newSize * 6;
 
-	var size;
-	var data;
-	var data_size;
-	var default_data;
+	var vertexLineSize = newSize * 2 * 3;
+
+	var size, data, data_size, default_data;
 
 	if (vertexSize == data_Vertex.length)
 		return;
@@ -436,6 +562,10 @@ function resizeBufferArray(mesh, newSize) {
         mesh.getBuffer("icoord").data   = data_iCoords.slice(0, coordsSize);
         mesh.getBuffer("size").data     = data_Size.slice(0, coordsSize);
 
+        line_mesh.getBuffer("vertices").data = data_linesVertex.slice(0, vertexLineSize);
+        line_mesh.getBuffer("visible").data   = data_linesVisible.slice(0, visibleSize);
+
+        this.orderBuffers(particles);
     } else {
 
     	for (x in mesh.vertexBuffers) { 
@@ -489,6 +619,32 @@ function resizeBufferArray(mesh, newSize) {
 	        mesh.getBuffer(x).data = nBuff
     	}
 
+    	for (x in line_mesh.vertexBuffers) {
+			if (x == "vertices") {
+    			size = vertexLineSize;
+    			data_size = 2 * 3;
+    			data = data_linesVertex;
+    			default_data = [0,0,0, 0,0,0];
+    		}
+    		else if (x == "visible") {
+    			size = visibleSize;
+    			data_size = 6;
+    			data = data_linesVisible;
+    			default_data = [0.0];
+    		}
+
+			var nBuff = new Float32Array(size);
+
+        	//Copying the old data
+	        for (var i = 0; i < data.length; i++)
+	            nBuff[i] = data[i];
+	        
+	        //Filling the new information in the buffers
+			for(var i = data.length / data_size; i < nBuff.length / data_size; i ++)
+			    nBuff.set(default_data, i*data_size);
+
+	        line_mesh.getBuffer(x).data = nBuff
+    	}
 	}	
 }
 
@@ -618,32 +774,49 @@ function onShowNodePanel(node){
     var that = this.graphCanvas;
     var graphcanvas = this.graphCanvas;
 
+    var aux_panel = this.graphCanvas.createPanel(node.title || "",{closable: true, window: ref_window });
+
     function inner_refresh()
     {
         panel.content.innerHTML = ""; //clear
-        panel.addHTML("<span class='node_type'>"+node.type+"</span><span class='node_desc'>"+(node.constructor.desc || "")+"</span><span class='separator'></span>");
-
-        panel.addHTML("<h3>Properties</h3>");
-
-        for(var i in node.properties)
+       	
+        if(Object.keys(node.properties).length == 0)
+        	panel.addHTML("<span class='node_desc'> (" + node.type + ") <br>" + (node.constructor.desc || ""));
+        else 
         {
-            var value = node.properties[i];
-            var info = node.getPropertyInfo(i);
-            var type = info.type || "string";
+	  		panel.addHTML("<span class='node_desc'> (" + node.type + ") <br>" + (node.constructor.desc || "")
+	        			  +"</span><span class='separator'></span>");
+	        /*panel.addHTML("<span class='node_type'>"+node.type
+	        			  +"</span><span class='node_desc'>"+(node.constructor.desc || "")
+	        			  +"</span><span class='separator'></span>");*/
 
-            //in case the user wants control over the side panel widget
-            if( node.onAddPropertyToPanel && node.onAddPropertyToPanel(i,panel) )
-                continue;
+	        panel.addHTML("<h3>Properties</h3>");
+	        panel.addHTML("", "node_properties");
 
-            panel.addWidget( info.widget || info.type, i, value, info, function(name,value){
-                graphcanvas.graph.beforeChange(node);
-                node.setProperty(name,value);
-                graphcanvas.graph.afterChange();
-                graphcanvas.dirty_canvas = true;
-            });
+	        for(var i in node.properties)
+	        {
+	            var value = node.properties[i];
+	            var info = node.getPropertyInfo(i);
+	            var type = info.type || "string";
+
+	            //in case the user wants control over the side panel widget
+	            if( node.onAddPropertyToPanel && node.onAddPropertyToPanel(i,panel) )
+	                continue;
+
+	            var elem = aux_panel.addWidget( info.widget || info.type, i, value, info, function(name,value){
+			                graphcanvas.graph.beforeChange(node);
+			                node.setProperty(name,value);
+			                graphcanvas.graph.afterChange();
+			                graphcanvas.dirty_canvas = true;
+			            });
+
+	            if( node.prop_desc != undefined )
+	            	if ( node.prop_desc[i] != undefined ) 
+	           			elem.innerHTML += '<div class="tooltiptext">'+ node.prop_desc[i]+'</div>';
+	            
+	            panel.children[1].children[2].innerHTML += elem.outerHTML;
+	        }
         }
-
-        panel.addSeparator();
 
         if(node.onShowCustomPanelInfo)
             node.onShowCustomPanelInfo(panel);
@@ -660,7 +833,7 @@ function onShowNodePanel(node){
     {
         panel.style.top = "calc( 50% - 250px)";
         panel.style.left = "calc( 50% - 400px)";
-        panel.style.width = "800px";
+        panel.style.width = "900px";
         panel.style.height = "500px";
 
         if(window.CodeFlask) //disabled for now
@@ -762,6 +935,16 @@ function loadTexture(node){
 	}
 }
 
+//https://stackoverflow.com/questions/5717093/check-if-a-javascript-string-is-a-url
+function validURL(str) {
+  var pattern = new RegExp('^(https?:\\/\\/)?'+ // protocol
+    '((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|'+ // domain name
+    '((\\d{1,3}\\.){3}\\d{1,3}))'+ // OR ip (v4) address
+    '(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*'+ // port and path
+    '(\\?[;&a-z\\d%_.~+=-]*)?'+ // query string
+    '(\\#[-a-z\\d_]*)?$','i'); // fragment locator
+  return !!pattern.test(str);
+}
 
 function chargeMesh(node, url){
 	GL.Mesh.fromURL(url, node.onMeshLoaded.bind(node));
@@ -775,51 +958,113 @@ function loadMesh(node){
 	//Pango
 	def_mesh_1.onclick = function(){
 		chargeMesh(node, 'default_meshes/pango.obj');
+		node.properties.name = "pango";
+		node.last_name = node.properties.name;
+		node.size[1]   = node.n_size;
 	}
 
 	//Cylinder
 	def_mesh_2.onclick = function(){
 		node.onMeshLoaded(GL.Mesh.cylinder({radius:0.5}));
+		node.properties.name = "cylinder";
+		node.last_name = node.properties.name;
+		node.size[1]   = node.n_size;
 		mesh_modal.modal('hide');
 	}
 	
-	//Torus
+	//Plane
 	def_mesh_3.onclick = function(){
-		node.onMeshLoaded(GL.Mesh.torus({innerradius:0.25,outerradius:1,innerslices:8}));
+		node.onMeshLoaded(GL.Mesh.plane());
+		node.properties.name = "plane";
+		node.last_name = node.properties.name;
+		node.size[1]   = node.n_size;
 		mesh_modal.modal('hide');
 	}
 	
 	//Dodo
 	def_mesh_4.onclick = function(){
 		chargeMesh(node, 'default_meshes/dodo.obj');
+		node.properties.name = "dodo";
+		node.last_name = node.properties.name;
+		node.size[1]   = node.n_size;
 	}
 
 	//Cube
 	def_mesh_5.onclick = function(){
 		node.onMeshLoaded(GL.Mesh.cube());
+		node.properties.name = "cube";
+		node.last_name = node.properties.name;
+		node.size[1]   = node.n_size;
 		mesh_modal.modal('hide');
 	}
 
 	//Cone
 	def_mesh_6.onclick = function(){
 		node.onMeshLoaded(GL.Mesh.cone({radius:0.5,height:1}));
+		node.properties.name = "cone";
+		node.last_name = node.properties.name;
+		node.size[1]   = node.n_size;
 		mesh_modal.modal('hide');
 	}
 
 	//PI
 	def_mesh_7.onclick = function(){
 		chargeMesh(node, 'default_meshes/pi.obj');
+		node.properties.name = "pi";
+		node.last_name = node.properties.name;
+		node.size[1]   = node.n_size;
 	}
 
 	//Sphere
 	def_mesh_8.onclick = function(){
 		node.onMeshLoaded(GL.Mesh.sphere());
+		node.properties.name = "sphere";
+		node.last_name = node.properties.name;
+		node.size[1]   = node.n_size;
 		mesh_modal.modal('hide');
 	}
 
 	//Icosahedron
 	def_mesh_9.onclick = function(){
 		node.onMeshLoaded(GL.Mesh.icosahedron({size:1,subdivisions:1}));
+		node.properties.name = "ico";
+		node.last_name = node.properties.name;
+		node.size[1]   = node.n_size;
 		mesh_modal.modal('hide');
+	}
+
+	//Custom mesh
+	custom_mesh.onclick = function(){
+		var url = url_mesh.value;
+		chargeMesh(node, url);
+
+		//Check if the url is valid
+		if(!validURL(url))
+		{
+        	createAlert('Holy Guacamole!','Loading error','URL not valid...','danger',true,true,'pageMessages')
+            return;
+        }
+
+		url = url.split("/");
+		var name = url[url.length - 1];
+		name = name.split(".");
+		var extension = name[name.length - 1];
+		
+		//Check if the extension is valid
+        if(GL.Mesh.parsers[extension] == undefined)
+        {
+        	createAlert('Holy Guacamole!','Loading error','Extension not valid...','danger',true,true,'pageMessages')
+            return;
+        }
+		
+		//Get the name of the mesh
+		var n_name = "";
+		for(var i = 0; i < name.length - 1; ++i)
+            n_name += name[i];
+            
+		if(n_name.length > 7)
+			n_name = n_name.substring(0, 7);
+        
+		node.temp_name = n_name;
 	}
 }

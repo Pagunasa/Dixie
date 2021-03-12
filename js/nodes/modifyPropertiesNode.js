@@ -1,9 +1,8 @@
 /*
-*	This node is for define how the particle system spawns the particles
-*	@method mySpawnNode
+*	This node is for allow to modify the properties of the particles
+*	@method modifyPropertyNode
 */
-function modifyPropertyNode() 
-{
+function modifyPropertyNode() {
 	/**************************************/
 	/***********Node properties************/
 	/**************************************/
@@ -23,6 +22,19 @@ function modifyPropertyNode()
 	this.propValues = ["Speed", "Size", "Color", "Life time"];
 	this.applValues = ["Equalization", "Addition", "Subtraction"];
 	this.modiValues = ["Along life time", "User defined"];
+
+    this.constructor.desc = "&nbsp;&nbsp;&nbsp;&nbsp; This node allows modifying one property of the particles given a condition and\
+    an equation. By default, the condition is true for all the particles, and the equation is linear.\
+    It will only modify properties for sub emitter particles if the connection comes from a init node that initializes his particles.";
+
+    this.prop_desc = {
+    	changed_property:     "What property will be changed",
+    	application_mode:     "What operation will be done with the new value",
+    	modification_mode:    "If the property will change along the particle lifetime or depending some times defined manually",
+    	user_defined_seconds: "How many seconds until achieve the new value",
+		user_defined_start:   "How many seconds until start to make the changes",
+		new_value:            "The new value of the property"
+    }
 
 	/**************************************/
 	/***************Widgets****************/
@@ -230,7 +242,7 @@ modifyPropertyNode.prototype.onExecute = function()
 
 		if(this.internal.last_id != system.id)
 		{
-			this.system_info = searchSystem(system.id);
+			this.system_info      = system.data;
 			this.internal.last_id = system.id;
 		}
 
@@ -246,7 +258,7 @@ modifyPropertyNode.prototype.onExecute = function()
 
 		//Look if there was an non undefined contition list
 		if (condition == undefined)
-			particles_condition_list = particles;
+			particles_condition_list = system.type == "emitter" ? system_info.particles_ids : system_info.sub_emission_ids;
 		else
 		{
 			using_condition = true;
@@ -256,15 +268,15 @@ modifyPropertyNode.prototype.onExecute = function()
 		for (var i = 0; i < particles_condition_list.length; i++)
 		{	
 			//Depending if there was a condition, the way to get the id of the particle changes		
-			if (using_condition){
+		//	if (using_condition){
 				particle_id = particles_condition_list[i].id;
 				index       = i;
-			}
+		/*	}
 			else
 			{
 				index   = i;
 				particle_id = particles_ids[i].id;
-			}
+			}*/
 
 			particle = particles[particle_id];
 
@@ -277,6 +289,11 @@ modifyPropertyNode.prototype.onExecute = function()
 			else if (properties.modification_mode == "User defined")
 			{
 				e = properties.user_defined_seconds + properties.user_defined_start;
+
+				//Because the time starts when the condition is meeted
+				if(condition != undefined)
+					e += particles_condition_list[i].meet_at;
+
 				if(x < properties.user_defined_start) continue; //That means that the condition is already meeted
 			}
 

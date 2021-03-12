@@ -19,9 +19,10 @@ class Camera
 		this.center = center || vec3.fromValues( 0, 0, 0 );  //If no center provided the value will be vec3(0,0,0)
 		this.eye    = eye    || vec3.fromValues( 0, 0, 10 ); //If no eye provided the value will be vec3(0,0,10)
 
-		this.gl     = gl;
+		this.near   = 0.1;
+		this.far    = 1000;
 
-		this.mouse_blocked = false;
+		this.gl     = gl;
 
 		this.initCamera( );
 	}
@@ -32,8 +33,8 @@ class Camera
 	*	@method initCamera
 	*/
 	initCamera ( )
-	{		
-		mat4.perspective( this.proj, 45 * DEG2RAD, this.gl.canvas.width / this.gl.canvas.height, 0.1, 1000 );
+	{	
+		mat4.perspective(this.proj, 45 * DEG2RAD, this.gl.canvas.width / this.gl.canvas.height, this.near, this.far);
 		this.updateViewMatrix();
 
 		this.gl.captureMouse( true, true );
@@ -43,15 +44,15 @@ class Camera
 		this.gl.onmousemove = function ( e ) 
 		{ 
 			if( e.dragging ) {
-				vec3.rotateY( camera.eye, camera.eye, e.deltax * 0.01 );
-				vec3.rotateX( camera.eye, camera.eye, -e.deltay * 0.01 );
+				vec3.rotateY(camera.eye, camera.eye, e.deltax * 0.25 * DEG2RAD);
+				vec3.rotateX(camera.eye, camera.eye, -e.deltay * 0.25 * DEG2RAD);
 				camera.updateViewMatrix(); //Update the viewMatrix 
 			}
 		}
 
 		this.gl.onmousewheel = function ( e )
 		{
-			vec3.scale( camera.eye, camera.eye, 1.0 - e.delta * 0.01 );
+			vec3.scale(camera.eye, camera.eye, 1.0 - e.delta * 0.01);
 			camera.updateViewMatrix();
 		}
 
@@ -62,22 +63,22 @@ class Camera
 			if( e.eventType == "keydown" )
 			{
 				if( e.code == "KeyW" )
-					camera.moveCamera( vec3.fromValues( 0.0, 0.0, 1.0 ) );
+					camera.moveCamera(vec3.fromValues(0.0, 0.0, 1.0));
 
 				if( e.code == "KeyS" )
-					camera.moveCamera( vec3.fromValues( 0.0, 0.0, -1.0 ) );
+					camera.moveCamera(vec3.fromValues(0.0, 0.0, -1.0));
 
 				if( e.code == "KeyA" ) 
-					camera.moveCamera( vec3.fromValues( 1.0, 0.0, 0.0 ) );
+					camera.moveCamera(vec3.fromValues(1.0, 0.0, 0.0));
 
 				if( e.code == "KeyD" )
-					camera.moveCamera( vec3.fromValues( -1.0, 0.0, 0.0 ) );
+					camera.moveCamera(vec3.fromValues(-1.0, 0.0, 0.0));
 
 				if( e.code == "KeyE" )
-					camera.moveCamera( vec3.fromValues( 0.0, 1.0, 0.0 ) );
+					camera.moveCamera(vec3.fromValues(0.0, 1.0, 0.0));
 
 				if( e.code == "KeyQ" )
-					camera.moveCamera( vec3.fromValues( 0.0, -1.0, 0.0 ) );
+					camera.moveCamera(vec3.fromValues(0.0, -1.0, 0.0));
 			}
 		}
 	}
