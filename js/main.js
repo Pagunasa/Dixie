@@ -11,6 +11,7 @@
 var graph;
 var graphCanvas;
 var gl;
+var playButton, resetButton, stopButton;
 
 var divisionButton;
 var glCanvasOptionsButton;
@@ -154,9 +155,9 @@ function initMenuButtons ()
 	var saveButton   = document.getElementById("save");
 	var exportButton = document.getElementById("export");
 
-	var playButton   = document.getElementById("play");
-	var resetButton  = document.getElementById("reset");
-	var stopButton   = document.getElementById("stop");
+	playButton   = document.getElementById("play");
+	resetButton  = document.getElementById("reset");
+	stopButton   = document.getElementById("stop");
 
 	var demoButton   = document.getElementById("demos");
 	var helpButton   = document.getElementById("help");
@@ -227,41 +228,71 @@ function initMenuButtons ()
 		graph.start();
 		is_graph_running = true;
     	emergency_stop  = false;
+    	playButton.className = "button-secondary red_color";
+    	stopButton.className = "button-secondary";
 	}
 
 	stopButton.onclick = function() {
 		graph.stop();
 		is_graph_running = false;
+    	stopButton.className = "button-secondary red_color";
+    	playButton.className = "button-secondary";
+    }
+
+	resetButton.onclick = function() {
+		var system, particles, ids, toReset, particle;
+		var subEmittors, subEmitter;
+
+		for (var i = 0; i < system_list.length; ++i)
+			resetSystem(system_list[i]);	
 	}
 
 	showDemo1Button.onclick =function() {
-		graph.configure( demo1 ); 
+		graph.configure( Object.assign({}, demo1) ); 
 		$('#demosModal').modal('hide');
+
+		stopButton.className = "button-secondary red_color";
+    	playButton.className = "button-secondary";
 	}
 
 	showDemo2Button.onclick =function() {
-		graph.configure( demo2 ); 
+		graph.configure( Object.assign({}, demo2) ); 
 		$('#demosModal').modal('hide');
+
+		stopButton.className = "button-secondary red_color";
+    	playButton.className = "button-secondary";
 	}
 
 	showDemo3Button.onclick =function() {
-		graph.configure( demo3 ); 
+		graph.configure( Object.assign({}, demo3) ); 
 		$('#demosModal').modal('hide');
+
+		stopButton.className = "button-secondary red_color";
+    	playButton.className = "button-secondary";
 	}
 
 	showDemo4Button.onclick =function() {
-		graph.configure( demo4 ); 
+		graph.configure( Object.assign({}, demo4) ); 
 		$('#demosModal').modal('hide');
+
+		stopButton.className = "button-secondary red_color";
+    	playButton.className = "button-secondary";
 	}
 
 	showDemo5Button.onclick =function() {
-		graph.configure( demo5 ); 
+		graph.configure( Object.assign({}, demo5) ); 
 		$('#demosModal').modal('hide');
+
+		stopButton.className = "button-secondary red_color";
+    	playButton.className = "button-secondary";
 	}
 
 	showDemo6Button.onclick =function() {
-		graph.configure( demo6 ); 
+		graph.configure( Object.assign({}, demo6) ); 
 		$('#demosModal').modal('hide');
+		
+		stopButton.className = "button-secondary red_color";
+    	playButton.className = "button-secondary";
 	}
 }
 
@@ -355,7 +386,11 @@ function init ()
 	//When the screen is not visible the graph execution will be paused (for eficiency)
 	document.addEventListener("visibilitychange", function(){
 		if (is_graph_running && graph.status == LGraph.STATUS_RUNNING)
+		{
 			graph.stop();
+			stopButton.className = "button-secondary red_color";
+    		playButton.className = "button-secondary";
+		}
 	});
 }
 
@@ -683,6 +718,8 @@ gl.onupdate = function( dt ) {
     		num_slow_frames = 0;
     		createAlert('Holy Guacamole!','Low FPS','The fps are very low, check what you do...','danger',true,false,'pageMessages')
     		graph.stop();
+    		stopButton.className = "button-secondary red_color";
+    		playButton.className = "button-secondary";
     		emergency_stop   = true;
 			is_graph_running = false;
     	}

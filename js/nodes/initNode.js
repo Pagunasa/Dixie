@@ -149,6 +149,7 @@ function initParticlesNode() {
 	/***********Node properties************/
 	/**************************************/
 	this.internal = {
+		type: "",
 		init_time_pased: 0.0,
 		last_id: -1,
 		last_sub_id: -1,
@@ -497,10 +498,14 @@ initParticlesNode.prototype.onExecute = function()
 
 	if (system_input != undefined)
 	{
-		var type = system_input.type; 
+		var type  = system_input.type; 
+		this.internal.type = type;
 
 		if (type == "sub_emitter" && system_input.id == -1)
+		{
+			this.setOutputData(0, undefined);
 			return;
+		}
 
 		var particles_spawned = 0;
 
@@ -605,6 +610,12 @@ initParticlesNode.prototype.onExecute = function()
 		//The system is the output
 		this.setOutputData(0, system_input);
 	}
+}
+
+initParticlesNode.prototype.onRemoved = function()
+{
+	if(this.system_info != undefined && this.internal.type != "sub_emitter")
+		resetSystem(this.system_info);
 }
 
 initParticlesNode.title = "Initialize Particles";

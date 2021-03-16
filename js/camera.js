@@ -44,8 +44,8 @@ class Camera
 		this.gl.onmousemove = function ( e ) 
 		{ 
 			if( e.dragging ) {
-				vec3.rotateY(camera.eye, camera.eye, e.deltax * 0.25 * DEG2RAD);
-				vec3.rotateX(camera.eye, camera.eye, -e.deltay * 0.25 * DEG2RAD);
+				vec3.rotateY(camera.eye, camera.eye,  e.deltax * time_interval * DEG2RAD * 6);
+				vec3.rotateX(camera.eye, camera.eye, -e.deltay * time_interval * DEG2RAD * 6);
 				camera.updateViewMatrix(); //Update the viewMatrix 
 			}
 		}
@@ -132,13 +132,13 @@ class Camera
 	{
 		var lv = this.getLocalVector(delta);
 
-		this.eye[0] = this.eye[0] - lv[0] * 0.1; //It has to be dt no 0.1
-		this.eye[1] = this.eye[1] - lv[1] * 0.1;
-		this.eye[2] = this.eye[2] - lv[2] * 0.1;
+		this.eye[0] = this.eye[0] - lv[0] * time_interval * 6; //It has to be dt no 0.1
+		this.eye[1] = this.eye[1] - lv[1] * time_interval * 6;
+		this.eye[2] = this.eye[2] - lv[2] * time_interval * 6;
 
-		this.center[0] = this.center[0] - lv[0] * 0.1;
-		this.center[1] = this.center[1] - lv[1] * 0.1;
-		this.center[2] = this.center[2] - lv[2] * 0.1;
+		this.center[0] = this.center[0] - lv[0] * time_interval * 6;
+		this.center[1] = this.center[1] - lv[1] * time_interval * 6;
+		this.center[2] = this.center[2] - lv[2] * time_interval * 6;
 
 		this.updateViewMatrix();
 	}

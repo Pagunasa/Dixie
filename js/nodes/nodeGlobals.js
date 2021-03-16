@@ -760,7 +760,7 @@ function updateCoord(mesh, particle, particle_id, new_coord){
 
 } 
 
-
+//https://github.com/jagenjo/litegraph.js/blob/master/src/litegraph-editor.js
 function onShowNodePanel(node){
 	window.SELECTED_NODE = node;
     var panel = document.querySelector("#node-panel");
@@ -786,9 +786,6 @@ function onShowNodePanel(node){
         {
 	  		panel.addHTML("<span class='node_desc'> (" + node.type + ") <br>" + (node.constructor.desc || "")
 	        			  +"</span><span class='separator'></span>");
-	        /*panel.addHTML("<span class='node_type'>"+node.type
-	        			  +"</span><span class='node_desc'>"+(node.constructor.desc || "")
-	        			  +"</span><span class='separator'></span>");*/
 
 	        panel.addHTML("<h3>Properties</h3>");
 	        panel.addHTML("", "node_properties");
@@ -808,13 +805,47 @@ function onShowNodePanel(node){
 			                node.setProperty(name,value);
 			                graphcanvas.graph.afterChange();
 			                graphcanvas.dirty_canvas = true;
+			                
+			                document.querySelectorAll('[data-property="'+name+'"]')[0].children[1].innerHTML = String(node.properties[name]);
 			            });
+
+                if(isArray(value))
+                {               	    
+               	    var value_element = elem.querySelector(".property_value");
+                    value_element.setAttribute("contenteditable",true);
+					value_element.addEventListener("keydown", function(e){ 
+						if(e.code == "Enter")
+						{
+							e.preventDefault();
+							this.blur();
+						}
+					});
+
+					value_element.addEventListener("blur", function(){ 
+						var v = this.innerText;
+						var propname = this.parentNode.dataset["property"];
+						var proptype = this.parentNode.dataset["type"];
+
+						v = v.split(",");
+						
+						graphcanvas.graph.beforeChange(node);
+			            node.setProperty(propname,v);
+			            graphcanvas.graph.afterChange();
+			            graphcanvas.dirty_canvas = true;
+			            this.innerText = String(node.properties[propname]);
+					});    	
+               }
 
 	            if( node.prop_desc != undefined )
 	            	if ( node.prop_desc[i] != undefined ) 
-	           			elem.innerHTML += '<div class="tooltiptext">'+ node.prop_desc[i]+'</div>';
-	            
-	            panel.children[1].children[2].innerHTML += elem.outerHTML;
+	            	{
+	            		var desc = document.createElement('div');
+	            		desc.className = "tooltiptext";
+	            		desc.innerHTML = node.prop_desc[i];
+	           			elem.appendChild(desc);	            		
+	            	}
+	           
+	            panel.content.appendChild(elem);
 	        }
         }
 
@@ -1066,5 +1097,44 @@ function loadMesh(node){
 			n_name = n_name.substring(0, 7);
         
 		node.temp_name = n_name;
+	}
+}
+
+
+function resetSystem(system)
+{
+	var particles, ids, toReset, particle;
+	var subEmittors, subEmitter;
+
+	particles   = system.particles_list;
+	subEmittors = system.sub_emittors;
+
+	toReset = [];
+	ids = system.particles_ids;
+	for (var j = 0; j < ids.length; ++j) 
+	{
+		particle = particles[ids[j].id];
+		particle.visibility = 0;
+
+		toReset.push(particle.id);
+	}
+
+	system.particles_to_reset = toReset;
+
+	toReset = [];
+	for (var j = 0; j < subEmittors.length; ++j) 
+	{
+		subEmitter = subEmittors[j];
+		ids = subEmitter.ids;
+
+		for (var k = 0; k < ids.length; ++k) 
+		{
+			particle = particles[ids[k].id];
+			particle.visibility = 0;
+
+			toReset.push(particle.id);
+		}
+
+		subEmitter.to_reset = toReset;
 	}
 }

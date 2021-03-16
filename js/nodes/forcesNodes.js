@@ -59,6 +59,15 @@ gravityNode.prototype.onPropertyChanged = function(property)
 		case "direction":
 			if (properties.direction.length != 3)
 				properties.direction = [0,0,0];
+
+			if(!vec3.equals(this.last_state.direction, properties.direction))
+			{
+				this.last_state.direction = properties.direction;
+
+				if(!vec3.equals(properties.direction, [0,0,0]))
+					vec3.normalize(this.last_state.direction_normalized, properties.direction);
+				else
+					this.last_state.direction_normalized = [0,0,0];			}
 		break;
 	}
 }
@@ -68,8 +77,10 @@ gravityNode.prototype.onExecute = function()
 	var system_input = this.getInputData(0);
 	var properties   = this.properties;
 
+	var direction_input = this.getInputData(1);
+
 	//When is executed the inputs are gotten and if they are undefined a default value is setted
-	properties.direction = this.getInputData(1) || properties.direction;
+	properties.direction = direction_input == undefined ? properties.direction : direction_input.slice(0);
 	properties.strength  = this.getInputData(2) || properties.strength;
 
 	if (system_input != undefined)
@@ -85,8 +96,18 @@ gravityNode.prototype.onExecute = function()
 
 		if(ids.length > 0)
 		{	
+			if(!vec3.equals(properties.direction, this.last_state.direction))
+			{
+				this.last_state.direction = properties.direction.slice(0);
+
+				if(!vec3.equals(properties.direction, [0,0,0]))
+					vec3.normalize(this.last_state.direction_normalized, properties.direction);
+				else
+					this.last_state.direction_normalized = [0,0,0];
+			}
+
 			var particle;
-			var direction = properties.direction;
+			var direction = this.last_state.direction_normalized.slice(0);
 			var strength  = properties.strength;
 
 			direction[0] = direction[0] * strength;
@@ -192,14 +213,17 @@ vortexNode.prototype.onRemoved = function()
 
 vortexNode.prototype.onExecute = function() 
 {
-	var properties = this.properties;
-	var system_input = this.getInputData(0);
+	var properties     = this.properties;
+	var system_input   = this.getInputData(0);
+	var position_input = this.getInputData(1);
+	var angular_input  = this.getInputData(2);
+	var color_input    = this.getInputData(4);
 
 	//When is executed the inputs are gotten and if they are undefined a default value is setted
-	properties.position       = this.getInputData(1)             || properties.position;
-	properties.angular_speed  = this.getInputData(2)             || properties.angular_speed;
+	properties.position       = position_input == undefined ? properties.position      : position_input.slice(0);
+	properties.angular_speed  = angular_input  == undefined ? properties.angular_speed : angular_input.slice(0);
 	properties.scale          = Math.max(this.getInputData(3),0) || properties.scale;
-	properties.color          = this.getInputData(4)             || properties.color;
+	properties.color          = color_input    == undefined ? properties.color         : color_input.slice(0);
 
 	//It's necesary update the force position and color for 
 	//render te origin of the vortex
@@ -337,11 +361,14 @@ magnetNode.prototype.onExecute = function()
 	var system_input = this.getInputData(0);
 	var properties = this.properties;
 
+	var position_input = this.getInputData(1);
+	var color_input    = this.getInputData(4);
+
 	//When is executed the inputs are gotten and if they are undefined a default value is setted
-	properties.position = this.getInputData(1) || properties.position;
+	properties.position = position_input == undefined ? properties.position : position_input.slice(0);
 	properties.strength = this.getInputData(2) || properties.strength;
 	properties.scale    = Math.max(this.getInputData(3),0) || properties.scale;
-	properties.color    = this.getInputData(4) || properties.color;
+	properties.color    = color_input    == undefined ? properties.color    : color_input.slice(0);
 
 	//It's necesary update the force position and color for 
 	//render te origin of the magnet point

@@ -459,10 +459,10 @@ mySpawnNode.prototype.onExecute = function()
 	}
 
 	//and if they are undefined a default value is setted
-	properties.max_particles       = input_max_particles   == undefined ? max_particles : Math.abs(Math.round(input_max_particles));
-	properties.spawn_rate          = input_spawn_rate      == undefined ? spawn_rate    : Math.abs(Math.round(input_spawn_rate));
-	properties.particles_per_wave  = input_per_wave        == undefined ? per_wave      : Math.abs(Math.round(input_per_wave));
-	properties.color               = input_color || color;
+	properties.max_particles       = input_max_particles == undefined ? max_particles : Math.abs(Math.round(input_max_particles));
+	properties.spawn_rate          = input_spawn_rate    == undefined ? spawn_rate    : Math.abs(Math.round(input_spawn_rate));
+	properties.particles_per_wave  = input_per_wave      == undefined ? per_wave      : Math.abs(Math.round(input_per_wave));
+	properties.color               = input_color         == undefined ? color         : input_color.slice(0);
 	
 	if(origin == "Point")
 		position = input_origin || position;
@@ -606,6 +606,7 @@ subEmitterNode.prototype.onExecute = function()
 
 	if(system == undefined)
 	{
+		this.sub_emittor.ids = [];
 		this.setOutputData(0, {type : "sub_emitter", id: -1});
 		return;
 	}
@@ -627,6 +628,7 @@ subEmitterNode.prototype.onExecute = function()
 		this.system_info = searchSystem(system.id);
 		this.last_status.index = this.system_info.sub_emittors.length;
 		this.system_info.sub_emittors.push(this.sub_emittor);
+		this.sub_emittor.ids = [];
 
 		this.last_status.id = system.id;
 		system_info = this.system_info;

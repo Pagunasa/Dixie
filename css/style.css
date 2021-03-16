@@ -104,6 +104,10 @@ html,body {
 	font-size: 25px;
 }
 
+.red_color{
+	color: #b00404;
+}
+
 .button-secondary:hover{
 	background-color: var(--ternary-color);
 	color: var(--secondary-color); 
@@ -553,4 +557,14 @@ html,body {
 
 #mesh_url {
 	margin-top: 16px;
+}
+
+#stoppedDisplay {
+	width:        40px;
+	height:       40px;
+	margin-left:  10px;
+	margin-right: 20px;
+	margin-top:   10px;
+	font-size:    40px;
+	color:        white;
 }

@@ -850,12 +850,12 @@ meshLoadNode.prototype.onExecute = function()
 	var input_position = this.getInputData(0);
 	var input_scale    = this.getInputData(1);
 	var input_rotation = this.getInputData(2);
+	var input_color    = this.getInputData(3);
 
-
-	position = input_position || position;
-	scale    = input_scale    || scale;
-	rotation = input_rotation || rotation;
-	this.properties.color = this.getInputData(3) || this.properties.color;
+	position = input_position == undefined ? position : input_position.slice(0);
+	scale    = input_scale    == undefined ? scale    : input_scale.slice(0);
+	rotation = input_rotation == undefined ? rotation : input_rotation.slice(0);
+	this.properties.color = input_color == undefined ? this.properties.color : input_color.slice(0);
 
 	this.setTranslation(position);
 	this.setScale(scale);
@@ -992,8 +992,32 @@ equationNode.prototype.onAdded = function()
 
 equationNode.prototype.onPropertyChanged = function() 
 {
-	if(this.curve_editor == undefined)
+if(this.curve_editor == undefined)
 	    this.curve_editor = new LiteGraph.CurveEditor(this.properties.curve_points);
+
+    if(!isArray(this.properties.curve_points[0]))
+    {
+    	var curve_points = this.properties.curve_points;
+    	var length = curve_points.length; 
+
+    	if(length % 2 != 0)
+           this.properties.curve_points.splice(length - 1, 1);
+            
+		var newPoints = [];
+		var point     = [];
+
+		for(var i = 0; i < length; i = i + 2)
+		{
+			point.push(Math.min(Math.max(curve_points[i],0),1));
+			point.push(Math.min(Math.max(curve_points[i+1],0),1));
+
+			newPoints.push(point);
+			point = [];
+		}        	
+
+		this.properties.curve_points = newPoints;
+        
+    }
 
 	this.curve_editor.points = this.properties.curve_points;
 	this.verifyPoints();
