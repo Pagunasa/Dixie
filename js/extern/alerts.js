@@ -1,8 +1,21 @@
 /*	
-* This file is not mine, all the honour is for Sechelski for make this amazing code. If you want to see the original one just go to:
-* https://codepen.io/codysechelski/pen/dYVwjb
+*   This function creates an Alert
+*   @method createAlert
+*   @params {String} The title of the alert
+*   @params {String} A litle description of the message
+*   @params {String} The message
+*   @params {String} If is a warning, a message or an error
+*   @params {Bool}   If the user can close the alert
+*   @params {Bool}   If the alert is closed after some seconds
+*   @params {String} The id in wich the alerts are appended
+*
+*
+*   This file is not mine, all the honour is for Sechelski for make this amazing code. 
+*   If you want to see the original one just go to:
+*   @source https://codepen.io/codysechelski/pen/dYVwjb
 */
-function createAlert(title, summary, details, severity, dismissible, autoDismiss, appendToId) {
+function createAlert(title, summary, details, severity, dismissible, autoDismiss, appendToId) 
+{
   var iconMap = {
     info: "fa fa-info-circle",
     success: "fa fa-thumbs-up",
@@ -86,8 +99,18 @@ function createAlert(title, summary, details, severity, dismissible, autoDismiss
 //https://en.wikipedia.org/wiki/Polynomial_interpolation
 //https://en.wikipedia.org/wiki/Vandermonde_matrix
 //https://www.dcode.fr/lagrange-interpolating-polynomial
-// Returns the inverse of matrix `M`.
-function matrix_invert(M){
+
+/*  
+*   Returns the inverse of matrix 'M'
+*   @method matrix_invert
+*   @params {List} The matrix to be inverted
+*
+*   This file is not mine, all the honour is for Andrew Ippoloti's for make this amazing code. 
+*   If you want to see the original one just go to:
+*   @source http://blog.acipo.com/matrix-inversion-in-javascript/
+*/
+function matrix_invert(M)
+{
     // I use Guassian Elimination to calculate the inverse:
     // (1) 'augment' the matrix (left) by the identity (on the right)
     // (2) Turn the matrix on the left into the identity by elemetry row ops

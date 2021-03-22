@@ -1,6 +1,6 @@
 /*
 * 	This node is for define a constant number.
-*	@method constantNumberNode     this.widgets_up = true;
+*	@method constantNumberNode 
 */
 function constantNumberNode() {
 	this.properties = { number: 1.0 }
@@ -16,7 +16,11 @@ function constantNumberNode() {
 	this.addOutput("Number", "number");
 }
 
-//For recover (in a visual way) the value when a graph is loaded
+/*
+* 	For show the values when a graph is loaded, when the user change 
+*	the properties using the window of properties and when the node is cloned
+*	@method onPropertyChanged 
+*/
 constantNumberNode.prototype.onPropertyChanged = function()
 {
 	var number = this.properties.number;
@@ -24,6 +28,10 @@ constantNumberNode.prototype.onPropertyChanged = function()
 	this.widget.value = this.properties.number;
 }
 
+/*
+* 	Set the value of the constant number
+*	@method setValue 
+*/
 constantNumberNode.prototype.setValue = function(v)
 {
 	var number = isNaN(v) ? 1.0 : v;
@@ -31,6 +39,10 @@ constantNumberNode.prototype.setValue = function(v)
 	this.properties.number = number;
 }
 
+/*
+* 	What the node does every frame
+*	@method onExecute 
+*/
 constantNumberNode.prototype.onExecute = function() 
 {
 	this.setOutputData(0, this.properties.number);
@@ -62,6 +74,11 @@ function randomNumberNode() {
 	this.addOutput("Number", "number");
 }
 
+/*
+* 	For show the values when a graph is loaded, when the user change 
+*	the properties using the window of properties and when the node is cloned
+*	@method onPropertyChanged 
+*/
 randomNumberNode.prototype.onPropertyChanged = function()
 {
 	var min = this.properties.min;
@@ -70,6 +87,10 @@ randomNumberNode.prototype.onPropertyChanged = function()
 	this.properties.max = isNaN(max) ? 1.0 : max; 
 }
 
+/*
+* 	What the node does every frame
+*	@method onExecute 
+*/
 randomNumberNode.prototype.onExecute = function() 
 {
 	this.properties.min = Math.min(this.getInputData(0), this.getInputData(1)) || this.properties.min;
@@ -77,7 +98,7 @@ randomNumberNode.prototype.onExecute = function()
 
 	var random = Math.random() * (this.properties.max - this.properties.min) + this.properties.min;
 	this.setOutputData(0, random);
-};
+}
 
 randomNumberNode.title = "Random Number";
 randomNumberNode.title_color = basicNodeColor;
@@ -86,8 +107,8 @@ randomNumberNode.title_selected_color = basicSelectedTitleColor;
 
 
 /*
-* 	This node is for load a texture.
-*	@method textureLoadNode
+* 	This node is for create a vector of 2 components
+*	@method vector2Node
 */
 function vector2Node() {
 	this.properties = { x: 0.0, y: 0.0 }
@@ -107,6 +128,11 @@ function vector2Node() {
 	this.addOutput("Vec2", "vec2");
 }
 
+/*
+* 	For show the values when a graph is loaded, when the user change 
+*	the properties using the window of properties and when the node is cloned
+*	@method onPropertyChanged 
+*/
 vector2Node.prototype.onPropertyChanged = function()
 {
 	var x = this.properties.x;
@@ -116,6 +142,10 @@ vector2Node.prototype.onPropertyChanged = function()
 	this.properties.y = isNaN(y) ? 0.0 : y; 
 }
 
+/*
+* 	What the node does every frame
+*	@method onExecute 
+*/
 vector2Node.prototype.onExecute = function() 
 {
 	this.properties.x = this.getInputData(0) || this.properties.x;
@@ -134,8 +164,8 @@ vector2Node.title_selected_color = basicSelectedTitleColor;
 
 
 /*
-* 	This node is for load a texture.
-*	@method textureLoadNode
+* 	This node is for create a vector of 3 components
+*	@method vector3Node
 */
 function vector3Node() {
 	this.properties = { x: 0.0, y: 0.0, z: 0.0 }
@@ -157,6 +187,11 @@ function vector3Node() {
 	this.addOutput("Vec3", "vec3");
 }
 
+/*
+* 	For show the values when a graph is loaded, when the user change 
+*	the properties using the window of properties and when the node is cloned
+*	@method onPropertyChanged 
+*/
 vector3Node.prototype.onPropertyChanged = function()
 {
 	var x = this.properties.x;
@@ -168,6 +203,10 @@ vector3Node.prototype.onPropertyChanged = function()
 	this.properties.z = isNaN(z) ? 0.0 : z; 
 }
 
+/*
+* 	What the node does every frame
+*	@method onExecute 
+*/
 vector3Node.prototype.onExecute = function() 
 {
 	this.properties.x = this.getInputData(0) || this.properties.x;
@@ -188,8 +227,8 @@ vector3Node.title_selected_color = basicSelectedTitleColor;
 
 
 /*
-* 	This node is for load a texture.
-*	@method textureLoadNode
+* 	This node is for create a vector of 4 components
+*	@method vector4Node
 */
 function vector4Node() {
 	this.properties = { x: 0.0, y: 0.0, z: 0.0, w: 0.0 }
@@ -213,6 +252,11 @@ function vector4Node() {
 	this.addOutput("Vec4", "vec4");
 }
 
+/*
+* 	For show the values when a graph is loaded, when the user change 
+*	the properties using the window of properties and when the node is cloned
+*	@method onPropertyChanged 
+*/
 vector4Node.prototype.onPropertyChanged = function()
 {
 	var x = this.properties.x;
@@ -226,6 +270,10 @@ vector4Node.prototype.onPropertyChanged = function()
 	this.properties.w = isNaN(w) ? 0.0 : w; 
 }
 
+/*
+* 	What the node does every frame
+*	@method onExecute 
+*/
 vector4Node.prototype.onExecute = function() 
 {
 	this.properties.x = this.getInputData(0) || this.properties.x;
@@ -291,6 +339,12 @@ function textureLoadNode() {
 	this.addOutput("Texture", "texture");
 };
 
+/*
+* 	Show the widgets fot the animated textures and enable disable if a texture is animated
+*	@method changeAnimated
+*	@params {Bool} if the texture is animated or no
+*	@params {Bool} if the value is changed manually (to avoid recalculate in chase that the user put the same value)
+*/
 textureLoadNode.prototype.changeAnimated = function(v, manual_prop = false)
 {
 	var properties = this.properties;
@@ -316,6 +370,12 @@ textureLoadNode.prototype.changeAnimated = function(v, manual_prop = false)
 	   	this.size[1] += 112;
 }
 
+/*
+* 	Show the widgets for the loop animated textures and enable disable if a texture is animation looped
+*	@method changeAnimLoop
+*	@params {Bool} if the texture is looped or no
+*	@params {Bool} if the value is changed manually
+*/
 textureLoadNode.prototype.changeAnimLoop = function(v, manual_prop = false)
 {
 	var properties = this.properties;
@@ -337,6 +397,10 @@ textureLoadNode.prototype.changeAnimLoop = function(v, manual_prop = false)
 	   	this.size[1] += 112;
 }
 
+/*
+* 	Add all the widgets 
+*	@method addWidgets
+*/
 textureLoadNode.prototype.addWidgets = function() 
 {
 	var properties = this.properties;
@@ -360,6 +424,12 @@ textureLoadNode.prototype.addWidgets = function()
 	    this.size[1] += 112;
 };
 
+/*
+* 	Show the widgets for the sub textures and enable disable if a texture is an atlas
+*	@method changeSubTexture
+*	@params {Bool} if the texture is an atlas or no
+*	@params {Bool} if the value is changed manually
+*/
 textureLoadNode.prototype.changeSubTexture = function(v, manual_prop = false)
 {
 	if(this.properties.subtextures == v && !manual_prop)
@@ -379,8 +449,21 @@ textureLoadNode.prototype.changeSubTexture = function(v, manual_prop = false)
 	}
 }
 
+/*
+* 	The behaviour done when the texture is finally loaded
+*	@method afterLoading
+*	@params {Texture} The texture
+*	@params {String} The url of the texture
+*/
 textureLoadNode.prototype.afterLoading = function(texture, url)
 {
+	//In chase that the texture is of an invalid size, show an alert 
+	if(texture.width > gl.MAX_TEXTURE_SIZE || texture.height > gl.MAX_TEXTURE_SIZE)
+	{
+		createAlert('Holy Guacamole!','Loading error','The texture is too big','danger',true,true,'pageMessages')
+	    return;
+	}
+	
 	//Transform the texture to power of 2 (code by Javi Agengo http://tamats.com/apps/texturetools/)
 	//Get the most closets (and bigger) power of two
 	var w = Math.pow(2,Math.round(Math.log(texture.width)/Math.log(2)));
@@ -403,11 +486,21 @@ textureLoadNode.prototype.afterLoading = function(texture, url)
 	this.data_loaded = true;
 }
 
+/*
+* 	Change the duration of the animtion 
+*	@method changeAnimDuration
+*	@params {Number} The seconds of the animation
+*/
 textureLoadNode.prototype.changeAnimDuration = function(v)
 {
 	this.properties.anim_duration = Math.max(isNaN(v) ? 1 : v, 1);
 }
 
+/*
+* 	Change the numbers of textures in the component X in the atlas
+*	@method changeTexturesX
+*	@params {Number} The number of textures
+*/
 textureLoadNode.prototype.changeTexturesX = function(v)
 {
 	this.properties.textures_x = Math.floor(Math.max(isNaN(v) ? 1 : v, 1));
@@ -416,6 +509,11 @@ textureLoadNode.prototype.changeTexturesX = function(v)
 		this.subxW.value = this.properties.textures_x;
 }
 
+/*
+* 	Change the numbers of textures in the component Y in the atlas
+*	@method changeTexturesY
+*	@params {Number} The number of textures
+*/
 textureLoadNode.prototype.changeTexturesY = function(v)
 {
 	this.properties.textures_y = Math.floor(Math.max(isNaN(v) ? 1 : v, 1));
@@ -424,8 +522,11 @@ textureLoadNode.prototype.changeTexturesY = function(v)
 		this.subyW.value = this.properties.textures_y;
 }
 
-//In order to show to the users the loaded texture it's mandatory to
-//overload the onDrawBackground
+/*
+* 	In order to show to the users the loaded texture it's mandatory to overload the onDrawBackground
+*	@method onDrawBackground
+*	@params {Context} The context of the node
+*/
 textureLoadNode.prototype.onDrawBackground = function(ctx)
 {
 	//if the data is not loaded we don't have anithing to show
@@ -450,6 +551,12 @@ textureLoadNode.prototype.onDrawBackground = function(ctx)
 	ctx.drawImage(this.file.data, (this.size[0]-60)*0.5, this.size[1] - 80, 60, 60);	
 };
 
+/*
+* 	For show the values when a graph is loaded, when the user change 
+*	@method onPropertyChanged 
+*	the properties using the window of properties and when the node is cloned
+*	@params {String} The name of the changed property
+*/
 textureLoadNode.prototype.onPropertyChanged = function(property)
 {
 	var properties = this.properties;
@@ -573,6 +680,10 @@ textureLoadNode.prototype.onPropertyChanged = function(property)
 	}
 };
 
+/*
+* 	What the node does every frame
+*	@method onExecute 
+*/
 textureLoadNode.prototype.onExecute = function()
 {
 	this.setOutputData(0, {prop: this.properties, file: this.file});
@@ -586,15 +697,16 @@ textureLoadNode.title_selected_color = basicSelectedTitleColor;
 
 /*
 * 	This node is for load a mesh.
-*	@method textureLoadNode
+*	@method meshLoadNode
 */
 function meshLoadNode() {
 	this.properties = { 
-		name    : "",
-		position: [0,0,0],
-		scale   : [1,1,1],
-		rotation: [0,0,0],
-		color   : [1,1,1,0.25]
+		name       : "",
+		position   : [0,0,0],
+		scale      : [1,1,1],
+		rotation   : [0,0,0],
+		color      : [1,1,1,0.25],
+		visibility : true
 	}
 
 	this.last_model = {
@@ -604,7 +716,7 @@ function meshLoadNode() {
 	}
 
 	this.last_name = undefined;
-	this.n_size    = 160.63;
+	this.n_size    = 184;
 	this.loaded    = false;
 	this.meshNames = ["pango", "cylinder", "plane", "dodo", "cube", "cone", "pi", "sphere", "ico"]
 
@@ -612,11 +724,12 @@ function meshLoadNode() {
     In that case, you will have to save it because the next time you load the graph, you will need it.";
 
     this.prop_desc = {
-    	name:     "If a default mesh is loaded, then his name will be saved here",
-    	position: "The position of the mesh",
-    	scale:    "The scale in the components xyz of the mesh",
-		rotation: "The rotation, in degrees, in the components xyz of the mesh",
-    	color:    "The color of the mesh"
+    	name:       "If a default mesh is loaded, then his name will be saved here",
+    	position:   "The position of the mesh",
+    	scale:      "The scale in the components xyz of the mesh",
+		rotation:   "The rotation, in degrees, in the components xyz of the mesh",
+    	color:      "The color of the mesh",
+    	visibility: "If the mesh is visible"
     }
 
 	var that = this;
@@ -627,6 +740,9 @@ function meshLoadNode() {
 			loadMesh(that);
 		}
 	);
+	
+	//This widget allows to enable/disable the visibility of the mesh
+	this.show_widget  = this.addWidget("toggle", "Show mesh", true, this.toogleVisibility.bind(this));
 
 	this.addInput("Position", "vec3");
 	this.addInput("Scale"   , "vec3");
@@ -636,6 +752,28 @@ function meshLoadNode() {
 	this.addOutput("Mesh"  , "mesh");
 }
 
+
+/*
+* 	Enable/Disable the visibility of the mesh
+*	@method toogleVisibility
+*	@params {Bool} If the mesh is visible
+*/
+meshLoadNode.prototype.toogleVisibility = function(v)
+{
+	this.properties.visibility = v;
+	this.show_widget.value     = v;
+
+	if(this.object != undefined)
+		this.object.visibility = v;
+}
+
+
+/*
+* 	The behaviour done when the mesh is finally loaded
+*	@method onMeshLoaded
+*	@params {Mesh} The loaded mesh
+*	@params {Bool} If the texture is a plane
+*/
 meshLoadNode.prototype.onMeshLoaded = function(loaded_mesh, plane = false)
 {
 	if(loaded_mesh == undefined)
@@ -652,25 +790,50 @@ meshLoadNode.prototype.onMeshLoaded = function(loaded_mesh, plane = false)
 		this.temp_name = undefined;
     }
 
+	if(this.object == undefined)
+	{
+		objects_list.push({id: this.id, mesh: this.mesh, model: mat4.create(), color: this.properties.color,
+							visibility: this.properties.visibility});
+		this.object = searchObject(this.id);	
+	}
+
 	this.object.mesh  = loaded_mesh;
 	this.mesh         = this.object.mesh
 	this.triangle_num = this.mesh.vertexBuffers.vertices.data.length / (plane ? 6 : 9); //3 coordinates by 3 points of a triangle or 2 coordinates (plane) by 3 points of a triangle 	
 }
 
+/*
+* 	The behaviour done when the node is added
+*	@method onAdded
+*/
 meshLoadNode.prototype.onAdded = function()
 {
 	//Add the mesh to the object list
-	objects_list.push({id: this.id, mesh: this.mesh, model: mat4.create(), color: this.properties.color});
-	this.object = searchObject(this.id);
+	if(this.object == undefined)
+	{
+		objects_list.push({id: this.id, mesh: this.mesh, model: mat4.create(), color: this.properties.color,
+							visibility: this.properties.visibility});
+		this.object = searchObject(this.id);	
+	}
+	
 	this.model  = this.object.model;
 	this.triangle_num = 0;
 }
 
+/*
+* 	The behaviour done when the node is removed
+*	@method onAdded
+*/
 meshLoadNode.prototype.onRemoved = function()
 {
 	searchObject(this.id, true);
 }
 
+/*
+* 	Change the scale of the mesh
+*	@method setScale
+*	@params {Vector3} The new scale of the mesh
+*/
 meshLoadNode.prototype.setScale = function(scale)
 {
 	if(scale == undefined || scale.length != 3)
@@ -700,6 +863,11 @@ meshLoadNode.prototype.setScale = function(scale)
 	mat4.scale(this.model, this.model, this.properties.scale);
 }
 
+/*
+* 	Change the position of the mesh
+*	@method setTranslation
+*	@params {Vector3} The new position of the mesh
+*/
 meshLoadNode.prototype.setTranslation = function(position)
 {
 	if(position == undefined || position.length != 3)
@@ -715,6 +883,11 @@ meshLoadNode.prototype.setTranslation = function(position)
 	mat4.setTranslation(this.model, this.properties.position);
 }
 
+/*
+* 	Change the rotation of the mesh
+*	@method setRotation
+*	@params {Vector3} The new rotation of the mesh
+*/
 meshLoadNode.prototype.setRotation = function(rotation)
 {
 	if(rotation.length != 3)
@@ -735,6 +908,12 @@ meshLoadNode.prototype.setRotation = function(rotation)
 	mat4.scale(this.model, this.model, this.properties.scale);
 }
 
+/*
+* 	For show the values when a graph is loaded, when the user change 
+*	the properties using the window of properties and when the node is cloned
+*	@method onPropertyChanged 
+*	@params {String} The name of the changed property
+*/
 meshLoadNode.prototype.onPropertyChanged = function(property)
 {
 
@@ -825,9 +1004,18 @@ meshLoadNode.prototype.onPropertyChanged = function(property)
 			for (var i = 0; i < 4; ++i)
 				properties.color[i] = Math.min(Math.max(properties.color[i], 0.0), 1.0);
 		break;
+
+		case "visibility":
+			this.toogleVisibility(properties.visibility);
+		break;
 	}
 }
 
+/*
+* 	In order to show to the users the name of the loaded mesh it's mandatory to overload the onDrawBackground
+*	@method onDrawBackground
+*	@params {Context} The context of the node
+*/
 meshLoadNode.prototype.onDrawBackground = function(ctx)
 {
 	ctx.fillStyle = "rgb( 255 , 255 , 255)"; 
@@ -841,6 +1029,10 @@ meshLoadNode.prototype.onDrawBackground = function(ctx)
 	}  
 }
 
+/*
+* 	What the node does every frame
+*	@method onExecute 
+*/
 meshLoadNode.prototype.onExecute = function() 
 {
 	var position = this.properties.position;
@@ -879,8 +1071,8 @@ meshLoadNode.title_selected_color = basicSelectedTitleColor;
 
 
 /*
-* 	This node is for load a texture.
-*	@method textureLoadNode
+* 	This node is for create an equation.
+*	@method equationNode
 */
 function equationNode() {
 	this.properties = { 
@@ -900,12 +1092,21 @@ function equationNode() {
 	this.addOutput("Equation", "equation");
 }
 
+/*
+* 	To show to the users the equation 
+*	@method onDrawBackground
+*	@params {Context} The context of the node
+*/
 equationNode.prototype.onDrawBackground = function(ctx) 
 {
 	if(!this.flags.collapsed)
 	  	this.curve_editor.draw(ctx, this.size, graphCanvas, true);
 }
 
+/*
+* 	Create the equation given a finite number of points
+*	@method generateFunction
+*/
 equationNode.prototype.generateFunction = function() 
 {
 	var y = [];
@@ -941,6 +1142,10 @@ equationNode.prototype.generateFunction = function()
 	this.coef = coef;
 }
 
+/*
+* 	Verify that all the points on the equation are valid (between 0 and 1)
+*	@method verifyPoints
+*/
 equationNode.prototype.verifyPoints = function() 
 {
 	for(var i = 0; i < this.properties.curve_points.length; ++i) {
@@ -953,11 +1158,25 @@ equationNode.prototype.verifyPoints = function()
 	}	
 }
 
+/*
+* 	Control what append when the mouse moves over the node
+*	@method onMouseMove
+*	@params {Event} The event of the mouse
+*	@params {Vector3} The local position of the mouse
+*	@params {Canvas} The canvas of the equation
+*/
 equationNode.prototype.onMouseMove = function(e, local_pos, graphCanvas) 
 {
 	this.curve_editor.onMouseMove(local_pos, graphCanvas);
 }
 
+/*
+* 	Control what append when the mouse is down over the node
+*	@method onMouseDown
+*	@params {Event} The event of the mouse
+*	@params {Vector3} The local position of the mouse
+*	@params {Canvas} The canvas of the equation
+*/
 equationNode.prototype.onMouseDown = function(e, local_pos, graphCanvas) 
 {
 	var editor_clicked = this.curve_editor.onMouseDown(local_pos, graphCanvas);
@@ -969,6 +1188,13 @@ equationNode.prototype.onMouseDown = function(e, local_pos, graphCanvas)
 	return editor_clicked;
 }
 
+/*
+* 	Control what append when the mouse is up over the node
+*	@method onMouseUp
+*	@params {Event} The event of the mouse
+*	@params {Vector3} The local position of the mouse
+*	@params {Canvas} The canvas of the equation
+*/
 equationNode.prototype.onMouseUp = function(e, local_pos, graphCanvas) 
 {
 	this.curve_editor.onMouseUp(local_pos, graphCanvas);
@@ -977,6 +1203,10 @@ equationNode.prototype.onMouseUp = function(e, local_pos, graphCanvas)
 	this.captureInput(false);
 }
 
+/*
+* 	The behaviour done when the node is added
+*	@method onAdded
+*/
 equationNode.prototype.onAdded = function() 
 {
 	if(this.curve_editor == undefined)
@@ -990,9 +1220,14 @@ equationNode.prototype.onAdded = function()
 	this.curve_editor.size = this.size;
 }
 
+/*
+* 	For show the values when a graph is loaded, when the user change 
+*	the properties using the window of properties and when the node is cloned
+*	@method onPropertyChanged 
+*/
 equationNode.prototype.onPropertyChanged = function() 
 {
-if(this.curve_editor == undefined)
+	if(this.curve_editor == undefined)
 	    this.curve_editor = new LiteGraph.CurveEditor(this.properties.curve_points);
 
     if(!isArray(this.properties.curve_points[0]))
@@ -1024,6 +1259,10 @@ if(this.curve_editor == undefined)
 	this.generateFunction();
 }
 
+/*
+* 	What the node does every frame
+*	@method onExecute 
+*/
 equationNode.prototype.onExecute = function() 
 {
 	this.setOutputData(0, this.coef);
@@ -1036,8 +1275,8 @@ equationNode.title_selected_color = basicSelectedTitleColor;
 
 
 /*
-* 	This node is for load a texture.
-*	@method textureLoadNode
+* 	This node is for pick a color.
+*	@method colorPickerNode
 */
 function colorPickerNode() 
 {
@@ -1057,10 +1296,14 @@ function colorPickerNode()
 	this.addOutput("Color", "color");
 }
 
+/*
+* 	Make that the background color of the node is the shame than the color picked by the user	
+*	@method onDrawBackground
+*	@params {Context} The context of the node
+*/
 colorPickerNode.prototype.onDrawBackground = function(ctx) 
 {
-	//This is for make that the background color of the node
-	//is the shame than the color picked by the user	
+
     ctx.fillStyle = "rgb(" + (this.properties.color[0] * 255) + "," +
         (this.properties.color[1] * 255) + "," +
         (this.properties.color[2] * 255) +
@@ -1072,41 +1315,74 @@ colorPickerNode.prototype.onDrawBackground = function(ctx)
         ctx.fillRect(0, 0, this.size[0], this.size[1]);
 };
 
-//For recover (in a visual way) the values when a graph is loaded
+/*
+* 	For show the values when a graph is loaded, when the user change 
+*	the properties using the window of properties and when the node is cloned
+*	@method onPropertyChanged 
+*/
 colorPickerNode.prototype.onPropertyChanged = function()
 {
 	if (this.properties.color.length != 4)
 		this.properties.color = [1,1,1,1];
 
-	this.rw.value = Math.min(Math.max(this.properties.color[0], 0.0), 1.0);
-	this.gw.value = Math.min(Math.max(this.properties.color[1], 0.0), 1.0);
-	this.bw.value = Math.min(Math.max(this.properties.color[2], 0.0), 1.0);
-	this.aw.value = Math.min(Math.max(this.properties.color[3], 0.0), 1.0);
+	this.properties.color[0] = Math.min(Math.max(this.properties.color[0], 0.0), 1.0);
+	this.properties.color[1] = Math.min(Math.max(this.properties.color[1], 0.0), 1.0);
+	this.properties.color[2] = Math.min(Math.max(this.properties.color[2], 0.0), 1.0);
+	this.properties.color[3] = Math.min(Math.max(this.properties.color[3], 0.0), 1.0);
+
+	this.rw.value = this.properties.color[0];
+	this.gw.value = this.properties.color[1];
+	this.bw.value = this.properties.color[2];
+	this.aw.value = this.properties.color[3];
 }
 
-colorPickerNode.prototype.onExecute = function() 
-{
-	this.setOutputData(0, this.properties.color);
-}
-
+/*
+* 	Set the red component of the color
+*	@method setRed 
+*	@params {Number} The value of the component
+*/
 colorPickerNode.prototype.setRed = function(v)
 {
 	this.properties.color[0] = v;
 }
 
+/*
+* 	Set the blue component of the color
+*	@method setBlue 
+*	@params {Number} The value of the component
+*/
 colorPickerNode.prototype.setBlue = function(v)
 {
 	this.properties.color[1] = v;
 }
 
+/*
+* 	Set the green component of the color
+*	@method setGreen 
+*	@params {Number} The value of the component
+*/
 colorPickerNode.prototype.setGreen = function(v)
 {
 	this.properties.color[2] = v;
 }
 
+/*
+* 	Set the alpha component of the color
+*	@method setAlpha 
+*	@params {Number} The value of the component
+*/
 colorPickerNode.prototype.setAlpha = function(v)
 {
 	this.properties.color[3] = v;
+}
+
+/*
+* 	What the node does every frame
+*	@method onExecute 
+*/
+colorPickerNode.prototype.onExecute = function() 
+{
+	this.setOutputData(0, this.properties.color);
 }
 
 colorPickerNode.title = "Color Picker";

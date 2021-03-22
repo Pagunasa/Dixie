@@ -14,7 +14,9 @@ var gl;
 var playButton, resetButton, stopButton;
 
 var divisionButton;
-var glCanvasOptionsButton;
+
+var showGrid = true, showLines = false;
+var c_buttonGrid, c_buttonLine;
 
 var graphLi;
 var glLi;
@@ -29,10 +31,10 @@ var is_graph_running;
 var emergency_stop = false;
 var identity = mat4.IDENTITY;
 
-var switchGrid, switchLines; 
 var backgroundColor = [0,0,0,0];
 var gridColor       = [1,1,1,0.25];
 var linesColor      = [1,1,1,0.5];
+var times_clicked   = 0; //How many times the user clicks in the canvas div
 
 /* Demos */
 //Default start
@@ -57,8 +59,27 @@ var particle_text;
 /*   Default Meshes      */
 var grid;
 
+
+/********************************/
+/*************Modals*************/
+/********************************/
+var texture_modal;
+var def_texture_1, def_texture_2, def_texture_3;
+var def_texture_4, def_texture_5, local_texture;
+
+var mesh_modal;
+var def_mesh_1, def_mesh_2, def_mesh_3, def_mesh_4, def_mesh_5;
+var def_mesh_6, def_mesh_7, def_mesh_8, def_mesh_9;
+var url_mesh, custom_mesh;
+
+var export_modal;
+/********************************/
+/********************************/
+/********************************/
+
+
 /*
-* 	Change the width of both canvases depending of the division button position.
+* 	Change the width of both canvases depending of the division button position
 *	@method changeCanvasWidth
 *	@params {Number} the position of the division button
 */
@@ -82,8 +103,9 @@ function changeCanvasSize ( dBPosition )
 	graphCanvas.resize();
 }
 
+
 /*
-* 	Calculus for get the correct position, using percentages, of the division button when the screen is resized.
+* 	Calculus for get the correct position, using percentages, of the division button when the screen is resized
 *	@method reizeElements
 */
 function resizeElements ()
@@ -110,13 +132,11 @@ function resizeElements ()
 	dBPosition = Math.min(Math.max(dBPosition, dBLimit),  widthCanvasContainer - divisionButton.offsetWidth - dBLimit);
 
 	changeCanvasSize(dBPosition);
-
-//	glCanvasOptionsButton.style.top  = $('#menu').height() + 25 + 'px';
-//	glCanvasOptionsButton.style.left = widthCanvasContainer - glCanvasOptionsButton.offsetWidth - 10 + 'px';
 }
 
+
 /*
-* 	Initialization of the division button.
+* 	Initialization of the division button
 *	@method initDivisionButton
 */
 function initDivisionButton () 
@@ -139,9 +159,6 @@ function initDivisionButton ()
 		if (divisionButton.drag == true)
 			divisionButton.drag = false;
 	});
-
-	switchGrid  = document.getElementById('switchGrid');
-	switchLines = document.getElementById('switchLines');
 }
 
 /*
@@ -210,10 +227,10 @@ function initMenuButtons ()
 		jsonGraph = JSON.stringify(jsonGraph);
 		jsonGraph = [jsonGraph];
 
-		var blobl = new Blob(jsonGraph, {type: "text/plain;charset=utf-8"});
+		var blob = new Blob(jsonGraph, {type: "text/plain;charset=utf-8"});
 		
 		var url = window.URL || window.webkitURL;
-		link = url.createObjectURL(blobl);
+		link = url.createObjectURL(blob);
 
 		var savedGraph = document.createElement("a");
 		savedGraph.download = "Graph.dx";
@@ -222,6 +239,8 @@ function initMenuButtons ()
 		document.body.appendChild(savedGraph);
 		savedGraph.click();
 		document.body.removeChild(savedGraph);
+
+		export_modal.modal('hide');
 	}
 
 	playButton.onclick = function() {
@@ -290,11 +309,114 @@ function initMenuButtons ()
 	showDemo6Button.onclick =function() {
 		graph.configure( Object.assign({}, demo6) ); 
 		$('#demosModal').modal('hide');
-		
+
 		stopButton.className = "button-secondary red_color";
     	playButton.className = "button-secondary";
 	}
 }
+
+
+/*
+*	Initialization of the buttons in the gl canvas
+*	@method initMenuButtons
+*/
+function initCanvasButtons ()
+{
+	//Event to remove the color pickers if the user clicks on one canvas
+	document.getElementById("graphAngWebGL").onclick = function()
+	{
+		var color_picker = document.getElementsByClassName("jscolor-picker-wrap");
+
+		if(color_picker.length != 0)
+		{
+			times_clicked++;
+
+			//For avoid that the first time that is clicked automatically hide the color picker
+			if(times_clicked%2 == 0)
+				jscolor.hide();
+		}
+	}
+
+	document.getElementById("backgroundColorIcon").onclick = function()
+	{
+		times_clicked = 0;
+	}
+
+	document.getElementById("pickerGrid").onclick = function()
+	{
+		times_clicked = 0;
+	}
+
+	document.getElementById("pickerLine").onclick = function()
+	{
+		times_clicked = 0;
+	}
+
+	c_buttonGrid = document.getElementById("gridIcon");
+	c_buttonLine = document.getElementById("lineIcon");
+
+	c_buttonGrid.onclick = function()
+	{
+		showGrid = !showGrid;
+
+		if(showGrid)
+			c_buttonGrid.className = "icon icon-selected";
+		else
+			c_buttonGrid.className = "icon";
+	}
+
+	c_buttonLine.onclick = function()
+	{
+		showLines = !showLines;
+
+		if(showLines)
+			c_buttonLine.className = "icon icon-selected";
+		else
+			c_buttonLine.className = "icon";
+	}
+}
+
+
+/*
+*	Initialization of the modals and his buttons
+*	@method initModals
+*/
+function initModals ()
+{
+	/********************************/
+	/*************Modals*************/
+	/********************************/
+	texture_modal = $('#texturesModal');
+	def_texture_1 = document.getElementById("def_texture1");
+	def_texture_2 = document.getElementById("def_texture2");
+	def_texture_3 = document.getElementById("def_texture3");
+	def_texture_4 = document.getElementById("def_texture4");
+	def_texture_5 = document.getElementById("def_texture5");
+	local_texture = document.getElementById("texture_local");
+
+
+	/********************************/
+	/*************Meshes*************/
+	/********************************/
+	mesh_modal  = $('#meshesModal');
+	def_mesh_1  = document.getElementById("def_mesh1");
+	def_mesh_2  = document.getElementById("def_mesh2");
+	def_mesh_3  = document.getElementById("def_mesh3");
+	def_mesh_4  = document.getElementById("def_mesh4");
+	def_mesh_5  = document.getElementById("def_mesh5");
+	def_mesh_6  = document.getElementById("def_mesh6");
+	def_mesh_7  = document.getElementById("def_mesh7");
+	def_mesh_8  = document.getElementById("def_mesh8");
+	def_mesh_9  = document.getElementById("def_mesh9");
+	url_mesh    = document.getElementById("mesh_url");
+	custom_mesh = document.getElementById("mesh_custom");
+    
+    /********************************/
+	/*************Export*************/
+	/********************************/
+	export_modal = $('#exportModal');
+}
+
 
 /*
 *	Addition of all the nodes created 
@@ -327,6 +449,7 @@ function addNodes ()
 	LiteGraph.registerNodeType("modify/modify property", modifyPropertyNode);
 }
 
+
 /*
 * 	Initialization of both canvases, menu and division buttons.
 *	@method init
@@ -354,11 +477,14 @@ function init ()
 	navbar = document.getElementById('menu');
 
 	//buttons inicialization
-	glCanvasOptionsButton = document.getElementById('glOptionButton');
 	initMenuButtons();
+	initCanvasButtons();
 	initDivisionButton();
 
-	camera = new Camera(gl, [0,0,0], [-0.36,7.36,16.74]); /**************************************************/
+	//Modals inicialization
+	initModals();
+
+	camera = new Camera(gl, [0,0,0], [-0.36,7.36,16.74]);
 
 	//Set the default mesh for the forces
 	default_forces_mesh = new GL.Mesh({vertices: [0,0,0]});
@@ -379,7 +505,7 @@ function init ()
 	resizeElements(); //First time that the application is executed we need to resize both canvases
 
 	//Listener for the window resize, this is for make the application responsive
-	window.addEventListener( 'resize', function(){resizeElements()} );
+	window.addEventListener('resize', function(){resizeElements()});
 
 	graphCanvas.onShowNodePanel = onShowNodePanel.bind(this);
 
@@ -392,9 +518,43 @@ function init ()
     		playButton.className = "button-secondary";
 		}
 	});
+
+	nodePanel = document.getElementById("nodeDisplay");
+	nodePanel.addEventListener("mouseleave", function() {panel_focus = false;});
+	nodePanel.addEventListener("mouseenter", function() {panel_focus = true;});
+
+	//For detect changes in the nodeDisplay div
+	$('body').on('DOMSubtreeModified', '#nodeDisplay', function(){
+		var child = nodePanel.children[0];
+	  	if(child == undefined)
+	  		panel_focus = false;
+	  	
+	});
+
+	//Listener for close with escape the panel info
+	document.addEventListener('keydown', (event) => {
+	  const keyName = event.key;
+
+	  if(event.key == "Escape")
+	  {	  	
+	  	var child = nodePanel.children[0];
+	  	if(child != undefined)
+	  	{
+	  		panel_focus = false;
+	  		child.remove();
+	  	}
+	  }
+	});
+
+	//Alert in chase of window close
+	window.onbeforeunload = function() {
+	    return "Did you save your work?"
+	}
 }
 
+
 init();
+
 
 /*************************************************/
 /****************SHADER DEFINITION****************/
@@ -408,6 +568,11 @@ var particleShaderFlat     =  new GL.Shader(vs_particles, fs_flat_p);
 var linesShader = new GL.Shader(vs_basic_point, fs_lines_flat);
 var fogShader   = new GL.Shader(vs_fog, fs_fog);
 
+/*
+*	Change the background color of the litegl canvas
+*	@method updateColorBack
+*	@params {jscolor} the color picker 
+*/
 function updateColorBack(picker)
 {
 	var channels = picker.channels;
@@ -418,6 +583,11 @@ function updateColorBack(picker)
     backgroundColor[3] = 0.0;//channels.a;
 }
 
+/*
+*	Change the grid color 
+*	@method updateColorGrid
+*	@params {jscolor} the color picker 
+*/
 function updateColorGrid(picker)
 {
 	var channels = picker.channels;
@@ -428,6 +598,11 @@ function updateColorGrid(picker)
     gridColor[3] = channels.a;
 }
 
+/*
+*	Change the lines color
+*	@method updateColorLine
+*	@params {jscolor} the color picker 
+*/
 function updateColorLine(picker)
 {
 	var channels = picker.channels;
@@ -448,7 +623,12 @@ var update_frames   = 10;
 var ordeningMade    = false;
 var object_uniforms, system_uniforms, particles_uniforms, forces_uniforms, grid_uniforms;
 
-function setUniforms() {
+/*
+*	Define the uniforms for every shader
+*	@method setUniforms
+*/
+function setUniforms() 
+{
 	object_uniforms = {
 		u_mvp: camera.mvp,
 		u_model: mat4.IDENTITY,
@@ -486,14 +666,20 @@ function setUniforms() {
 	}
 }
 
-gl.ondraw = function() {
+
+/*
+*	The render of the application
+*	@method gl.ondraw
+*/
+gl.ondraw = function() 
+{
 
 	num_frames++;
 
 	gl.clear(gl.COLOR_BUFFER_BIT);
 	gl.clear(gl.DEPTH_BUFFER_BIT);
 
-	gl.enable(gl.BLEND );
+	gl.enable(gl.BLEND);
 	gl.blendEquation(gl.FUNC_ADD);
 	gl.enable(gl.DEPTH_TEST);
 	gl.depthFunc(gl.LESS);
@@ -506,7 +692,7 @@ gl.ondraw = function() {
 	gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
 
 	//Render of the grid
-	if(switchGrid.checked && camera.eye[1] < 0)
+	if(showGrid)
 		fogShader.uniforms(grid_uniforms).draw(grid, GL.LINES);
 
 	gl.depthMask(false);
@@ -519,7 +705,7 @@ gl.ondraw = function() {
 			continue;
 
 		//Draw the lines!!
-		if(switchLines.checked == true)
+		if(showLines == true)
 		{
 			gl.depthMask(true);
 			linesShader.uniforms(object_uniforms).draw(system.line_mesh, GL.LINES);
@@ -590,17 +776,15 @@ gl.ondraw = function() {
 	gl.depthMask(true);
 	gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
 
-	//Render of the grid
-	if(switchGrid.checked && camera.eye[1] > 0)
-		fogShader.uniforms(grid_uniforms).draw(grid, GL.LINES);
-
 	for (var i = 0; i < objects_list.length; ++i) {
 		var object = objects_list[i];
 
+		if(!object.visibility || object.mesh == undefined)
+			continue;
+
 		object_uniforms.u_model = object.model;
 		object_uniforms.u_color = object.color;
-		if(object.mesh != undefined)
-			flatShader.uniforms(object_uniforms).draw(object.mesh);
+		flatShader.uniforms(object_uniforms).draw(object.mesh);
 	}
 
 
@@ -609,8 +793,14 @@ gl.ondraw = function() {
 }
 
 /*
-* 	Ordination of the particles & saving the actual position, depending on how far from the camera they are.
+* 	Ordination of the particles & saving the actual position, depending on how far from the camera they are
 *	@method orderParticles
+*	@params {system_info} the information of the particle system 
+*	@params {list} the list of the ids of the particles
+*	@params {list} the list of the ids of the subemittors
+*	@params {list} the list of all the particles in the system
+*	@params {camera} the camera
+*	@params {mesh} the mesh of all the particles
 */
 function orderParticles(system, particle_ids, subem_ids, particle_list, camera, particles_mesh)
 {
@@ -686,7 +876,12 @@ function orderParticles(system, particle_ids, subem_ids, particle_list, camera, 
 	}
 }
 
-
+/*
+*	Merge the ids of all the subemittors
+*	@method mergeSubEmittorsIds
+*	@params {system_info} the information of the particle system 
+*	@params {list} the list of the sub_emittors 
+*/
 function mergeSubEmittorsIds(system, sub_emittors)
 {
 	system.sub_emission_ids = [];
@@ -705,8 +900,13 @@ function mergeSubEmittorsIds(system, sub_emittors)
 /*************************************************/
 /********************UPDATE***********************/
 /*************************************************/
+/*
+*	The update
+*	@method gl.onupdate
+*/
 gl.onupdate = function( dt ) {
 	time_interval = dt;
+	camera.update();
 
 	//If time interval is greater than 5 seconds, then the systems goes very slow and is better to stop it
 	if(time_interval >= 0.4 && !emergency_stop)

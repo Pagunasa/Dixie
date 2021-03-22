@@ -426,7 +426,13 @@ html,body {
     background-color: #F33;
     color: black;
 }
+/**************************************/
+/**************************************/
+/**************************************/
 
+/**************************************/
+/**********Display of the node*********/
+/**************************************/
 #nodeDisplay {
 	max-width: 80%;
 }
@@ -525,7 +531,13 @@ html,body {
 ::-webkit-scrollbar-thumb:hover {
   background: var(--secondary-color); 
 }
+/**************************************/
+/**************************************/
+/**************************************/
 
+/**************************************/
+/***************Tooltips***************/
+/**************************************/
 .tooltiptext {
   visibility: hidden;
   width: 400px;
@@ -546,6 +558,13 @@ html,body {
   visibility: visible;
 }
 
+/**************************************/
+/**************************************/
+/**************************************/
+
+/**************************************/
+/*************Modals stuff*************/
+/**************************************/
 .img-max {
 	max-width:  100px;
 	max-height: 80px;
@@ -568,3 +587,57 @@ html,body {
 	font-size:    40px;
 	color:        white;
 }
+/**************************************/
+/**************************************/
+/**************************************/
+
+/**************************************/
+/*************Canvas icons*************/
+/**************************************/
+.icons-canvas {
+	margin-left: 10px;
+	margin-top: 5px;
+	position: absolute;
+}
+
+.icons-canvas .icon:hover {
+	background-color: var(--quaternary-color);
+}
+
+.icons-canvas .icon {
+	width:  26px;
+	height: 26px;
+	background-color: var(--primary-color);
+	padding: 3px;
+	border-radius: 2px;
+	margin-bottom: 5px;
+}
+
+.icons-canvas .rigth {
+	width:  26px;
+	height: 26px;
+	background-color: var(--primary-color);
+	padding: 3px;
+	border-radius: 2px;
+	margin-left: 29px;
+	position: absolute;
+}
+
+.icons-canvas .icon-size {
+	width:  20px;
+	height: 20px;
+	user-select: none;
+}
+
+.icon-selected {
+	background-color: var(--quaternary-color) !important;
+}
+
+#backgroundColorIcon{
+	background-image: url("images/bucket.png");
+	background-repeat:no-repeat;
+    background-size:contain;
+}
+/**************************************/
+/**************************************/
+/**************************************/

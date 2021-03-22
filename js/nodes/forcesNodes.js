@@ -17,13 +17,13 @@ function gravityNode() {
 	/***********Node properties************/
 	/**************************************/
 	this.properties = {
-		direction: vector_3,
+		direction: [0,0,0],
 		strength: 1
 	};
 
 	this.last_state = {
-		direction: vector_3,
-		direction_normalized: vector_3
+		direction: [0,0,0],
+		direction_normalized: [0,0,0]
 	}
 
     this.constructor.desc = "&nbsp;&nbsp;&nbsp;&nbsp; This node creates a global force that affects all the particles of a given system.\
@@ -38,13 +38,20 @@ function gravityNode() {
 	/***********Inputs & Outputs***********/
 	/**************************************/
 	this.addInput("Particle system", "particle_system");
+	this.addInput("Condition"      , "condition_list");
 	this.addInput("Direction"      , "vec3");
 	this.addInput("Stength"        , "number");
 
 	this.addOutput("Particle system", "particle_system");
 }
 
-//For recover (in a visual way) the values when a graph is loaded
+
+/*
+* 	For show the values when a graph is loaded, when the user change 
+*	the properties using the window of properties and when the node is cloned
+*	@method onPropertyChanged 
+*   @params {String} The name of the changed value
+*/
 gravityNode.prototype.onPropertyChanged = function(property)
 {
 	var properties = this.properties;
@@ -72,16 +79,22 @@ gravityNode.prototype.onPropertyChanged = function(property)
 	}
 }
 
+
+/*
+* 	What the node does every frame
+*	@method onExecute 
+*/
 gravityNode.prototype.onExecute = function() 
 {
 	var system_input = this.getInputData(0);
 	var properties   = this.properties;
 
-	var direction_input = this.getInputData(1);
+	var condition       = this.getInputData(1);
+	var direction_input = this.getInputData(2);
 
 	//When is executed the inputs are gotten and if they are undefined a default value is setted
 	properties.direction = direction_input == undefined ? properties.direction : direction_input.slice(0);
-	properties.strength  = this.getInputData(2) || properties.strength;
+	properties.strength  = this.getInputData(3) || properties.strength;
 
 	if (system_input != undefined)
 	{
@@ -89,10 +102,13 @@ gravityNode.prototype.onExecute = function()
 		var particles = system.particles_list;
 		var ids;
 
-		if(system_input.type == "emitter")
-			ids = system.particles_ids;
-		else if(system_input.type == "sub_emitter")
-			ids = system.sub_emittors[system_input.index].ids;
+		if(condition != undefined)
+			ids = condition;
+		else
+			if(system_input.type == "emitter")
+				ids = system.particles_ids;
+			else if(system_input.type == "sub_emitter")
+				ids = system.sub_emittors[system_input.index].ids;
 
 		if(ids.length > 0)
 		{	
@@ -138,14 +154,15 @@ gravityNode.title_selected_color = basicSelectedTitleColor;
 /*
 *	This node is for define a vortes that is applied at all particles inside his area of effect (defined by the scale)
 *	@method vortexNode
+*   @source https://gamedevelopment.tutsplus.com/tutorials/adding-turbulence-to-a-particle-system--gamedev-13332
 */
 function vortexNode() {
 	/**************************************/
 	/***********Node properties************/
 	/**************************************/
 	this.properties = {
-		position: vector_3,
-		angular_speed: vector_3,
+		position: [0,0,0],
+		angular_speed: [0,0,0],
 		scale: 10,
 		color: [1,1,1,1]
 	};
@@ -171,6 +188,7 @@ function vortexNode() {
 	/***********Inputs & Outputs***********/
 	/**************************************/
 	this.addInput("Particle system", "particle_system");
+	this.addInput("Condition"      , "condition_list");
 	this.addInput("Position"       , "vec3");
 	this.addInput("Angular speed"  , "vec3");
 	this.addInput("Scale"          , "number");
@@ -179,50 +197,73 @@ function vortexNode() {
 	this.addOutput("Particle system", "particle_system");
 }
 
-//For recover (in a visual way) the values when a graph is loaded
-vortexNode.prototype.onPropertyChanged = function()
+
+/*
+* 	For show the values when a graph is loaded, when the user change 
+*	the properties using the window of properties and when the node is cloned
+*	@method onPropertyChanged 
+*	@params {String} The name of the changed property
+*/
+vortexNode.prototype.onPropertyChanged = function(property)
 {
 	var properties = this.properties;
 
-	var scale = properties.scale;
-	scale = isNaN(scale) ? 10 : scale;
-	properties.scale = Math.max(scale, 0);
+	switch (property)
+	{
+		case "position":
+			if (properties.position.length != 3)
+				properties.position = [0,0,0];
+		break;
 
-	if (properties.position.length != 3)
-		properties.position = [0,0,0];
+		case "angular_speed":
+			if (properties.angular_speed.length != 3)
+				properties.angular_speed = [0,0,0];
+		break;
 
-	if (properties.angular_speed.length != 3)
-		properties.angular_speed = [0,0,0];
+		case "scale":
+			var scale = properties.scale;
+			scale = isNaN(scale) ? 10 : scale;
+			properties.scale = Math.max(scale, 0);
+		break;
 
-	if (properties.color.length != 4)
-		properties.color = [1,1,1,1];	
-	else
-		for (var i = 0; i < 4; ++i)
-			properties.color[i] = Math.min(Math.max(properties.color[i], 0.0), 1.0);
+		case "color":
+			if (properties.color.length != 4)
+				properties.color = [1,1,1,1];	
+			else
+				for (var i = 0; i < 4; ++i)
+					properties.color[i] = Math.min(Math.max(properties.color[i], 0.0), 1.0);
+		break;
+	}
 }
 
+
+/*
+* 	The behaviour done when the node is added
+*	@method onAdded
+*/
 vortexNode.prototype.onAdded = function() 
 {
  	this.force = addForce(this.id, this.properties.position, "vortex")
 };
 
-vortexNode.prototype.onRemoved = function() 
-{
- 	searchForce(this.id, true);
-};
 
+/*
+* 	What the node does every frame
+*	@method onExecute 
+*/
 vortexNode.prototype.onExecute = function() 
 {
 	var properties     = this.properties;
 	var system_input   = this.getInputData(0);
-	var position_input = this.getInputData(1);
-	var angular_input  = this.getInputData(2);
-	var color_input    = this.getInputData(4);
+	var condition      = this.getInputData(1);
+	var position_input = this.getInputData(2);
+	var angular_input  = this.getInputData(3);
+	var color_input    = this.getInputData(5);
 
 	//When is executed the inputs are gotten and if they are undefined a default value is setted
 	properties.position       = position_input == undefined ? properties.position      : position_input.slice(0);
 	properties.angular_speed  = angular_input  == undefined ? properties.angular_speed : angular_input.slice(0);
-	properties.scale          = Math.max(this.getInputData(3),0) || properties.scale;
+	properties.scale          = Math.max(this.getInputData(4),0) || properties.scale;
 	properties.color          = color_input    == undefined ? properties.color         : color_input.slice(0);
 
 	//It's necesary update the force position and color for 
@@ -236,10 +277,13 @@ vortexNode.prototype.onExecute = function()
 		var particles = system.particles_list;
 		var ids;
 
-		if(system_input.type == "emitter")
-			ids = system.particles_ids;
-		else if(system_input.type == "sub_emitter")
-			ids = system.sub_emittors[system_input.index].ids;
+		if(condition != undefined) 
+			ids = condition;
+		else
+			if(system_input.type == "emitter")
+				ids = system.particles_ids;
+			else if(system_input.type == "sub_emitter")
+				ids = system.sub_emittors[system_input.index].ids;
 
 		if(ids.length > 0)
 		{
@@ -274,6 +318,17 @@ vortexNode.prototype.onExecute = function()
 	this.setOutputData(0, system);
 }
 
+
+/*
+* 	The behaviour of the node when is removed
+*	@method onExecute 
+*/
+vortexNode.prototype.onRemoved = function() 
+{
+ 	searchForce(this.id, true);
+}
+
+
 vortexNode.title = "Vortex";
 vortexNode.title_color = forcesNodeColor;
 vortexNode.title_text_color = basicTitleColor;
@@ -289,7 +344,7 @@ function magnetNode() {
 	/***********Node properties************/
 	/**************************************/
 	this.properties = {
-		position: vector_3,
+		position: [0,0,0],
 		strength: 10,
 		scale: 10,
 		color: [1,1,1,1]
@@ -316,6 +371,7 @@ function magnetNode() {
 	/***********Inputs & Outputs***********/
 	/**************************************/
 	this.addInput("Particle system", "particle_system");
+	this.addInput("Condition"      , "condition_list");
 	this.addInput("Position"       , "vec3");
 	this.addInput("Strength"       , "number");
 	this.addInput("Scale"          , "number");
@@ -324,50 +380,71 @@ function magnetNode() {
 	this.addOutput("Particle system", "particle_system");
 }
 
-//For recover (in a visual way) the values when a graph is loaded
-magnetNode.prototype.onPropertyChanged = function()
+/*
+* 	For show the values when a graph is loaded, when the user change 
+*	the properties using the window of properties and when the node is cloned
+*	@method onPropertyChanged 
+*	@params {String} The name of the changed property
+*/
+magnetNode.prototype.onPropertyChanged = function(property)
 {
 	var properties = this.properties;
 
-	var scale = properties.scale;
-	scale = isNaN(scale) ? 10 : scale;
-	properties.scale = Math.max(scale, 0);
+	switch (property){
+		case "position":
+			if (properties.position.length != 3)
+				properties.position = [0,0,0];
+		break;
 
-	var strength = properties.strength;
-	properties.strength = isNaN(strength) ? 10 : strength;
+		case "strength":
+			var strength = properties.strength;
+			properties.strength = isNaN(strength) ? 10 : strength;
+		break;
 
-	if (properties.position.length != 3)
-		properties.position = [0,0,0];
+		case "scale":
+			var scale = properties.scale;
+			scale = isNaN(scale) ? 10 : scale;
+			properties.scale = Math.max(scale, 0);
+		break;
 
-	if (properties.color.length != 4)
-		properties.color = [1,1,1,1];	
-	else
-		for (var i = 0; i < 4; ++i)
-			properties.color[i] = Math.min(Math.max(properties.color[i], 0.0), 1.0);
+		case "color":
+			if (properties.color.length != 4)
+				properties.color = [1,1,1,1];	
+			else
+				for (var i = 0; i < 4; ++i)
+					properties.color[i] = Math.min(Math.max(properties.color[i], 0.0), 1.0);
+		break;
+	}
 }
 
+
+/*
+* 	The behaviour done when the node is added
+*	@method onAdded
+*/
 magnetNode.prototype.onAdded = function() 
 {
 	this.force = addForce(this.id, this.properties.position, "magnet")
-};
+}
 
-magnetNode.prototype.onRemoved = function() 
-{
- 	searchForce(this.id, true);
-};
 
+/*
+* 	What the node does every frame
+*	@method onExecute 
+*/
 magnetNode.prototype.onExecute = function() 
 {
 	var system_input = this.getInputData(0);
 	var properties = this.properties;
 
-	var position_input = this.getInputData(1);
-	var color_input    = this.getInputData(4);
+	var condition      = this.getInputData(1);
+	var position_input = this.getInputData(2);
+	var color_input    = this.getInputData(5);
 
 	//When is executed the inputs are gotten and if they are undefined a default value is setted
 	properties.position = position_input == undefined ? properties.position : position_input.slice(0);
-	properties.strength = this.getInputData(2) || properties.strength;
-	properties.scale    = Math.max(this.getInputData(3),0) || properties.scale;
+	properties.strength = this.getInputData(3) || properties.strength;
+	properties.scale    = Math.max(this.getInputData(4),0) || properties.scale;
 	properties.color    = color_input    == undefined ? properties.color    : color_input.slice(0);
 
 	//It's necesary update the force position and color for 
@@ -381,10 +458,13 @@ magnetNode.prototype.onExecute = function()
 		var particles = system.particles_list;
 		var ids;
 
-		if(system_input.type == "emitter")
-			ids = system.particles_ids;
-		else if(system_input.type == "sub_emitter")
-			ids = system.sub_emittors[system_input.index].ids;
+		if (condition != undefined)
+			ids = condition;
+		else
+			if(system_input.type == "emitter")
+				ids = system.particles_ids;
+			else if(system_input.type == "sub_emitter")
+				ids = system.sub_emittors[system_input.index].ids;
 
 		if(ids.length > 0)
 		{
@@ -416,6 +496,16 @@ magnetNode.prototype.onExecute = function()
 
 	//The porperties of the node are the output
 	this.setOutputData(0, system);
+}
+
+
+/*
+* 	The behaviour of the node when is removed
+*	@method onExecute 
+*/
+magnetNode.prototype.onRemoved = function() 
+{
+ 	searchForce(this.id, true);
 }
 
 magnetNode.title = "Magnet Point";

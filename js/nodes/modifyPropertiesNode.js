@@ -58,6 +58,12 @@ function modifyPropertyNode() {
 	this.addOutput("Particle system", "particle_system");
 }
 
+
+/*
+* 	Change if the modification is along the lifetime of the particle or if is user defined
+*	@method changeModification 
+*   @params {String} If is user defined or along lifetime
+*/
 modifyPropertyNode.prototype.changeModification = function(v)
 {
 	var properties = this.properties;
@@ -74,10 +80,15 @@ modifyPropertyNode.prototype.changeModification = function(v)
 		this.secW = this.addWidget("number", "Duration" , duration, this.setDuration.bind(this), {min: 0, max: 100000, step: 0.1});
 	}
 	else
-		this.size[1] = 166;
-	
+		this.size[1] = 166;	
 }
 
+
+/*
+* 	Set when the modification starts
+*	@method setStart 
+*   @params {Number} Seconds in which the modification starts
+*/
 modifyPropertyNode.prototype.setStart = function(v)
 {
 	if(isNaN(v))
@@ -87,6 +98,12 @@ modifyPropertyNode.prototype.setStart = function(v)
 	this.staW.value = v;
 }
 
+
+/*
+* 	Set how many time lasts the modification 
+*	@method setDuration 
+*   @params {Number} Modification duration in seconds
+*/
 modifyPropertyNode.prototype.setDuration = function(v)
 {
 	if(isNaN(v))
@@ -96,11 +113,23 @@ modifyPropertyNode.prototype.setDuration = function(v)
 	this.secW.value = v;
 }
 
+
+/*
+* 	Change the application mode of the modification
+*	@method changeApplication 
+*   @params {String} The name of the application (Add, equalize or substract)
+*/
 modifyPropertyNode.prototype.changeApplication = function(v)
 {
 	this.properties.application_mode = v;
 }
 
+
+/*
+* 	Change the property that is modified
+*	@method changeProperty 
+*   @params {String} The name of the property
+*/
 modifyPropertyNode.prototype.changeProperty = function(v)
 {
 	var properties = this.properties;
@@ -136,7 +165,13 @@ modifyPropertyNode.prototype.changeProperty = function(v)
 	}
 }
 
-//For recover (in a visual way) the values when a graph is loaded
+
+/*
+* 	For show the values when a graph is loaded, when the user change 
+*	the properties using the window of properties and when the node is cloned
+*	@method onPropertyChanged 
+*   @params {String} The name of the changed value
+*/
 modifyPropertyNode.prototype.onPropertyChanged = function(property)
 {
 	var properties = this.properties;
@@ -210,6 +245,12 @@ modifyPropertyNode.prototype.onPropertyChanged = function(property)
 	}
 }
 
+
+/*
+* 	If a equation is gived then this function calculates the factor of the new value using it
+*	@method computeChangeEquation 
+*   @params {Number} The lifetime of the particle
+*/
 modifyPropertyNode.prototype.computeChangeEquation = function(lifetime)
 {
 	var value = 0;
@@ -225,6 +266,11 @@ modifyPropertyNode.prototype.computeChangeEquation = function(lifetime)
 	return value;
 }
 
+
+/*
+* 	What the node does every frame
+*	@method onExecute 
+*/
 modifyPropertyNode.prototype.onExecute = function() 
 {
 	var system = this.getInputData(0);
@@ -238,7 +284,12 @@ modifyPropertyNode.prototype.onExecute = function()
 	if (system != undefined)
 	{
 		if(new_value != undefined)
-			properties.new_value = new_value;
+		{
+			if(properties.changed_property == "Speed" || properties.changed_property == "Color")
+				properties.new_value = new_value.slice(0);
+			else
+				properties.new_value = new_value;
+		}
 
 		if(this.internal.last_id != system.id)
 		{
@@ -268,15 +319,8 @@ modifyPropertyNode.prototype.onExecute = function()
 		for (var i = 0; i < particles_condition_list.length; i++)
 		{	
 			//Depending if there was a condition, the way to get the id of the particle changes		
-		//	if (using_condition){
-				particle_id = particles_condition_list[i].id;
-				index       = i;
-		/*	}
-			else
-			{
-				index   = i;
-				particle_id = particles_ids[i].id;
-			}*/
+			particle_id = particles_condition_list[i].id;
+			index       = i;
 
 			particle = particles[particle_id];
 
@@ -324,7 +368,7 @@ modifyPropertyNode.prototype.onExecute = function()
 						temp[j] = particle.iSpeed[j] - final_value[j];
 
 				for (var j = 0; j < 3; ++j)
-					particle.speed[j] = final_value[j] * modifier + particle.iSpeed[j] * (1.0 - modifier);
+					particle.speed[j] = temp[j] * modifier + particle.iSpeed[j] * (1.0 - modifier);
 			}
 			else if (properties.changed_property == "Size")
 			{
@@ -349,7 +393,12 @@ modifyPropertyNode.prototype.onExecute = function()
 			}
 			else if (properties.changed_property == "Life time")
 			{
-				//????????
+				if(properties.application_mode == "Addition")
+					final_value += particle.iLifetime;
+				else if(properties.application_mode == "Subtraction")
+					final_value = Math.max(particle.iLifetime - final_value, 0);
+
+				particle.lifetime = final_value * modifier + particle.iLifetime * (1.0 - modifier);
 			}
 			
 		}

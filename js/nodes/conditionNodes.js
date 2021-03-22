@@ -10,7 +10,7 @@ function createConditionNode() {
 		system_property: "Speed",
 		condition      : "Equals",
 		is_one_time    : false,
-		value          : vector_3
+		value          : [0,0,0]
 	};
 
     this.constructor.desc = "&nbsp;&nbsp;&nbsp;&nbsp; This node defines a condition and checks for every particle in the system if it's meted.\
@@ -23,7 +23,7 @@ function createConditionNode() {
         value:           "The value we want to use for the check"
     }
 
-	this.w1Values = ["Speed", "Life time", "Colision number", "Size"];
+	this.w1Values = ["Speed", "Life time", "Size"];
 	this.w2Values = ["Equals", "Greater than", "Less than", "Greater than or equals", "Less than or equals", "No equals"];
 
 	/**************************************/
@@ -46,38 +46,72 @@ function createConditionNode() {
 	this.addOutput("Condition", "condition_list");
 }
 
-createConditionNode.prototype.onPropertyChanged = function()
+
+/*
+* 	For show the values when a graph is loaded, when the user change 
+*	the properties using the window of properties and when the node is cloned
+*	@method onPropertyChanged 
+*   @params {String} The name of the changed value
+*/
+createConditionNode.prototype.onPropertyChanged = function(property)
 {
 	var properties = this.properties;
-	var sp = properties.system_property;
-	var co = properties.condition;
 
-	if(!this.w1Values.includes(sp))
-		sp = "Speed";
-	
-	if(this.w1.value != sp)
-	{
-		this.changeProperty(sp);
-		this.w1.value = sp;
+	switch (property) {
+		case "system_property":
+			var sp = properties.system_property;
+
+			if(!this.w1Values.includes(sp))
+				sp = "Speed";
+			
+			if(this.w1.value != sp)
+			{
+				this.changeProperty(sp);
+				this.w1.value = sp;
+			}
+		break;
+
+		case "condition":
+			var co = properties.condition;
+
+			if(!this.w2Values.includes(co))
+				co = "Equals";
+
+			if(this.w2.value != co)
+			{
+				this.changeCondition(co);
+				this.w2.value = co;
+			}
+		break;
+
+		case "is_one_time":
+			this.w3.value = properties.is_one_time;
+		break;
+
+		case "value":
+			if(properties.system_property == "Speed" && properties.value.length != 3) 
+				properties.value = [0,0,0];
+		break; 
 	}
-
-	if(!this.w2Values.includes(co))
-		co = "Equals";
-
-	if(this.w2.value != co)
-	{
-		this.changeCondition(co);
-		this.w2.value = co;
-	}
-
-	this.w3.value = properties.is_one_time;
 }
 
+
+/*
+* 	Change if the condition can be reached several times or just one
+*	@method changeConditionTime 
+*   @params {Bool} If is one time or not
+*/
 createConditionNode.prototype.changeConditionTime = function(v)
 {
 	this.properties.is_one_time = v;
 }
 
+
+/*
+* 	Change the kind of operator to meet the condition
+*	@method changeConditionTime 
+*   @params {String} The name of the operator
+*/
 createConditionNode.prototype.changeCondition = function(v)
 {
 	this.properties.condition = v;
@@ -86,6 +120,12 @@ createConditionNode.prototype.changeCondition = function(v)
 		this.size[0] = 270;
 }
 
+
+/*
+* 	Change the propety to be tested
+*	@method changeProperty 
+*   @params {String} The name of the property
+*/
 createConditionNode.prototype.changeProperty = function(v)
 {
 	var properties = this.properties;
@@ -100,7 +140,7 @@ createConditionNode.prototype.changeProperty = function(v)
 	if(v == "Speed")
 	{
 		this.addInput("Speed", "vec3");
-		properties.value = vector_3;
+		properties.value = [0,0,0];
 	}
 	else if (v == "Size")
 	{
@@ -123,6 +163,11 @@ createConditionNode.prototype.changeProperty = function(v)
 		this.size[0] = 270;
 }
 
+
+/*
+* 	What the node does every frame
+*	@method onExecute 
+*/
 createConditionNode.prototype.onExecute = function() 
 {
 	var properties = this.properties;
@@ -284,22 +329,41 @@ function mergeConditionsNode() {
 	this.addOutput("Condition", "condition_list");
 }
 
+
+/*
+* 	For show the values when a graph is loaded, when the user change 
+*	the properties using the window of properties and when the node is cloned
+*	@method onPropertyChanged 
+*/
 mergeConditionsNode.prototype.onPropertyChanged = function()
 {
 	var m = this.properties.merge_mode;
 
 	if(!this.vValues.includes(m))
+	{
 		m = "And";
+		this.properties.merge_mode = m;
+	}
 
 	this.w.value = m;
 }
 
+
+/*
+* 	Change the kind of merge mode 
+*	@method changeConditionTime 
+*   @params {String} The name of the merge mode (And, OR)
+*/
 mergeConditionsNode.prototype.changeMergeMode = function(v)
 {
 	this.properties.merge_mode = v;
 }
 
 
+/*
+* 	What the node does every frame
+*	@method onExecute 
+*/
 mergeConditionsNode.prototype.onExecute = function() 
 {
 	var condition_1 = this.getInputData(0) || [];

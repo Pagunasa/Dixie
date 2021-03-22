@@ -52,7 +52,13 @@ function particleDataNode() {
 	this.addOutput("Particle data", "p_data");
 }
 
-//For recover (in a visual way) the value when a graph is loaded
+
+/*
+* 	For show the values when a graph is loaded, when the user change 
+*	the properties using the window of properties and when the node is cloned
+*	@method onPropertyChanged 
+*	@params {String} The name of the changed property
+*/
 particleDataNode.prototype.onPropertyChanged = function(property)
 {
 	var properties = this.properties;
@@ -102,6 +108,11 @@ particleDataNode.prototype.onPropertyChanged = function(property)
 	}
 }
 
+
+/*
+* 	What the node does every frame
+*	@method onExecute 
+*/
 particleDataNode.prototype.onExecute = function()
 {
 	var input_max_speed = this.getInputData(0);
@@ -140,6 +151,7 @@ particleDataNode.title_color = spawnNodeColor;
 particleDataNode.title_text_color = basicTitleColor;
 particleDataNode.title_selected_color = basicSelectedTitleColor;
 
+
 /*
 *	This node is for set the values of every particle of the system and set a default movement 
 *	@method initParticlesNode
@@ -168,7 +180,13 @@ function initParticlesNode() {
 	this.addOutput("Particle system", "particle_system");
 }
 
-//Here is returned and object that have all the information for a particle
+
+/*
+*	Creation of an object with all the properties of a particle for the fill method 
+*	@method generateParticleInfo
+*   @params {Object} The properties of the particle
+*   @params {Object} The system of the particle
+*/
 initParticlesNode.prototype.generateParticleInfo = function (properties, system)
 {
 	var max_life_time = Math.max(properties.min_life_time, properties.max_life_time);
@@ -192,7 +210,12 @@ initParticlesNode.prototype.generateParticleInfo = function (properties, system)
 			};
 }
 
-//In the case that the particle is animated, this function allows to get the next frame
+
+/*
+*	In the case that the particle is animated, this method allows to get the next frame
+*	@method getNextFrame
+*   @params {Object} The particle
+*/
 initParticlesNode.prototype.getNextFrame = function(particle)
 {
 	var texture = this.texture;
@@ -221,6 +244,13 @@ initParticlesNode.prototype.getNextFrame = function(particle)
 	particle.coords = this.getCoords(particle.frameX, particle.frameY);
 }
 
+
+/*
+*	Get the texture coordinates of the particle
+*	@method getCoords
+*   @params {Number} The particle frame in the X of the atlas
+*   @params {Number} The particle frame in the Y of the atlas
+*/
 initParticlesNode.prototype.getCoords = function(frameX = 0, frameY = 0)
 {
 	var texture    = this.texture;
@@ -298,8 +328,13 @@ initParticlesNode.prototype.getCoords = function(frameX = 0, frameY = 0)
 	return [maxX,maxY, minX,maxY, maxX,minY, minX,minY, maxX,minY, minX,maxY];
 }
 
-//If the particle origin is a mesh, then this function will bring a random point 
-//of the mesh, and if the origin is a point will return this point
+
+/*
+*	Retuns a the origin of the particle, if is a mesh will return a random point
+*   of the surface and if not will return the origin point defined by the user
+*	@method getCoords
+*   @params {Object} The system of the particle
+*/
 initParticlesNode.prototype.generateRandomPoint = function(system)
 {
 	var origin      = system.origin;
@@ -347,9 +382,20 @@ initParticlesNode.prototype.generateRandomPoint = function(system)
 	return random_point;
 }
 
-//This function is the one that add new particles to the system, first will add particles until 
-//the maximum number is archieved and then start to reuse the dead particles 
-//Return -1 if the particle is added and his id is reused
+
+/*
+*	Add new particles to the system, first will add particles until the maximum number 
+*   is archieved and then start to reuse the dead particles Return -1 if the particle 
+*   is added and his id is reused
+*	@method addParticle
+*   @params {Object} The properties of the particle
+*   @params {List}   The ids of the particles
+*   @params {List}   The list of the particles
+*   @params {List}   The ids of the particles
+*   @params {Number} The maximum number of particles
+*   @params {Object} The system of the particle
+*   @params {String} The type of the particle "emitter" or "subemitter"
+*/
 initParticlesNode.prototype.addParticle = function(particle_data, ids, particles, particles_to_reset, max_particles, system, type)
 {
 	var particle_info;
@@ -395,6 +441,14 @@ initParticlesNode.prototype.addParticle = function(particle_data, ids, particles
 	}
 }
 
+
+/*
+*	Spawn a particle from the system emitter
+*	@method spawnEmitter
+*   @params {Object} The particle system
+*   @params {Object} The system input data 
+*   @params {Object} The particle data
+*/
 initParticlesNode.prototype.spawnEmitter = function(system, system_input, p_prop)
 {
 	var particle;
@@ -416,6 +470,15 @@ initParticlesNode.prototype.spawnEmitter = function(system, system_input, p_prop
 	return;
 }
 
+
+/*
+*	Apply a default movement for all the particles
+*	@method moveParticles
+*   @params {Object} The particle system
+*   @params {List}   The ids of the particles
+*   @params {List}   The list of the particles
+*   @params {List}   The particles to be reseted
+*/
 initParticlesNode.prototype.moveParticles = function(system, ids, particles, to_reset)
 {
 	var id, particle;
@@ -451,6 +514,14 @@ initParticlesNode.prototype.moveParticles = function(system, ids, particles, to_
 	}
 }
 
+
+/*
+*	Spawn a particle from a sub emitter (other particle)
+*	@method spawnSubEmitter
+*   @params {Object} The particle system
+*   @params {Object} The system input data 
+*   @params {Object} The particle data
+*/
 initParticlesNode.prototype.spawnSubEmitter = function(system, system_input, p_prop)
 {
 	var particle;
@@ -492,6 +563,11 @@ initParticlesNode.prototype.spawnSubEmitter = function(system, system_input, p_p
 	sub_emittor.ids = sub_emission_ids;
 }
 
+
+/*
+* 	What the node does every frame
+*	@method onExecute 
+*/
 initParticlesNode.prototype.onExecute = function() 
 {
 	var system_input = this.getInputData(0);
@@ -579,15 +655,12 @@ initParticlesNode.prototype.onExecute = function()
         else if ( system_input.type == "sub_emitter")
             this.texture_id = sub_emitter.texture.id;
 
-        /************************************/
-        //REVISAR 
-		if(this.texture.file != undefined)
-			this.subTextures  = p_prop.texture.subtextures;
-
 		if(this.texture.file != undefined)
 			this.subTextures  = this.texture.prop.subtextures;
-		//REVISAR
-        /************************************/ 
+		else if(p_prop.texture.file != undefined)
+			this.subTextures  = p_prop.texture.prop.subtextures;
+		else
+			this.subTextures  = false;
 
 		var origin      = system.origin;
 		var origin_mesh = system.origin_mesh;
@@ -612,6 +685,11 @@ initParticlesNode.prototype.onExecute = function()
 	}
 }
 
+
+/*
+* 	The behaviour of the node when is removed
+*	@method onExecute 
+*/
 initParticlesNode.prototype.onRemoved = function()
 {
 	if(this.system_info != undefined && this.internal.type != "sub_emitter")

@@ -1,3 +1,10 @@
+/*
+* 	Resize the mesh
+*	@method resizeMesh
+*	@params {Object} The system we want to edit
+*	@params {Number} The new number of particles
+*	@params {Object} The new number of subemissions
+*/
 function resizeMesh(system, num_particles, num_subemissions)
 {
 	if (num_particles != system.max_particles || num_subemissions != system.max_subemissions)
@@ -77,6 +84,13 @@ function resizeMesh(system, num_particles, num_subemissions)
 	}
 }
 
+
+/*
+* 	Get the index of an input in a node
+*	@method getInputIndex
+*	@params {String} The input we want to find
+*	@params {List}   The inputs of the node
+*/
 function getInputIndex(name, inputs)
 {
 	var index = 0;
@@ -91,6 +105,7 @@ function getInputIndex(name, inputs)
 
 	return -1; //not found
 }
+
 
 /*
 *	This node is for define how the particle system spawns the particles
@@ -162,6 +177,12 @@ function mySpawnNode() {
 	this.addOutput("Emitter", "emitter");
 }
 
+
+/*
+*	Change the mode in which the particles are spawned
+*	@method setParticleSpawnMode
+*	@params {String} The new mode of spawning the particles (Linear or Waves)
+*/
 mySpawnNode.prototype.setParticleSpawnMode = function(v)
 {
 	if(this.properties.spawn_mode == v)
@@ -192,6 +213,12 @@ mySpawnNode.prototype.setParticleSpawnMode = function(v)
 	this.size[0] = 389;
 }
 
+
+/*
+*	Change the source factor from the blending function of the system
+*	@method setSrcFactor
+*	@params {String} The source factor for the blending function
+*/
 mySpawnNode.prototype.setSrcFactor = function(v)
 {
 	if(!this.blending_factors.includes(v))
@@ -202,6 +229,12 @@ mySpawnNode.prototype.setSrcFactor = function(v)
 	this.setBlendFactors(v)
 }
 
+
+/*
+*	Change the destination factor from the blending function of the system
+*	@method setSrcFactor
+*	@params {String} The destination factor for the blending function
+*/
 mySpawnNode.prototype.setDstFactor = function(v)
 {
 	if(!this.blending_factors.includes(v))
@@ -212,6 +245,13 @@ mySpawnNode.prototype.setDstFactor = function(v)
 	this.setBlendFactors(v, true)
 }
 
+
+/*
+*	Convert the string of a blending factor to his value for webgl
+*	@method setBlendFactors
+*	@params {String} The blending factor 
+*	@params {Bool}   If is true then will be edited the destination, if not the source 
+*/
 mySpawnNode.prototype.setBlendFactors = function(value, dst = false)
 {
 	var system = this.system;
@@ -290,6 +330,11 @@ mySpawnNode.prototype.setBlendFactors = function(value, dst = false)
 	}
 }
 
+
+/*
+*	Show or hide the origin of the particle system
+*	@method toogleOriginVisibility
+*/
 mySpawnNode.prototype.toogleOriginVisibility = function()
 {
 	var properties              = this.properties;
@@ -297,6 +342,12 @@ mySpawnNode.prototype.toogleOriginVisibility = function()
 	this.system.visible         = properties.show_origin;
 }
 
+
+/*
+*	Change the origin for the spawn of the particles
+*	@method setBlendFactors
+*	@params {String} The new origin type
+*/
 mySpawnNode.prototype.setSpawnOrigin = function(v)
 {
 	//if there was no change in the origin then return
@@ -321,7 +372,13 @@ mySpawnNode.prototype.setSpawnOrigin = function(v)
 	this.size[0] = 389;
 }
 
-//For recover (in a visual way) the value when a graph is loaded
+
+/*
+* 	For show the values when a graph is loaded, when the user change 
+*	the properties using the window of properties and when the node is cloned
+*	@method onPropertyChanged 
+*	@params {String} The name of the changed property
+*/
 mySpawnNode.prototype.onPropertyChanged = function(property)
 {
 	var properties = this.properties;
@@ -416,6 +473,11 @@ mySpawnNode.prototype.onPropertyChanged = function(property)
 	}
 }
 
+
+/*
+* 	The behaviour done when the node is added
+*	@method onAdded
+*/
 mySpawnNode.prototype.onAdded = function()
 {
 	//Every time that a spawn node is created a new mesh and information about the system have to be added to the list in order to work properly
@@ -429,6 +491,11 @@ mySpawnNode.prototype.onAdded = function()
 	}
 }
 
+
+/*
+* 	What the node does every frame
+*	@method onExecute 
+*/
 mySpawnNode.prototype.onExecute = function()
 {
 	var properties    = this.properties;
@@ -499,6 +566,11 @@ mySpawnNode.prototype.onExecute = function()
 	this.setOutputData(0, out_data);
 }
 
+
+/*
+* 	The behaviour of the node when is removed
+*	@method onExecute 
+*/
 mySpawnNode.prototype.onRemoved = function()
 {
 	//When the node is removed is necesary to search in the list and delete the system
@@ -512,7 +584,7 @@ mySpawnNode.title_selected_color = basicSelectedTitleColor;
 
 
 /*
-*	This node is for define how the particle system spawns the particles
+*	This node is for define how the subemitters of the particle system spawns the particles
 *	@method mySpawnNode
 */
 function subEmitterNode() {
@@ -555,6 +627,13 @@ function subEmitterNode() {
 	this.addOutput("Emitter", "emitter");
 }
 
+
+/*
+* 	For show the values when a graph is loaded, when the user change 
+*	the properties using the window of properties and when the node is cloned
+*	@method onPropertyChanged 
+*	@params {String} The name of the changed property
+*/
 subEmitterNode.prototype.onPropertyChanged = function(property)
 {
 	var properties = this.properties;
@@ -575,10 +654,18 @@ subEmitterNode.prototype.onPropertyChanged = function(property)
 	}
 }
 
+
+/*
+* 	Behaviour for when a connection of the node is changed
+*	@method onConnectionsChange 
+*	@params {Number} The type of the slot (input or output)
+*   @params {Number} The slot that has been changed
+*   @params {Bool}   If the slot is connected  
+*/
 subEmitterNode.prototype.onConnectionsChange = function(type, slot, connected)
 {
 	//Detect when the subsystem is disconected and delete it from the system
-	if(slot == 0 && ! connected)
+	if(slot == 0 && !connected && type == 1)
 	{
 		//In the case that the graph is loaded and without starting disconnect a node
 		if(this.system_info == undefined)
@@ -594,12 +681,22 @@ subEmitterNode.prototype.onConnectionsChange = function(type, slot, connected)
 	}
 }
 
+
+/*
+* 	The behaviour done when the node is added
+*	@method onAdded
+*/
 subEmitterNode.prototype.onAdded = function()
 {
 	var properties   = this.properties;
 	this.sub_emittor = new SubEmitterInfo(this.id, properties.max_particles, properties.spawn_rate, properties.particles_per_wave);
 }
 
+
+/*
+* 	What the node does every frame
+*	@method onExecute 
+*/
 subEmitterNode.prototype.onExecute = function()
 {
 	var system = this.getInputData(0);
@@ -665,6 +762,11 @@ subEmitterNode.prototype.onExecute = function()
 	this.setOutputData(0, out_data);
 }
 
+
+/*
+* 	The behaviour of the node when is removed
+*	@method onExecute 
+*/
 subEmitterNode.prototype.onRemoved = function()
 {
 	if(this.system_info != undefined)

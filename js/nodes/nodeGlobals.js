@@ -22,7 +22,6 @@ var default_particle_color = [1,1,1,1];
 /********************************/
 /*************Lists**************/
 /********************************/
-//var meshes_list  = [];
 var forces_list  = [];
 var system_list  = [];
 var objects_list = [];
@@ -38,36 +37,21 @@ var default_sizes      = [0.25,0.25, 0.25,0.25, 0.25,0.25, 0.25,0.25, 0.25,0.25,
 var default_visibility = [0, 0, 0, 0, 0, 0];
 var default_forces_mesh;
 
-
 /********************************/
-/*************Modals*************/
+/***********Node Panel***********/
 /********************************/
-var texture_modal = $('#texturesModal');
-var def_texture_1 = document.getElementById("def_texture1");
-var def_texture_2 = document.getElementById("def_texture2");
-var def_texture_3 = document.getElementById("def_texture3");
-var def_texture_4 = document.getElementById("def_texture4");
-var def_texture_5 = document.getElementById("def_texture5");
-var local_texture = document.getElementById("texture_local");
+var panel_focus = false;
+var nodePanel;
 
-
-/********************************/
-/*************Meshes*************/
-/********************************/
-var mesh_modal  = $('#meshesModal');
-var def_mesh_1  = document.getElementById("def_mesh1");
-var def_mesh_2  = document.getElementById("def_mesh2");
-var def_mesh_3  = document.getElementById("def_mesh3");
-var def_mesh_4  = document.getElementById("def_mesh4");
-var def_mesh_5  = document.getElementById("def_mesh5");
-var def_mesh_6  = document.getElementById("def_mesh6");
-var def_mesh_7  = document.getElementById("def_mesh7");
-var def_mesh_8  = document.getElementById("def_mesh8");
-var def_mesh_9  = document.getElementById("def_mesh9");
-var url_mesh    = document.getElementById("mesh_url");
-var custom_mesh = document.getElementById("mesh_custom");
-
-function lerpVec(s, e, x){
+/*
+* 	Make a linear interpolation between two vectors of the same component
+*	@method lerpVec 
+*	@params {Vector} The start of the interpolation
+*	@params {Vector} The end of the interpolation
+*	@params {Number} The value to be interpolated
+*/
+function lerpVec(s, e, x)
+{
 	var out = [];
 
 	if(s.length != e.length)
@@ -79,7 +63,16 @@ function lerpVec(s, e, x){
 	return out; 
 }
 
-function lerp(s, e, x){
+
+/*
+* 	Make a linear interpolation between two numbers
+*	@method lerp 
+*	@params {Number} The start of the interpolation
+*	@params {Number} The end of the interpolation
+*	@params {Number} The value to be interpolated
+*/
+function lerp(s, e, x)
+{
 	return s * ( 1 - x ) + e * x;
 }
 
@@ -90,7 +83,8 @@ function lerp(s, e, x){
 *	@params {vector3} the first vector
 *	@params {vector3} the second vector
 */
-function cross(a, b){
+function cross(a, b)
+{
     var c = new Float32Array(3);
     
     c[0] = a[1]*b[2] - a[2]*b[1];
@@ -107,7 +101,8 @@ function cross(a, b){
 *	@params {vector3} the first vector
 *	@params {vector3} the second vector
 */
-function mult(a, b){
+function mult(a, b)
+{
 	var c = new Float32Array(3);
 	
 	c[0] = a[0] * b[0];
@@ -115,6 +110,18 @@ function mult(a, b){
 	c[2] = a[2] * b[2];
 
 	return c;
+}
+
+
+/*
+* 	This method returns a random number
+*	@method mult
+*	@params {Number} the minimum value of the random number
+*	@params {Number} the maximum value of the random number
+*/
+function randomNumber(min, max)
+{
+  return Math.random() * (max - min) + min;
 }
 
 
@@ -143,7 +150,8 @@ function searchForce(id, remove = false)
 *	@params {position} the position of the force
 *	@params {type} the type of the force
 */
-function addForce(id, position, type){
+function addForce(id, position, type)
+{
 	var model = mat4.create();
 	mat4.setTranslation(model, position);
 
@@ -221,6 +229,13 @@ function searchSystem(id, remove = false)
 *	@class SystemInfo
 */
 class SystemInfo {
+	/*
+	* 	The constructor of the class
+	*	@method constructor
+	*	@params {Number}  the id of the system
+	*	@params {Vector3} the position of the system
+	*	@params {Number}  the maximum number of particles
+	*/
 	constructor(id_, position_, max_particles_) {
 		this.id                 = id_;
 		this.mesh_id            = id_;
@@ -271,10 +286,18 @@ class SystemInfo {
 }
 
 /*
-* 	This class is for save information about every system
-*	@class SystemInfo
+* 	This class is for save information about every sub emitter
+*	@class SubEmitterInfo
 */
 class SubEmitterInfo {
+	/*
+	* 	The constructor of the class
+	*	@method constructor
+	*	@params {Number} the id of the system
+	*	@params {Number} the maximum number of particles
+	*	@params {Number} how time are between the spawn of the particles
+	*	@params {Number} how many particles are every wave
+	*/
 	constructor(id_, max_particles_, spawn_rate_, particles_per_wave_) {
 		this.id = id_;
 
@@ -292,21 +315,29 @@ class SubEmitterInfo {
 	}
 }
 
-function randomNumber(min, max){
-  return Math.random() * (max - min) + min;
-}
 
 /*
 * 	This class is for save information about every particle
 *	@class SystemInfo
 */
 class Particle {
+	/*
+	* 	The constructor of the class
+	*	@method constructor
+	*/
 	constructor() {
 		this.size = 0.25;
 	}
 }
 
-Particle.prototype.fill = function(properties, is_Trail = false) {
+
+/*
+* 	For create or reset every particle
+*	@method fill
+*	@params {Object} the properties of the particle
+*/
+Particle.prototype.fill = function(properties, is_Trail = false) 
+{
 	var speed = new Float32Array(3);
 	speed[0]  = randomNumber(properties.min_speed[0], properties.max_speed[0]);
 	speed[1]  = randomNumber(properties.min_speed[1], properties.max_speed[1]);
@@ -341,6 +372,7 @@ Particle.prototype.fill = function(properties, is_Trail = false) {
 		this.iSpeed[i] = speed[i];
 
 	this.lifetime   = lifetime;
+	this.iLifetime  = lifetime;
 	this.c_lifetime = 0.0; //How many life time the particle lived
 	this.visibility = 1;
 
@@ -391,17 +423,16 @@ Particle.prototype.fill = function(properties, is_Trail = false) {
 		var frame_number = Math.floor(t_prop.textures_x + t_prop.textures_y) - 1; 
 		this.frameRate = (t / frame_number);
 	}
-
-};
+}
 
 
 /*
 * 	This method is for create a mesh
 *	@method createMesh
-*	@params {Number} the id of the mesh
-*	@params {Number} the maximum number of particles
+*	@params {List} the particles of the system
 */
-function createMesh(particles){
+function createMesh(particles)
+{
 	var vertices = new Float32Array(particles * 6 * 3); //Save information about the center of the particle
 	var coords   = new Float32Array(particles * 6 * 2); //The "possible changed" coordinates of the particle
 	var icoord   = new Float32Array(particles * 6 * 2); //The original coordinates of the particle
@@ -432,13 +463,14 @@ function createMesh(particles){
 	return mesh;
 }
 
+
 /*
-* 	This method is for create a mesh
-*	@method createMesh
-*	@params {Number} the id of the mesh
-*	@params {Number} the maximum number of particles
+* 	This method is for create the mesh of the lines that go form the particle to the ground plane
+*	@method createLineMesh
+*	@params {List} the particles of the system
 */
-function createLineMesh(particles){
+function createLineMesh(particles)
+{
 	var vertices = new Float32Array(particles * 2 * 3); //Save information about the center of the particle
 	var visible  = new Float32Array(particles * 2 * 3); //Save information about the center of the particle
 
@@ -451,7 +483,14 @@ function createLineMesh(particles){
 	return mesh;
 }
 
-SystemInfo.prototype.orderBuffers = function(particles){
+
+/*
+* 	Order the buffers of the particle mesh in order to avoid problems with the transparencies
+*	@method orderBuffers
+*	@params {List} the particles of the system
+*/
+SystemInfo.prototype.orderBuffers = function(particles)
+{
 	var all_ids  = this.all_ids;
 	var mesh     = this.particles_mesh;
 	var lineMesh = this.line_mesh;
@@ -493,7 +532,7 @@ SystemInfo.prototype.orderBuffers = function(particles){
 		for(var j = 0; j < 24; ++j)
 			color_data[i*24 + j] = particle.color[j % 4];
 
-		if(switchLines.checked)
+		if(showLines)
 		{
 			line_vertex_data[pos]   = particle.position[0];
 			line_vertex_data[pos+1] = particle.position[1] 
@@ -514,17 +553,18 @@ SystemInfo.prototype.orderBuffers = function(particles){
 
 	mesh.upload();
 
-	if(switchLines.checked)
+	if(showLines)
 		lineMesh.upload();
 }
 
+
 /*
 * 	This method is for change the maximum number of particles of a system
-*	@method createMesh
-*	@params {Mesh} the mesh
-*	@params {Number} the new maximum 
+*	@method resizeBufferArray
+*	@params {List} the particles of the system
 */
-SystemInfo.prototype.resizeBufferArray = function(particles){
+SystemInfo.prototype.resizeBufferArray = function(particles)
+{
 	var mesh      = this.particles_mesh;
 	var line_mesh = this.line_mesh; 
 	var newSize   = this.total_particles;
@@ -650,118 +690,13 @@ SystemInfo.prototype.resizeBufferArray = function(particles){
 
 
 /*
-* 	This method is for update the position of a particles
-*	@method updateVertex
-*	@params {Mesh} the mesh
-*	@params {Number} the id of the particle
-*	@params {Number} the particle
+* 	This method is for show a panel when a user makes double click in the node
+*	@method onShowNodePanel
+*	@params {Node} the node which the user make double click
+*   @source https://github.com/jagenjo/litegraph.js/blob/master/src/litegraph-editor.js
 */
-function updateVertexs(mesh, particle_id, particle){
-	var vertex_data = mesh.vertexBuffers.vertices.data;
-
-	particle_id *= 18
-	var j = 0;
-
-	for(var i = 0; i < 18; i++)
-	{
-		vertex_data[particle_id + i] = particle.position[j]
-		j = (j + 1) % 3;
-	}
-
-} 
-
-
-/*
-* 	This method is for update the visibility of a particle
-*	@method updateVisibility
-*	@params {Mesh} the mesh
-*	@params {particle} the particle
-*	@params {Number} the id of the particle
-*	@params {Number} enable or disable the visibility
-*/
-function updateVisibility(mesh, particle, particle_id, visible = 0.0){
-	var visibility_data = mesh.vertexBuffers.visible.data;
-	particle_id *= 6
-	particle.to_reset = false;
-
-	for(var i = 0; i < 6; i++)
-		visibility_data[particle_id + i] = visible;		
-} 
-
-
-/*
-* 	This method is for update the color of a particle
-*	@method updateColor
-*	@params {Mesh} the mesh
-*	@params {particle} the particle
-*	@params {Number} the id of the particle
-*/
-function updateColor(mesh, particle, particle_id){
-	var color_data = mesh.vertexBuffers.colors.data;
-	particle_id *= 24
-
-	var j = 0;
-
-	for(var i = 0; i < 24; i++)
-	{
-		color_data[particle_id + i] = particle.color[j];		
-		j = (j + 1) % 4;
-	}
-} 
-
-
-/*
-* 	This method is for update the size of a particle
-*	@method updateSize
-*	@params {Mesh} the mesh
-*	@params {particle} the particle
-*	@params {Number} the id of the particle
-*/
-function updateSize(mesh, particle, particle_id){
-	var size_data = mesh.vertexBuffers.size.data;
-	particle_id *= 12
-
-	//var j = 0;
-
-	for(var i = 0; i < 12; i++)
-	{
-		size_data[particle_id + i] = particle.size;		
-	//	j = (j + 1) % 2;
-	}
-} 
-
-
-function updateCoord(mesh, particle, particle_id, new_coord){
-	var coord_data = mesh.vertexBuffers.coords.data;
-	var lowX  = new_coord[0];
-	var lowY = new_coord[1];
-	var highX  = new_coord[2];
-	var highY = new_coord[3];
-	
-	particle_id *= 12
-
-	coord_data[particle_id]   = highX;
-	coord_data[particle_id+1] = highY;
-
-	coord_data[particle_id+2] = lowX;
-	coord_data[particle_id+3] = highY;
-
-	coord_data[particle_id+4] = highX;
-	coord_data[particle_id+5] = lowY;
-
-	coord_data[particle_id+6] = lowX;
-	coord_data[particle_id+7] = lowY;
-
-	coord_data[particle_id+8] = highX;
-	coord_data[particle_id+9] = lowY;
-
-	coord_data[particle_id+10] = lowX;
-	coord_data[particle_id+11] = highY;
-
-} 
-
-//https://github.com/jagenjo/litegraph.js/blob/master/src/litegraph-editor.js
-function onShowNodePanel(node){
+function onShowNodePanel(node)
+{
 	window.SELECTED_NODE = node;
     var panel = document.querySelector("#node-panel");
     if(panel)
@@ -827,6 +762,9 @@ function onShowNodePanel(node){
 						var proptype = this.parentNode.dataset["type"];
 
 						v = v.split(",");
+
+						for(var i = 0; i < v.length; i++)
+							v[i] = parseInt(v[i]) || 0;
 						
 						graphcanvas.graph.beforeChange(node);
 			            node.setProperty(propname,v);
@@ -908,15 +846,31 @@ function onShowNodePanel(node){
     document.getElementById("nodeDisplay").appendChild( panel );
 }
 
-function chargeTexture(node, node_properties, url, def_text = "NONE"){
+
+/*
+* 	This method is for charge a texture
+*	@method onShowNodePanel
+*	@params {Node}   the node that charges the texture
+*   @params {Object} the properties of the node
+*   @params {String} the url of the texture
+*   @params {String} the name of the texture (only applied if is one of the default ones)
+*/
+function chargeTexture(node, node_properties, url, def_text = "NONE")
+{
 	texture_modal.modal('hide');
 
 	GL.Texture.fromURL(url, {}, function(t,u){node.afterLoading(t,u)});
 	node_properties.default_texture = def_text;
 }
 
-function loadTexture(node){
-	
+
+/*
+* 	This method is for show the modal of the textures and define what does every button
+*	@method loadTexture
+*	@params {Node} the node that charges the texture
+*/
+function loadTexture(node)
+{
 	texture_modal.modal('show');
 	var node_properties = node.properties;
 
@@ -966,8 +920,15 @@ function loadTexture(node){
 	}
 }
 
-//https://stackoverflow.com/questions/5717093/check-if-a-javascript-string-is-a-url
-function validURL(str) {
+
+/*
+* 	This method is for check if a string is a valid url
+*	@method validURL
+*	@params {String} the string to check
+*   @source https://stackoverflow.com/questions/5717093/check-if-a-javascript-string-is-a-url
+*/
+function validURL(str) 
+{
   var pattern = new RegExp('^(https?:\\/\\/)?'+ // protocol
     '((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|'+ // domain name
     '((\\d{1,3}\\.){3}\\d{1,3}))'+ // OR ip (v4) address
@@ -977,12 +938,27 @@ function validURL(str) {
   return !!pattern.test(str);
 }
 
-function chargeMesh(node, url){
+
+/*
+* 	This method is for charge a mesh
+*	@method onShowNodePanel
+*	@params {Node}   the node that charges the texture
+*   @params {String} the url of the mesh
+*/
+function chargeMesh(node, url)
+{
 	GL.Mesh.fromURL(url, node.onMeshLoaded.bind(node));
 	mesh_modal.modal('hide');
 }
 
-function loadMesh(node){
+
+/*
+* 	This method is for show the modal of the mesh and define what does every button
+*	@method loadMesh
+*	@params {Node} the node that charges the texture
+*/
+function loadMesh(node)
+{
 	
 	mesh_modal.modal('show');
 
@@ -1101,6 +1077,11 @@ function loadMesh(node){
 }
 
 
+/*
+* 	This method is for reset all the particles of a system
+*	@method resetSystem
+*	@params {SystemInfo} the information of the system
+*/
 function resetSystem(system)
 {
 	var particles, ids, toReset, particle;
