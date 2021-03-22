@@ -165,6 +165,7 @@
 .litegraph.litesearchbox {
     font-family: Tahoma, sans-serif;
     position: absolute;
+    color: #ECEFF1;
     background-color: rgba(0, 0, 0, 0.5);
     padding-top: 4px;
 }
