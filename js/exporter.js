@@ -244,6 +244,13 @@ var exporter = function()
 	var blob = new Blob(exp_file, {type: "application/json"});
 	zip.file("Graph.json", blob);
 
+	var jsonGraph = graph.serialize();
+	jsonGraph = JSON.stringify(jsonGraph);
+	jsonGraph = [jsonGraph];
+
+	blob = new Blob(jsonGraph, {type: "text/plain;charset=utf-8"});
+	zip.file("Graph.dx", blob);
+
 	zip.generateAsync({type : "blob"}).then(function(blob)
 		{
 			var url = window.URL || window.webkitURL;
