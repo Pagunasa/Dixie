@@ -54,10 +54,13 @@ var addToZip = function(file, filename, zip, texture = true)
 	zip.file(filename, blob);
 }
 
-var exporterS = function()
+var exporter = function()
 {
 	if(system_list.length == 0)
+	{
+		export_modal_msg.modal('hide');
 		return;
+	}
 
 	//To be sure that at least one step of the graph have been
 	graph.runStep();
@@ -69,6 +72,7 @@ var exporterS = function()
 	var aux_sEmittor, sub_emittor;
 	var o_mesh, aux_mesh;
 	var c_id, condition;
+	var p_data;
 	
 	var atlas_to_download  = [];
 	var meshes_to_download = [];
@@ -112,7 +116,7 @@ var exporterS = function()
 		else
 		{
 			aux_mesh = searchObject(o_mesh.id);
-			exp_system.origin_mesh = {name:  o_mesh.id+"_"+o_mesh.name+".obj", modal: o_mesh.modal};
+			exp_system.origin_mesh = {name:  o_mesh.id+"_"+o_mesh.name+".obj", modal: o_mesh.model};
 			meshes_to_download.push({file: aux_mesh.mesh, name: o_mesh.id+"_"+o_mesh.name+".obj"});
 		}
 
@@ -226,9 +230,7 @@ var exporterS = function()
 	}
 
 	var zip = undefined;
-
-	if(atlas_to_download.length > 0 || meshes_to_download.length > 0)
-		zip = new JSZip();
+	zip = new JSZip();
 
 	for (var i = 0; i < atlas_to_download.length; ++i)
 		addToZip(atlas_to_download[i].file, atlas_to_download[i].name, zip);
@@ -254,8 +256,9 @@ var exporterS = function()
 			document.body.appendChild(exportedGraph);
 			exportedGraph.click();
 			document.body.removeChild(exportedGraph);
-		});
 
+			export_modal_msg.modal('hide');
+		});
 }
 
 

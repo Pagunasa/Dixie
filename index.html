@@ -29,7 +29,7 @@
 						<input type="file" id="graphLoader"/>
 						<button id="load" class="button-secondary">Load</button>
 					</li>
-					<li><button id="export" class="button-secondary" data-toggle="modal" data-target="#exportModal">Export</button></li>
+					<li><button id="exportMenu" class="button-secondary" data-toggle="modal" data-target="#exportModal">Export</button></li>
 					
 					<li class="list-divisor"><b>|</b></li>
 					<li><button id="play" class="button-secondary"><i class="fas fa-play icon-margin"></i>Play</button></li>
@@ -142,7 +142,7 @@
 				<i class="fas fa-save icon-margin-2"></i>Save to DX file
 			</button>
 
-			<button id="save" class="mt-3 button-secondary">
+			<button id="export" class="mt-3 button-secondary">
 				<i class="fas fa-file-export icon-margin-2"></i>Export for external usage
 			</button>
 
@@ -150,6 +150,26 @@
 	    </div>
 	  </div>
 	</div>
+
+
+	<!-------------------------->
+	<!--  Message  exporting  -->
+	<!-------------------------->
+	<div class="modal fade" id="exportingMessage" tabindex="-1" role="dialog" aria-labelledby="exportingMessage" aria-hidden="true" data-backdrop="static">
+	  <div class="modal-dialog modal-dialog-centered modal-sm" role="document">
+	    <div class="modal-content">
+	      <div class="modal-header text-center rounded-3 primary-bg-color ternary-color">
+	        <h5 class="modal-title w-100 " id="exportingMessageTitle">
+	        	Exporting file... 
+	        	<div class="spinner-border ml-3" role="status">
+  					<span class="sr-only">Loading...</span>
+				</div>
+			</h5>
+	      </div>
+	    </div>
+	  </div>
+	</div>
+
 
 	<!-------------------------->
 	<!-- Select Texture modal -->

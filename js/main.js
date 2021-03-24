@@ -73,6 +73,9 @@ var def_mesh_6, def_mesh_7, def_mesh_8, def_mesh_9;
 var url_mesh, custom_mesh;
 
 var export_modal;
+var export_modal_msg;
+
+var demos_modal;
 /********************************/
 /********************************/
 /********************************/
@@ -243,6 +246,14 @@ function initMenuButtons ()
 		export_modal.modal('hide');
 	}
 
+	exportButton.onclick = function(){
+		export_modal.modal('hide');
+		export_modal_msg.modal('show')
+		.on('shown.bs.modal', function(e){
+			exporter();
+		})
+	}
+
 	playButton.onclick = function() {
 		graph.start();
 		is_graph_running = true;
@@ -268,7 +279,7 @@ function initMenuButtons ()
 
 	showDemo1Button.onclick =function() {
 		graph.configure( Object.assign({}, demo1) ); 
-		$('#demosModal').modal('hide');
+		demos_modal.modal('hide');
 
 		stopButton.className = "button-secondary red_color";
     	playButton.className = "button-secondary";
@@ -276,7 +287,7 @@ function initMenuButtons ()
 
 	showDemo2Button.onclick =function() {
 		graph.configure( Object.assign({}, demo2) ); 
-		$('#demosModal').modal('hide');
+		demos_modal.modal('hide');
 
 		stopButton.className = "button-secondary red_color";
     	playButton.className = "button-secondary";
@@ -284,7 +295,7 @@ function initMenuButtons ()
 
 	showDemo3Button.onclick =function() {
 		graph.configure( Object.assign({}, demo3) ); 
-		$('#demosModal').modal('hide');
+		demos_modal.modal('hide');
 
 		stopButton.className = "button-secondary red_color";
     	playButton.className = "button-secondary";
@@ -292,7 +303,7 @@ function initMenuButtons ()
 
 	showDemo4Button.onclick =function() {
 		graph.configure( Object.assign({}, demo4) ); 
-		$('#demosModal').modal('hide');
+		demos_modal.modal('hide');
 
 		stopButton.className = "button-secondary red_color";
     	playButton.className = "button-secondary";
@@ -300,7 +311,7 @@ function initMenuButtons ()
 
 	showDemo5Button.onclick =function() {
 		graph.configure( Object.assign({}, demo5) ); 
-		$('#demosModal').modal('hide');
+		demos_modal.modal('hide');
 
 		stopButton.className = "button-secondary red_color";
     	playButton.className = "button-secondary";
@@ -308,7 +319,7 @@ function initMenuButtons ()
 
 	showDemo6Button.onclick =function() {
 		graph.configure( Object.assign({}, demo6) ); 
-		$('#demosModal').modal('hide');
+		demos_modal.modal('hide');
 
 		stopButton.className = "button-secondary red_color";
     	playButton.className = "button-secondary";
@@ -415,6 +426,12 @@ function initModals ()
 	/*************Export*************/
 	/********************************/
 	export_modal = $('#exportModal');
+	export_modal_msg = $("#exportingMessage");
+
+    /********************************/
+	/*************Demos**************/
+	/********************************/
+	demos_modal = $('#demosModal');
 }
 
 
