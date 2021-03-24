@@ -86,7 +86,7 @@ html,body {
 
 .list-divisor{
 	color: var(--ternary-color);
-	font-size: 25px;
+	font-size: 20px;
 	margin-left: 20px;
 	margin-right: 20px;
 }
@@ -101,7 +101,7 @@ html,body {
 	background-color: var(--secondary-color);
 	color: var(--ternary-color); 
 	border-style: none;
-	font-size: 25px;
+	font-size: 20px;
 }
 
 .red_color{

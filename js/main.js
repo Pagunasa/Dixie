@@ -524,6 +524,8 @@ function init ()
 	nodePanel.addEventListener("mouseenter", function() {panel_focus = true;});
 
 	//For detect changes in the nodeDisplay div
+	//https://api.jquery.com/on/
+	//https://stackoverflow.com/questions/15657686/jquery-event-detect-changes-to-the-html-text-of-a-div
 	$('body').on('DOMSubtreeModified', '#nodeDisplay', function(){
 		var child = nodePanel.children[0];
 	  	if(child == undefined)
@@ -757,7 +759,7 @@ gl.ondraw = function()
 
 		//If the user wants to see the origin of the force
 		//then it will be rendered using the default texture
-		if(!force.visible)
+		if(!force.visible || force.type == "gravity")
 			continue;
 
 		forces_uniforms.u_model = force.model;
@@ -938,6 +940,10 @@ gl.onupdate = function( dt ) {
 	for (var i = 0; i < forces_list.length; ++i)
 	{
 		force = forces_list[i];
+
+		if(force.type == "gravity")
+			continue;
+
 		mat4.setTranslation(force.model, force.position);
 	}
 

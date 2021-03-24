@@ -22,9 +22,11 @@ var default_particle_color = [1,1,1,1];
 /********************************/
 /*************Lists**************/
 /********************************/
-var forces_list  = [];
-var system_list  = [];
-var objects_list = [];
+var forces_list    = [];
+var system_list    = [];
+var condition_list = [];
+var objects_list   = [];
+var modProp_list   = [];
 
 /********************************/
 /***********Mesh Stuff***********/
@@ -155,16 +157,9 @@ function addForce(id, position, type)
 	var model = mat4.create();
 	mat4.setTranslation(model, position);
 
-	var force = {
-			id    : id,
-			type  : type,
-			model : model,
-			position : position,
-			color : [1,1,1,1],
-			visible : true
-		};
+	var force = new ForcesInfo(id, type, model, position);
 
-	forces_list.push( force );
+	forces_list.push(force);
 
 	return force;
 }
@@ -183,6 +178,42 @@ function searchObject(id, remove = false)
 			if(!remove)
 				return objects_list[x];
 			objects_list.splice(x, 1);
+		}
+	}
+}
+
+
+/*
+* 	This method is for search a condition in the objects list
+*	@method searchCondition
+*	@params {Number}  the id of the object
+*	@params {Boolean} if is true the mesh will be deleted
+*/
+function searchCondition(id, remove = false)
+{
+    for(x in condition_list){
+		if (condition_list[x].id == id){
+			if(!remove)
+				return condition_list[x];
+			condition_list.splice(x, 1);
+		}
+	}
+}
+
+
+/*
+* 	This method is for search a condition in the objects list
+*	@method searchCondition
+*	@params {Number}  the id of the object
+*	@params {Boolean} if is true the mesh will be deleted
+*/
+function searchModification(id, remove = false)
+{
+    for(x in modProp_list){
+		if (modProp_list[x].id == id){
+			if(!remove)
+				return modProp_list[x];
+			modProp_list.splice(x, 1);
 		}
 	}
 }
@@ -221,6 +252,124 @@ function searchSystem(id, remove = false)
 	        system_list.splice(x, 1);
 	   	}
     }
+}
+
+
+/*
+* 	This class is for save information about the forces
+*	@class ForcesInfo
+*/
+class ForcesInfo {
+	/*
+	* 	The constructor of the class
+	*	@method constructor
+	*	@params {Number}  the id of the force
+	*	@params {String}  the kind of force
+	*/
+	constructor(id_, type_, model_, position_) {
+		this.id          = id_;
+		this.type        = type_;
+		this.reciever    = -1;      //The system that recieves the force
+		this.subReciever = -1;      //The sub emitter that recieves the force
+		this.position    = position_;
+		this.model       = model_;
+		this.condition   = -1;
+		this.visible     = true;
+
+		switch (type_)
+		{
+			case "gravity":
+				this.direction = [0,0,0];
+				this.strength  = 1;
+			break;
+
+			case "vortex":
+				this.angular_speed = [0,0,0];
+				this.scale 		   = 10;
+				this.color 		   = [1,1,1,1]
+			break;
+
+			case "magnet":
+				this.strength = 10;
+				this.scale    = 10; 
+				this.color    = [1,1,1,1];
+			break;
+		}
+	}
+}
+
+
+/*
+* 	This class is for save information about the conditions
+*	@class ForcesInfo
+*/
+class ConditionInfo {
+	/*
+	* 	The constructor of the class
+	*	@method constructor
+	*	@params {Number}  the id of the condition
+	*	@params {Object}  the properties of the condition
+	*/
+	constructor(id_, properties_) {
+		this.id          = id_;
+		this.type        = "c";
+		this.property    = properties_.system_property;
+		this.one_time    = properties_.is_one_time;
+		this.value       = properties_.value;
+		this.operator    = properties_.condition;
+	}
+}
+
+
+/*
+* 	This class is for save information about the merged conditions
+*	@class ForcesInfo
+*/
+class MergedConditionInfo {
+	/*
+	* 	The constructor of the class
+	*	@method constructor
+	*	@params {Number}  the id of the merged condition
+	*	@params {Number}  the id of the first condition
+	*	@params {Number}  the id of the second condition
+	*	@params {String}  the merge mode
+	*/
+	constructor(id_, idC1_, idC2_, mode_)
+	{
+		this.id    = id_;
+		this.type        = "m";
+		this.id_C1 = idC1_;
+		this.id_C2 = idC2_;
+		this.mode  = mode_
+	}
+}
+
+
+/*
+* 	This class is for save information about the properties changes
+*	@class ModifyPropertiesInfo ªª!ª"ª!"ª!"ª!"ª"ª!"modProp_listª!ª!ª!ª!ª!ªª!!ª!ª!ª!ª
+*/
+class ModifyPropertiesInfo {
+	/*
+	* 	The constructor of the class
+	*	@method constructor
+	*	@params {Number}  the id of the merged condition
+	*	@params {Object}  the id of the first condition
+	*/
+	constructor(id_, props_)
+	{
+		this.id                   = id_;
+		this.reciever    		  = -1; //The system that recieves the modification
+		this.subReciever		  = -1; //The sub emitter that recieves the modification
+		this.equation             = undefined;
+		this.condition            = -1;
+		this.changed_property     = props_.changed_property;
+		this.application_mode     = props_.application_mode;
+		this.modification_mode    = props_.modification_mode;
+		this.user_defined_seconds = props_.user_defined_seconds;
+		this.user_defined_start   = props_.user_defined_start;
+		this.new_value            = props_.new_value;
+	}
 }
 
 
@@ -267,6 +416,9 @@ class SystemInfo {
 		this.origin 			= "Point";
 		this.origin_mesh        = undefined;
 
+		//Particle data
+		this.particle_data      = undefined;
+	
 		//Ids list
 		this.particles_ids      = [];	
 
@@ -307,10 +459,11 @@ class SubEmitterInfo {
 		this.particles_per_wave = particles_per_wave_;
 		this.origin 			= "Point";
 		this.texture            = {file: undefined, id: undefined};
+		this.condition 			= -1;
 
 		this.ids      = []; //Ids list	
 		this.to_reset = []; //Reset list
-	
+
 		this.max_particles = max_particles_; //Max elements
 	}
 }
@@ -764,7 +917,7 @@ function onShowNodePanel(node)
 						v = v.split(",");
 
 						for(var i = 0; i < v.length; i++)
-							v[i] = parseInt(v[i]) || 0;
+							v[i] = parseFloat(v[i]) || 0;
 						
 						graphcanvas.graph.beforeChange(node);
 			            node.setProperty(propname,v);
@@ -900,7 +1053,8 @@ function loadTexture(node)
 
 		input.addEventListener("change", function(e){
 			var file = e.target.files[0];
-			
+			var name = file.name; 
+
 			if (!file || file.type.split("/")[0] != "image")
 			{
 				createAlert("Holy Guacamole!", "Loading error", "Please insert an image...", "danger", true, true, "pageMessages");
@@ -909,7 +1063,7 @@ function loadTexture(node)
 		
 			var reader = new FileReader();
 			reader.onload = function(e) {
-				chargeTexture(node, node_properties, reader.result);
+				chargeTexture(node, node_properties, reader.result, name);
 			};
 
 			reader.readAsDataURL(file);

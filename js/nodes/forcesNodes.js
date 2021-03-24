@@ -47,6 +47,22 @@ function gravityNode() {
 
 
 /*
+* 	The behaviour done when the node is added
+*	@method onAdded
+*/
+gravityNode.prototype.onAdded = function() 
+{
+	if(this.force != undefined)
+	{
+		this.force.id = this.id
+		return;
+	}
+
+ 	this.force = addForce(this.id, [0,0,0], "gravity")
+};
+
+
+/*
 * 	For show the values when a graph is loaded, when the user change 
 *	the properties using the window of properties and when the node is cloned
 *	@method onPropertyChanged 
@@ -55,12 +71,18 @@ function gravityNode() {
 gravityNode.prototype.onPropertyChanged = function(property)
 {
 	var properties = this.properties;
+	
+	if(this.force == undefined)
+ 		this.force = addForce(this.id, [0,0,0], "gravity")
+
+	var force = this.force;
 
 	switch (property)
 	{
 		case "strength":
 			var strength = properties.strength;
 			properties.strength = isNaN(strength) ? 1 : strength;
+			force.strength = properties.strength;
 		break;
 
 		case "direction":
@@ -74,7 +96,10 @@ gravityNode.prototype.onPropertyChanged = function(property)
 				if(!vec3.equals(properties.direction, [0,0,0]))
 					vec3.normalize(this.last_state.direction_normalized, properties.direction);
 				else
-					this.last_state.direction_normalized = [0,0,0];			}
+					this.last_state.direction_normalized = [0,0,0];		
+
+			 	force.direction = this.last_state.direction_normalized;
+			}
 		break;
 	}
 }
@@ -102,13 +127,22 @@ gravityNode.prototype.onExecute = function()
 		var particles = system.particles_list;
 		var ids;
 
+		//Update the force reciever
+		this.force.reciever = system.id;
+
 		if(condition != undefined)
-			ids = condition;
+		{
+			ids = condition.condition;
+			this.force.condition = condition.id;
+		}
 		else
 			if(system_input.type == "emitter")
 				ids = system.particles_ids;
 			else if(system_input.type == "sub_emitter")
+			{
 				ids = system.sub_emittors[system_input.index].ids;
+				this.force.subReciever = system_input.index;
+			}
 
 		if(ids.length > 0)
 		{	
@@ -120,15 +154,14 @@ gravityNode.prototype.onExecute = function()
 					vec3.normalize(this.last_state.direction_normalized, properties.direction);
 				else
 					this.last_state.direction_normalized = [0,0,0];
+
+				this.force.direction = this.last_state.direction_normalized;
 			}
 
 			var particle;
 			var direction = this.last_state.direction_normalized.slice(0);
 			var strength  = properties.strength;
-
-			direction[0] = direction[0] * strength;
-			direction[1] = direction[1] * strength;
-			direction[2] = direction[2] * strength;
+			this.force.strength = strength;
 
 			for (var i = 0; i < ids.length; i++)
 			{
@@ -136,14 +169,30 @@ gravityNode.prototype.onExecute = function()
 				
 				//For the gravity only is needed to add to the position of the particle the direction
 				for(var j = 0; j < 3; j++)
-					particle.position[j] += direction[j] * time_interval;
+					particle.position[j] += direction[j] * strength * time_interval;
 			}
 		}
-
+	}
+	else
+	{
+		this.force.reciever    = -1;
+		this.force.subReciever = -1;
+		this.force.condition   = -1;
 	}
 
 	this.setOutputData(0, system);
 }
+
+
+/*
+* 	The behaviour of the node when is removed
+*	@method onExecute 
+*/
+gravityNode.prototype.onRemoved = function() 
+{
+ 	searchForce(this.id, true);
+}
+
 
 gravityNode.title = "Gravity";
 gravityNode.title_color = forcesNodeColor;
@@ -208,22 +257,32 @@ vortexNode.prototype.onPropertyChanged = function(property)
 {
 	var properties = this.properties;
 
+	if(this.force == undefined)
+ 		this.force = addForce(this.id, this.properties.position, "vortex")
+	
+	var force = this.force;
+
 	switch (property)
 	{
 		case "position":
 			if (properties.position.length != 3)
 				properties.position = [0,0,0];
+
+			force.position = properties.position;
 		break;
 
 		case "angular_speed":
 			if (properties.angular_speed.length != 3)
 				properties.angular_speed = [0,0,0];
+
+			force.angular_speed = properties.angular_speed;
 		break;
 
 		case "scale":
 			var scale = properties.scale;
 			scale = isNaN(scale) ? 10 : scale;
 			properties.scale = Math.max(scale, 0);
+			force.scale    = properties.scale;
 		break;
 
 		case "color":
@@ -232,6 +291,8 @@ vortexNode.prototype.onPropertyChanged = function(property)
 			else
 				for (var i = 0; i < 4; ++i)
 					properties.color[i] = Math.min(Math.max(properties.color[i], 0.0), 1.0);
+			
+			force.color = properties.color;
 		break;
 	}
 }
@@ -243,6 +304,12 @@ vortexNode.prototype.onPropertyChanged = function(property)
 */
 vortexNode.prototype.onAdded = function() 
 {
+	if(this.force != undefined)
+	{
+		this.force.id = this.id
+		return;
+	}
+
  	this.force = addForce(this.id, this.properties.position, "vortex")
 };
 
@@ -266,10 +333,12 @@ vortexNode.prototype.onExecute = function()
 	properties.scale          = Math.max(this.getInputData(4),0) || properties.scale;
 	properties.color          = color_input    == undefined ? properties.color         : color_input.slice(0);
 
-	//It's necesary update the force position and color for 
-	//render te origin of the vortex
-	this.force.position = properties.position;
-	this.force.color    = properties.color;
+	//It's necesary update the force angular speed, scale and color
+	var force = this.force;
+	force.color = properties.color;
+	force.angular_speed = properties.angular_speed;
+	force.scale = properties.scale;
+	force.position = properties.position;
 
 	if (system_input != undefined)
 	{
@@ -277,13 +346,22 @@ vortexNode.prototype.onExecute = function()
 		var particles = system.particles_list;
 		var ids;
 
-		if(condition != undefined) 
-			ids = condition;
+		//Update the force reciever
+		this.force.reciever = system.id;
+
+		if(condition != undefined)
+		{
+			ids = condition.condition;
+			this.force.condition = condition.id;
+		}
 		else
 			if(system_input.type == "emitter")
 				ids = system.particles_ids;
 			else if(system_input.type == "sub_emitter")
+			{
 				ids = system.sub_emittors[system_input.index].ids;
+				this.force.subReciever = system_input.index;
+			}
 
 		if(ids.length > 0)
 		{
@@ -313,6 +391,12 @@ vortexNode.prototype.onExecute = function()
 						particle.position[j] += v_vortex[j] * distance_factor * time_interval;
 			}
 		}
+	}
+	else
+	{
+		this.force.reciever    = -1;
+		this.force.subReciever = -1;
+		this.force.condition   = -1;
 	}
 
 	this.setOutputData(0, system);
@@ -389,22 +473,30 @@ function magnetNode() {
 magnetNode.prototype.onPropertyChanged = function(property)
 {
 	var properties = this.properties;
+	
+	if(this.force == undefined)
+ 		this.force = addForce(this.id, this.properties.position, "magnet");
+
+	var force = this.force;
 
 	switch (property){
 		case "position":
 			if (properties.position.length != 3)
 				properties.position = [0,0,0];
+			force.position = properties.position;
 		break;
 
 		case "strength":
 			var strength = properties.strength;
 			properties.strength = isNaN(strength) ? 10 : strength;
+			force.strength = properties.strength;
 		break;
 
 		case "scale":
 			var scale = properties.scale;
 			scale = isNaN(scale) ? 10 : scale;
 			properties.scale = Math.max(scale, 0);
+			force.scale = properties.scale;
 		break;
 
 		case "color":
@@ -413,6 +505,8 @@ magnetNode.prototype.onPropertyChanged = function(property)
 			else
 				for (var i = 0; i < 4; ++i)
 					properties.color[i] = Math.min(Math.max(properties.color[i], 0.0), 1.0);
+
+			force.color = properties.color;
 		break;
 	}
 }
@@ -424,6 +518,12 @@ magnetNode.prototype.onPropertyChanged = function(property)
 */
 magnetNode.prototype.onAdded = function() 
 {
+	if(this.force != undefined)
+	{
+		this.force.id = this.id
+		return;
+	}
+
 	this.force = addForce(this.id, this.properties.position, "magnet")
 }
 
@@ -447,10 +547,12 @@ magnetNode.prototype.onExecute = function()
 	properties.scale    = Math.max(this.getInputData(4),0) || properties.scale;
 	properties.color    = color_input    == undefined ? properties.color    : color_input.slice(0);
 
-	//It's necesary update the force position and color for 
-	//render te origin of the magnet point
-	this.force.position = properties.position;
-	this.force.color    = properties.color;
+	//It's necesary update the force scale, strength and color
+	var force = this.force;
+	force.color = properties.color;
+	force.strength = properties.strength;
+	force.scale = properties.scale;
+	force.position = properties.position;
 
 	if (system_input != undefined)
 	{
@@ -458,13 +560,22 @@ magnetNode.prototype.onExecute = function()
 		var particles = system.particles_list;
 		var ids;
 
+		//Update the force reciever
+		this.force.reciever = system.id;
+
 		if (condition != undefined)
-			ids = condition;
+		{
+			ids = condition.condition;
+			this.force.condition = condition.id;
+		}
 		else
 			if(system_input.type == "emitter")
 				ids = system.particles_ids;
 			else if(system_input.type == "sub_emitter")
+			{
 				ids = system.sub_emittors[system_input.index].ids;
+				this.force.subReciever = system_input.index;
+			}
 
 		if(ids.length > 0)
 		{
@@ -492,6 +603,12 @@ magnetNode.prototype.onExecute = function()
 					particle.position[j] += (distance[j] * distance_factor * time_interval);
 			}
 		}
+	}
+	else
+	{
+		this.force.reciever    = -1;
+		this.force.subReciever = -1;
+		this.force.condition   = -1;
 	}
 
 	//The porperties of the node are the output

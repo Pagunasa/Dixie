@@ -56,6 +56,12 @@ function createConditionNode() {
 createConditionNode.prototype.onPropertyChanged = function(property)
 {
 	var properties = this.properties;
+	
+	if(this.condition == undefined)
+	{
+		this.condition = new ConditionInfo(this.id, this.properties);
+		condition_list.push(this.condition);
+	}
 
 	switch (property) {
 		case "system_property":
@@ -85,12 +91,15 @@ createConditionNode.prototype.onPropertyChanged = function(property)
 		break;
 
 		case "is_one_time":
-			this.w3.value = properties.is_one_time;
+			var one_time  = properties.is_one_time;
+			this.w3.value = one_time ;
+			this.condition.one_time = one_time;
 		break;
 
 		case "value":
 			if(properties.system_property == "Speed" && properties.value.length != 3) 
 				properties.value = [0,0,0];
+			this.condition.value = properties.value;
 		break; 
 	}
 }
@@ -104,6 +113,7 @@ createConditionNode.prototype.onPropertyChanged = function(property)
 createConditionNode.prototype.changeConditionTime = function(v)
 {
 	this.properties.is_one_time = v;
+	this.condition.one_time   = v;
 }
 
 
@@ -115,6 +125,7 @@ createConditionNode.prototype.changeConditionTime = function(v)
 createConditionNode.prototype.changeCondition = function(v)
 {
 	this.properties.condition = v;
+	this.condition.operator   = v;
 
 	if(v == "Greater than or equals" || v == "Less than or equals")
 		this.size[0] = 270;
@@ -161,6 +172,26 @@ createConditionNode.prototype.changeProperty = function(v)
 
 	if(condition == "Greater than or equals" || condition == "Less than or equals")
 		this.size[0] = 270;
+
+		this.condition.value = properties.value;
+		this.condition.property = v;	
+}
+
+
+/*
+* 	The behaviour done when the node is added
+*	@method onAdded
+*/
+createConditionNode.prototype.onAdded =  function()
+{
+	if(this.condition != undefined)
+	{
+		this.condition.id = this.id
+		return;
+	}
+	
+	this.condition = new ConditionInfo(this.id, this.properties);
+	condition_list.push(this.condition);
 }
 
 
@@ -176,7 +207,8 @@ createConditionNode.prototype.onExecute = function()
 
 	//When is executed the inputs are gotten and if they are undefined a default value is setted
 	properties.value = this.getInputData(1) || properties.value;
-	
+	this.condition.value = properties.value;
+
 	if (system_input != undefined)
 	{
 		var system        = system_input.data;
@@ -224,8 +256,6 @@ createConditionNode.prototype.onExecute = function()
 			
 				case "Life time":
 					tested_value = particle.c_lifetime;
-				break;
-
 				break;
 			}
 
@@ -284,8 +314,19 @@ createConditionNode.prototype.onExecute = function()
 	}
 
 	//The ids of the particles that meet the condition are the output for this node
-	this.setOutputData(0, condition_list);
+	this.setOutputData(0, {id: this.id, condition: condition_list});
 }
+
+
+/*
+* 	The behaviour of the node when is removed
+*	@method onExecute 
+*/
+createConditionNode.prototype.onRemoved = function() 
+{
+ 	searchCondition(this.id, true);
+}
+
 
 createConditionNode.title = "Create Condition";
 createConditionNode.title_color = conditionsNodeColor;
@@ -339,6 +380,12 @@ mergeConditionsNode.prototype.onPropertyChanged = function()
 {
 	var m = this.properties.merge_mode;
 
+	if(this.condition == undefined)
+	{
+		this.condition = new MergedConditionInfo(this.id, -1, -1, this.properties.merge_mode);
+		condition_list.push(this.condition);
+	}
+
 	if(!this.vValues.includes(m))
 	{
 		m = "And";
@@ -346,6 +393,8 @@ mergeConditionsNode.prototype.onPropertyChanged = function()
 	}
 
 	this.w.value = m;
+
+	this.condition.mode = m;
 }
 
 
@@ -357,6 +406,24 @@ mergeConditionsNode.prototype.onPropertyChanged = function()
 mergeConditionsNode.prototype.changeMergeMode = function(v)
 {
 	this.properties.merge_mode = v;
+	this.condition.mode = v;
+}
+
+
+/*
+* 	The behaviour done when the node is added
+*	@method onAdded
+*/
+mergeConditionsNode.prototype.onAdded =  function()
+{
+	if(this.condition != undefined)
+	{
+		this.condition.id = this.id
+		return;
+	}
+
+	this.condition = new MergedConditionInfo(this.id, -1, -1, this.properties.merge_mode);
+	condition_list.push(this.condition);
 }
 
 
@@ -366,8 +433,15 @@ mergeConditionsNode.prototype.changeMergeMode = function(v)
 */
 mergeConditionsNode.prototype.onExecute = function() 
 {
-	var condition_1 = this.getInputData(0) || [];
-	var condition_2 = this.getInputData(1) || [];
+	var condition_1 = this.getInputData(0) || {id: -1, condition: []};
+	var condition_2 = this.getInputData(1) || {id: -1, condition: []};
+
+	var c  = this.condition;
+	c.id_C1 = condition_1.id;
+	c.id_C2 = condition_2.id;
+
+	condition_1 = condition_1.condition;
+	condition_2 = condition_2.condition;
 
 	var lenght1 = condition_1.length;
 	var lenght2 = condition_2.length;
@@ -407,8 +481,19 @@ mergeConditionsNode.prototype.onExecute = function()
 	}
 
 	//The ids of the particles that meet the conditions are the output for this node
-	this.setOutputData(0, condition_list);
+	this.setOutputData(0, {id: this.id, condition: condition_list});
 }
+
+
+/*
+* 	The behaviour of the node when is removed
+*	@method onExecute 
+*/
+mergeConditionsNode.prototype.onRemoved = function() 
+{
+ 	searchCondition(this.id, true);
+}
+
 
 mergeConditionsNode.title = "Merge Conditions";
 mergeConditionsNode.title_color = conditionsNodeColor;

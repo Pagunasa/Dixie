@@ -599,6 +599,7 @@ initParticlesNode.prototype.onExecute = function()
 		}
 
 		var system = this.system_info;
+		system.particle_data = p_prop.data;
 
 		if (type == "sub_emitter" && this.internal.last_sub_id != system_input.id)
 		{

@@ -711,7 +711,7 @@ subEmitterNode.prototype.onExecute = function()
 	var input_max_particles 	 = Math.max(this.getInputData(1), 0) || this.properties.max_particles;
 	var input_particles_per_wave = Math.max(this.getInputData(2), 0) || this.properties.particles_per_wave;
 
-	var input_condition     = this.getInputData(3);
+	var input_condition     = this.getInputData(3) || {id: -1, condition: undefined};
 	var system_info         = this.system_info;
 	var last_status 		= this.last_status;
 
@@ -750,13 +750,15 @@ subEmitterNode.prototype.onExecute = function()
 		this.sub_emittor.particles_per_wave = input_particles_per_wave;
 	}
 	
+	this.sub_emittor.condition = input_condition.id;
+
 	//The properties of the node are the output plus some extras
 	var out_data = {
 		id                  : this.id,
 		data  				: this.system_info,
 		index				: this.last_status.index,
 		type                : "sub_emitter",
-		condition           : input_condition
+		condition           : input_condition.condition
 	}
 
 	this.setOutputData(0, out_data);

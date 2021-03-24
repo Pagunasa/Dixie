@@ -12,11 +12,12 @@ function modifyPropertyNode() {
 		modification_mode: "Along life time",
 		user_defined_seconds: 2,
 		user_defined_start: 0,
-		new_value: vector_3	
+		new_value: [0,0,0]	
 	};
 
 	this.internal = {
-		last_id: -1
+		last_id: -1,
+		last_changed_property: "Unknow"
 	}
 
 	this.propValues = ["Speed", "Size", "Color", "Life time"];
@@ -81,6 +82,8 @@ modifyPropertyNode.prototype.changeModification = function(v)
 	}
 	else
 		this.size[1] = 166;	
+
+	this.modification.modification_mode = v;
 }
 
 
@@ -94,8 +97,8 @@ modifyPropertyNode.prototype.setStart = function(v)
 	if(isNaN(v))
 		v = 0;
 
-	this.properties.user_defined_start = v;
 	this.staW.value = v;
+	this.properties.user_defined_start   = v;
 }
 
 
@@ -109,8 +112,8 @@ modifyPropertyNode.prototype.setDuration = function(v)
 	if(isNaN(v))
 		v = 2;
 
-	this.properties.user_defined_seconds = v;
 	this.secW.value = v;
+	this.properties.user_defined_seconds   = v;
 }
 
 
@@ -122,6 +125,7 @@ modifyPropertyNode.prototype.setDuration = function(v)
 modifyPropertyNode.prototype.changeApplication = function(v)
 {
 	this.properties.application_mode = v;
+	this.modification.application_mode = v;
 }
 
 
@@ -132,16 +136,27 @@ modifyPropertyNode.prototype.changeApplication = function(v)
 */
 modifyPropertyNode.prototype.changeProperty = function(v)
 {
-	var properties = this.properties;
-	
-	if(properties.changed_property == v)
-		return;
-	
-	properties.changed_property = v;
+	var properties   = this.properties;
+	var modification = this.modification;
+	var last_prop    = this.internal.last_changed_property;
 
-	//The third input is deleted with his possible conection
-	this.disconnectInput(3);
-	this.inputs.splice(3,1);
+	if(v != last_prop && last_prop != "Unknow")
+	{
+		//The third input is deleted with his possible conection
+		this.disconnectInput(3);
+		this.inputs.splice(3,1);
+		this.internal.last_changed_property = v;
+	} 
+	else if(last_prop == "Unknow")
+	{
+		this.internal.last_changed_property = v;
+		modification.changed_property       = v;
+		properties.changed_property         = v;
+		return;
+	}
+
+	modification.changed_property = v;
+	properties.changed_property = v;
 
 	if(v == "Speed")
 	{
@@ -163,6 +178,8 @@ modifyPropertyNode.prototype.changeProperty = function(v)
 		this.addInput("New life time", "number");
 		properties.new_value = 0;
 	}
+
+	modification.new_value = properties.new_value ;
 }
 
 
@@ -176,15 +193,24 @@ modifyPropertyNode.prototype.onPropertyChanged = function(property)
 {
 	var properties = this.properties;
 	
+	if(this.modification == undefined)
+	{
+		this.modification = new ModifyPropertiesInfo(this.id, this.properties);
+		modProp_list.push(this.modification);	
+	}
+
 	switch(property)
 	{
 		case "changed_property":
 			var p = properties.changed_property;
 			
 			if(!this.propValues.includes(p))
+			{
 				p = "Size";
-
-			if(this.propW.value != p)
+				this.propW.value = p;
+				this.changeProperty(p);
+			} 
+			else if(this.propW.value != p)
 			{
 				this.propW.value = p;
 				this.changeProperty(p);
@@ -195,9 +221,12 @@ modifyPropertyNode.prototype.onPropertyChanged = function(property)
 			var a = properties.application_mode;
 
 			if(!this.applValues.includes(a))
+			{
 				a = "Equalization";
-			
-			if(this.applW.value != a)
+				this.applW.value = a;
+				this.changeApplication(a);
+			}
+			else if(this.applW.value != a)
 			{
 				this.applW.value = a;
 				this.changeApplication(a);
@@ -208,9 +237,12 @@ modifyPropertyNode.prototype.onPropertyChanged = function(property)
 			var m = properties.modification_mode;
 
 			if(!this.modiValues.includes(m))
-				m = "Along life time";
-
-			if(this.modiW.value != m)
+			{
+				m = "Along life time";	
+				this.modiW.value = m;
+				this.changeModification(m);		
+			}
+			else if(this.modiW.value != m)
 			{
 				this.modiW.value = m;
 				this.changeModification(m);
@@ -219,6 +251,7 @@ modifyPropertyNode.prototype.onPropertyChanged = function(property)
 
 		case "user_defined_seconds":
 			properties.user_defined_seconds = Math.max(properties.user_defined_seconds, 0.0);
+			this.modification.user_defined_seconds = properties.user_defined_seconds;
 
 			if(this.secW != undefined)
 				this.setDuration(properties.user_defined_seconds);
@@ -226,6 +259,7 @@ modifyPropertyNode.prototype.onPropertyChanged = function(property)
 
 		case "user_defined_start":
 			properties.user_defined_start = Math.max(properties.user_defined_start, 0.0);
+			this.modification.user_defined_start = properties.user_defined_start;
 
 			if(this.staW != undefined)
 				this.setStart(properties.user_defined_start);
@@ -241,6 +275,8 @@ modifyPropertyNode.prototype.onPropertyChanged = function(property)
 			if((properties.changed_property == "Size" || properties.changed_property == "Life time") 
 				&& (isNaN(properties.new_value) || properties.new_value < 0))
 				properties.new_value = 0;
+
+			this.modification.new_value = properties.new_value;
 		break;
 	}
 }
@@ -268,6 +304,23 @@ modifyPropertyNode.prototype.computeChangeEquation = function(lifetime)
 
 
 /*
+* 	The behaviour done when the node is added
+*	@method onAdded
+*/
+modifyPropertyNode.prototype.onAdded =  function()
+{
+	if(this.modification != undefined)
+	{
+		this.modification.id = this.id
+		return;
+	}
+
+	this.modification = new ModifyPropertiesInfo(this.id, this.properties);
+	modProp_list.push(this.modification);
+}
+
+
+/*
 * 	What the node does every frame
 *	@method onExecute 
 */
@@ -281,6 +334,9 @@ modifyPropertyNode.prototype.onExecute = function()
 	this.change_equation = this.getInputData(2) || undefined;
 	var new_value        = this.getInputData(3);
 
+	this.modification.equation  = this.change_equation;
+	this.modification.condition = condition != undefined ? condition.id : -1;
+
 	if (system != undefined)
 	{
 		if(new_value != undefined)
@@ -289,12 +345,19 @@ modifyPropertyNode.prototype.onExecute = function()
 				properties.new_value = new_value.slice(0);
 			else
 				properties.new_value = new_value;
+
+			this.modification.new_value = properties.new_value; 
 		}
 
 		if(this.internal.last_id != system.id)
 		{
 			this.system_info      = system.data;
 			this.internal.last_id = system.id;
+
+			this.modification.reciever = this.system_info.id; 
+			
+			if(system.type == "sub_emitter")
+				this.modification.subReciever = system.index; 
 		}
 
 		var system_info = this.system_info;
@@ -313,7 +376,7 @@ modifyPropertyNode.prototype.onExecute = function()
 		else
 		{
 			using_condition = true;
-			particles_condition_list = condition;
+			particles_condition_list = condition.condition;
 		}
 
 		for (var i = 0; i < particles_condition_list.length; i++)
@@ -400,14 +463,28 @@ modifyPropertyNode.prototype.onExecute = function()
 
 				particle.lifetime = final_value * modifier + particle.iLifetime * (1.0 - modifier);
 			}
-			
 		}
-
+	}
+	else
+	{
+		this.modification.reciever    = -1;
+		this.modification.subReciever = -1;
 	}
 
 	//The porperties of the node are the output
 	this.setOutputData(0, system);
 }
+
+
+/*
+* 	The behaviour of the node when is removed
+*	@method onExecute 
+*/
+modifyPropertyNode.prototype.onRemoved = function() 
+{
+ 	searchModification(this.id, true);
+}
+
 
 modifyPropertyNode.title = "Modify Property";
 modifyPropertyNode.title_color = modifyPropertiesNodeColor;
