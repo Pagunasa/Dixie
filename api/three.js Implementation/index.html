@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Three.js implementation</title>
+</head>
+<body>
+
+<script id="vertexShader" type="x-shader/x-vertex">
+	attribute vec3 vertices;
+	attribute vec2 coords;
+	attribute vec2 icoord;
+	attribute vec4 colors;
+	attribute vec2 size;
+	attribute float visible;
+
+	varying vec4 v_color;
+	varying vec3 v_pos;
+	varying vec2 v_coord;
+	varying float v_visible;
+
+	uniform vec3 u_up;
+	uniform vec3 u_right;
+
+	void main() {
+		v_visible = visible;
+		v_coord = coords;
+		v_color = colors;
+		v_pos = vertices + u_right * icoord.x * size.x + u_up * icoord.y * size.y;
+		gl_Position = projectionMatrix * modelViewMatrix * ( modelMatrix * vec4( v_pos, 1.0 ) );
+	}
+</script>
+
+<script id="fragmentShader" type="x-shader/x-fragment">
+	varying vec4 v_color;
+	varying float v_visible;
+
+	void main() {
+		if (v_visible == 0.0) discard;
+		pc_fragColor = v_color;
+	}
+</script>
+
+
+
+<!--<script id="vertexShader2" type="x-shader/x-vertex">
+	attribute vec4 colors;
+	attribute vec3 vertices;
+	varying vec4 v_color;
+	varying vec3 v_center;
+
+	void main() {
+		v_color = colors;
+		v_center = vertices;
+		gl_Position = projectionMatrix * modelViewMatrix * vec4( v_center, 1.0 );
+	}
+</script>
+
+<script id="fragmentShader2" type="x-shader/x-fragment">
+	varying vec4 v_color;
+	varying float v_visible;
+
+	void main() {;
+		pc_fragColor = v_color;
+	}
+</script>-->
+
+
+</body>
+
+<script type="text/javascript" src="../dixieApi.js"></script>
+<script type="text/javascript" src="three.js"></script>
+<script type="text/javascript" src="main.js"></script>
+
+</html>

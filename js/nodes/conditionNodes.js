@@ -10,7 +10,7 @@ function createConditionNode() {
 		system_property: "Speed",
 		condition      : "Equals",
 		is_one_time    : false,
-		value          : [0,0,0]
+		value          : Float32Array.from([0,0,0])
 	};
 
     this.constructor.desc = "&nbsp;&nbsp;&nbsp;&nbsp; This node defines a condition and checks for every particle in the system if it's meted.\
@@ -46,6 +46,13 @@ function createConditionNode() {
 	this.addOutput("Condition", "condition_list");
 }
 
+createConditionNode.prototype.onAddPropertyToPanel = function(i, panel)
+{
+	if (i == "value" && this.properties.system_property == "Speed")
+		return addVectorWidget(i, panel, this);
+	else 
+		return false;
+} 
 
 /*
 * 	For show the values when a graph is loaded, when the user change 
@@ -97,8 +104,17 @@ createConditionNode.prototype.onPropertyChanged = function(property)
 		break;
 
 		case "value":
-			if(properties.system_property == "Speed" && properties.value.length != 3) 
-				properties.value = [0,0,0];
+			if(properties.system_property == "Speed") 
+				if(properties.value.length != 3)
+					properties.value = Float32Array.from([0,0,0]);
+				else 
+				{
+					var val = properties.value;
+					
+					for(var i = 0; i < 3; ++i)
+						val[i] = isNaN(val[i]) ? 0 : val[i];
+				}
+
 			this.condition.value = properties.value;
 		break; 
 	}
@@ -151,7 +167,7 @@ createConditionNode.prototype.changeProperty = function(v)
 	if(v == "Speed")
 	{
 		this.addInput("Speed", "vec3");
-		properties.value = [0,0,0];
+		properties.value = Float32Array.from([0,0,0]);
 	}
 	else if (v == "Size")
 	{

@@ -1297,6 +1297,20 @@ function colorPickerNode()
 }
 
 /*
+* 	Add the color picker to the node panel	
+*	@method onAddPropertyToPanel
+*	@params {Number} The index of the propertie
+*	@params {Object} The node panel
+*/
+colorPickerNode.prototype.onAddPropertyToPanel = function(i, panel)
+{
+	if( i != "color")
+		return false;
+	else
+		return addColorWidget(i, panel, this);
+} 
+
+/*
 * 	Make that the background color of the node is the shame than the color picked by the user	
 *	@method onDrawBackground
 *	@params {Context} The context of the node

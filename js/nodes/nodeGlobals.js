@@ -117,7 +117,7 @@ function mult(a, b)
 
 /*
 * 	This method returns a random number
-*	@method mult
+*	@method randomNumber
 *	@params {Number} the minimum value of the random number
 *	@params {Number} the maximum value of the random number
 */
@@ -311,12 +311,12 @@ class ConditionInfo {
 	*	@params {Object}  the properties of the condition
 	*/
 	constructor(id_, properties_) {
-		this.id          = id_;
-		this.type        = "c";
-		this.property    = properties_.system_property;
-		this.one_time    = properties_.is_one_time;
-		this.value       = properties_.value;
-		this.operator    = properties_.condition;
+		this.id       = id_;
+		this.type     = "c";
+		this.property = properties_.system_property;
+		this.one_time = properties_.is_one_time;
+		this.value    = properties_.value;
+		this.operator = properties_.condition;
 	}
 }
 
@@ -337,7 +337,7 @@ class MergedConditionInfo {
 	constructor(id_, idC1_, idC2_, mode_)
 	{
 		this.id    = id_;
-		this.type        = "m";
+		this.type  = "m";
 		this.id_C1 = idC1_;
 		this.id_C2 = idC2_;
 		this.mode  = mode_
@@ -460,6 +460,9 @@ class SubEmitterInfo {
 		this.origin 			= "Point";
 		this.texture            = {file: undefined, id: undefined};
 		this.condition 			= -1;
+
+		//Particle data
+		this.particle_data      = undefined;
 
 		this.ids      = []; //Ids list	
 		this.to_reset = []; //Reset list
@@ -888,7 +891,8 @@ function onShowNodePanel(node)
 	            if( node.onAddPropertyToPanel && node.onAddPropertyToPanel(i,panel) )
 	                continue;
 
-	            var elem = aux_panel.addWidget( info.widget || info.type, i, value, info, function(name,value){
+	            var elem = aux_panel.addWidget( info.widget || info.type, i, value, info, 
+	            		function(name,value){
 			                graphcanvas.graph.beforeChange(node);
 			                node.setProperty(name,value);
 			                graphcanvas.graph.afterChange();
@@ -936,7 +940,7 @@ function onShowNodePanel(node)
 	           			elem.appendChild(desc);	            		
 	            	}
 	           
-	            panel.content.appendChild(elem);
+	            panel.content.children[2].appendChild(elem);
 	        }
         }
 
@@ -1002,7 +1006,7 @@ function onShowNodePanel(node)
 
 /*
 * 	This method is for charge a texture
-*	@method onShowNodePanel
+*	@method chargeTexture
 *	@params {Node}   the node that charges the texture
 *   @params {Object} the properties of the node
 *   @params {String} the url of the texture
@@ -1012,8 +1016,22 @@ function chargeTexture(node, node_properties, url, def_text = "NONE")
 {
 	texture_modal.modal('hide');
 
-	GL.Texture.fromURL(url, {}, function(t,u){node.afterLoading(t,u)});
-	node_properties.default_texture = def_text;
+	loading_texture_modal.modal('show');
+	loading_texture_modal.on('shown.bs.modal', 
+		function(e){
+			console.log("HI");
+			$.when(GL.Texture.fromURL(url, {}, function(t,u){node.afterLoading(t,u)}))
+				.then(
+					function(){
+						loading_texture_modal.modal('hide');
+						loading_texture_modal.off('shown.bs.modal');
+					}
+					);
+
+			node_properties.default_texture = def_text;
+		}
+	);
+
 }
 
 
@@ -1095,7 +1113,7 @@ function validURL(str)
 
 /*
 * 	This method is for charge a mesh
-*	@method onShowNodePanel
+*	@method chargeMesh
 *	@params {Node}   the node that charges the texture
 *   @params {String} the url of the mesh
 */
@@ -1272,4 +1290,104 @@ function resetSystem(system)
 
 		subEmitter.to_reset = toReset;
 	}
+}
+
+
+function addColorWidget(i, panel, node)
+{
+	var base = document.createElement("div");
+	base.className = "property";
+
+	var title = document.createElement("span");
+	title.className = "property_name";
+	title.innerText = "color";
+
+	var value = document.createElement("input");
+	value.className = "property_value";
+	value.style.border = "none";
+
+	var color = node.properties[i];
+	var picker = new jscolor(value, {
+		value: 'rgba('+color[0]*255+', '+color[1]*255+', '+color[2]*255+', '+color[3]+')',
+		backgroundColor: '#37464F',
+		borderColor: '#455A64',
+		controlBorderColor: '#37464F'
+	});
+	
+	picker.onChange = function(){
+		var colorS = picker.toRGBAString();
+		var nColor = Array.from(colorS.split("rgba(")[1].split(")")[0].split(","), x => parseFloat(x)/255.0);
+		nColor[3] *= 255;
+
+		node.properties[i] = nColor;
+		node.onPropertyChanged(i);
+	}
+
+	var desc = document.createElement('div');
+	desc.className = "tooltiptext";
+	desc.innerHTML = node.prop_desc[i];
+
+	title.appendChild(desc);
+	base.appendChild(title);
+	base.appendChild(value);
+
+	panel.content.children[2].appendChild(base);
+
+	return true;
+}
+
+
+function addVectorWidget(i, panel, node)
+{
+	var base = document.createElement("div");
+	base.className = "property";
+
+	var title = document.createElement("span");
+	title.className = "property_name";
+	title.innerText = i;
+
+	base.appendChild(title);
+
+	var contents = document.createElement("div");
+	contents.className = "inner_div";
+
+	var input;
+	var vector = node.properties[i];
+
+	for(var j = 0; j < vector.length; ++j)
+	{  
+		input = document.createElement("input");
+		input.className = "property_value";
+		input.style.border = "none";
+		input.jsindex = j;
+		input.value = vector[j];
+
+		input.addEventListener("keydown", function(e){ 
+			if(e.code == "Enter")
+			{
+				e.preventDefault();
+				this.blur();
+			}
+		});
+
+		input.addEventListener("blur", function(){ 
+			node.properties[i][this.jsindex] = this.value;
+			node.onPropertyChanged(i);
+	        this.value = String(node.properties[i][this.jsindex]);
+		});   
+
+		contents.appendChild(input);
+	}
+
+	base.appendChild(contents);
+
+	var desc = document.createElement('div');
+	desc.className = "tooltiptext";
+	desc.innerHTML = node.prop_desc[i];
+
+	title.appendChild(desc);
+
+	panel.content.children[2].appendChild(base);
+
+	return true;
 }

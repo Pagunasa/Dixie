@@ -75,6 +75,8 @@ var url_mesh, custom_mesh;
 var export_modal;
 var export_modal_msg;
 
+var loading_texture_modal;
+
 var demos_modal;
 /********************************/
 /********************************/
@@ -226,32 +228,37 @@ function initMenuButtons ()
 	};
 
 	saveButton.onclick = function() {
-		var jsonGraph = graph.serialize();
-		jsonGraph = JSON.stringify(jsonGraph);
-		jsonGraph = [jsonGraph];
 
-		var blob = new Blob(jsonGraph, {type: "text/plain;charset=utf-8"});
-		
-		var url = window.URL || window.webkitURL;
-		link = url.createObjectURL(blob);
+		//To be sure that at least one step of the graph have been
+		$.when(graph.runStep()).then(
+			function()
+			{
+				var jsonGraph = graph.serialize();
+				jsonGraph = JSON.stringify(jsonGraph);
+				jsonGraph = [jsonGraph];
 
-		var savedGraph = document.createElement("a");
-		savedGraph.download = "Graph.dx";
-		savedGraph.href = link;
+				var blob = new Blob(jsonGraph, {type: "text/plain;charset=utf-8"});
+				
+				var url = window.URL || window.webkitURL;
+				link = url.createObjectURL(blob);
 
-		document.body.appendChild(savedGraph);
-		savedGraph.click();
-		document.body.removeChild(savedGraph);
+				var savedGraph = document.createElement("a");
+				savedGraph.download = "Graph.dx";
+				savedGraph.href = link;
 
-		export_modal.modal('hide');
+				document.body.appendChild(savedGraph);
+				savedGraph.click();
+				document.body.removeChild(savedGraph);
+
+				export_modal.modal('hide');
+			}
+		);
 	}
 
 	exportButton.onclick = function(){
 		export_modal.modal('hide');
-		export_modal_msg.modal('show')
-		.on('shown.bs.modal', function(e){
-			exporter();
-		})
+		export_modal_msg.modal('show');
+		//The behaviour od export is in initModals!!
 	}
 
 	playButton.onclick = function() {
@@ -423,10 +430,18 @@ function initModals ()
 	custom_mesh = document.getElementById("mesh_custom");
     
     /********************************/
-	/*************Export*************/
+	/********Export & loading********/
 	/********************************/
 	export_modal = $('#exportModal');
 	export_modal_msg = $("#exportingMessage");
+	export_modal_msg.on('shown.bs.modal', 
+		function(e){
+			exporter();
+		}
+	);
+
+
+	loading_texture_modal = $('#loadingTexture');
 
     /********************************/
 	/*************Demos**************/
@@ -578,11 +593,11 @@ init();
 /*************************************************/
 /****************SHADER DEFINITION****************/
 /*************************************************/
-var flatShader     =  new GL.Shader(vs_basic_point, fs_point_flat);
-var texturedShader =  new GL.Shader(vs_basic_point, fs_point_texture);
+var flatShader     = new GL.Shader(vs_basic_point, fs_point_flat);
+var texturedShader = new GL.Shader(vs_basic_point, fs_point_texture);
 
-var particleShaderTextured =  new GL.Shader(vs_particles, fs_texture);
-var particleShaderFlat     =  new GL.Shader(vs_particles, fs_flat_p);
+var particleShaderTextured = new GL.Shader(vs_particles, fs_texture);
+var particleShaderFlat     = new GL.Shader(vs_particles, fs_flat_p);
 
 var linesShader = new GL.Shader(vs_basic_point, fs_lines_flat);
 var fogShader   = new GL.Shader(vs_fog, fs_fog);

@@ -17,13 +17,13 @@ function gravityNode() {
 	/***********Node properties************/
 	/**************************************/
 	this.properties = {
-		direction: [0,0,0],
+		direction: Float32Array.from([0,-1,0]),
 		strength: 1
 	};
 
 	this.last_state = {
-		direction: [0,0,0],
-		direction_normalized: [0,0,0]
+		direction: [0,-1,0],
+		direction_normalized: [0,-1,0]
 	}
 
     this.constructor.desc = "&nbsp;&nbsp;&nbsp;&nbsp; This node creates a global force that affects all the particles of a given system.\
@@ -45,6 +45,13 @@ function gravityNode() {
 	this.addOutput("Particle system", "particle_system");
 }
 
+gravityNode.prototype.onAddPropertyToPanel = function(i, panel)
+{
+	if (i == "direction")
+		return addVectorWidget(i, panel, this);
+	else 
+		return false;
+} 
 
 /*
 * 	The behaviour done when the node is added
@@ -87,7 +94,14 @@ gravityNode.prototype.onPropertyChanged = function(property)
 
 		case "direction":
 			if (properties.direction.length != 3)
-				properties.direction = [0,0,0];
+				properties.direction = Float32Array.from([0,0,0]);
+			else
+			{
+				var dir = properties.direction;
+
+				for(var i = 0; i < 3; ++i)
+					dir[i] = isNaN(dir[i]) ? 0 : dir[i];
+			}
 
 			if(!vec3.equals(this.last_state.direction, properties.direction))
 			{
@@ -210,8 +224,8 @@ function vortexNode() {
 	/***********Node properties************/
 	/**************************************/
 	this.properties = {
-		position: [0,0,0],
-		angular_speed: [0,0,0],
+		position: Float32Array.from([0,0,0]),
+		angular_speed: Float32Array.from([1,1,1]),
 		scale: 10,
 		color: [1,1,1,1]
 	};
@@ -246,6 +260,15 @@ function vortexNode() {
 	this.addOutput("Particle system", "particle_system");
 }
 
+vortexNode.prototype.onAddPropertyToPanel = function(i, panel)
+{
+	if (i == "position" || i == "angular_speed")
+		return addVectorWidget(i, panel, this);
+	else if (i =="color")
+		return addColorWidget(i, panel, this);
+	else 
+		return false;
+} 
 
 /*
 * 	For show the values when a graph is loaded, when the user change 
@@ -266,14 +289,28 @@ vortexNode.prototype.onPropertyChanged = function(property)
 	{
 		case "position":
 			if (properties.position.length != 3)
-				properties.position = [0,0,0];
+				properties.position = Float32Array.from([0,0,0]);
+			else
+			{
+				var pos = properties.position;
+
+				for(var i = 0; i < 3; ++i)
+					pos[i] = isNaN(pos[i]) ? 0 : pos[i];
+			}
 
 			force.position = properties.position;
 		break;
 
 		case "angular_speed":
 			if (properties.angular_speed.length != 3)
-				properties.angular_speed = [0,0,0];
+				properties.angular_speed = Float32Array.from([0,0,0]);
+			else
+			{
+				var a_speed = properties.angular_speed;
+
+				for(var i = 0; i < 3; ++i)
+					a_speed[i] = isNaN(a_speed[i]) ? 0 : a_speed[i];
+			}
 
 			force.angular_speed = properties.angular_speed;
 		break;
@@ -428,7 +465,7 @@ function magnetNode() {
 	/***********Node properties************/
 	/**************************************/
 	this.properties = {
-		position: [0,0,0],
+		position: Float32Array.from([0,0,0]),
 		strength: 10,
 		scale: 10,
 		color: [1,1,1,1]
@@ -464,6 +501,17 @@ function magnetNode() {
 	this.addOutput("Particle system", "particle_system");
 }
 
+
+magnetNode.prototype.onAddPropertyToPanel = function(i, panel)
+{
+	if (i == "position")
+		return addVectorWidget(i, panel, this);
+	else if (i =="color")
+		return addColorWidget(i, panel, this);
+	else 
+		return false;
+} 
+
 /*
 * 	For show the values when a graph is loaded, when the user change 
 *	the properties using the window of properties and when the node is cloned
@@ -482,7 +530,15 @@ magnetNode.prototype.onPropertyChanged = function(property)
 	switch (property){
 		case "position":
 			if (properties.position.length != 3)
-				properties.position = [0,0,0];
+				properties.position = Float32Array.from([0,0,0]);
+			else
+			{
+				var pos = properties.position;
+
+				for(var i = 0; i < 3; ++i)
+					pos[i] = isNaN(pos[i]) ? 0 : pos[i];
+			}
+
 			force.position = properties.position;
 		break;
 

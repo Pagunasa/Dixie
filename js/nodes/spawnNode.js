@@ -177,6 +177,15 @@ function mySpawnNode() {
 	this.addOutput("Emitter", "emitter");
 }
 
+mySpawnNode.prototype.onAddPropertyToPanel = function(i, panel)
+{
+	if( i == "color")
+		return addColorWidget(i, panel, this);
+	else if (i == "position")
+		return addVectorWidget(i, panel, this);
+	else 
+		return false;
+} 
 
 /*
 *	Change the mode in which the particles are spawned
@@ -417,7 +426,15 @@ mySpawnNode.prototype.onPropertyChanged = function(property)
 
 		case "position":
 			if(properties.position.length != 3)
-				properties.position = [0,0,0];
+				properties.position = Float32Array.from([0,0,0]);
+			else
+			{
+				var pos = properties.position;
+				for(var i = 0; i < pos.length; ++i)
+				{
+					pos[i] = isNaN(pos[i]) ? 0 : pos[i];
+				}	
+			}
 		break;
 
 		case "origin":

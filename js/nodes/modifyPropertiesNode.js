@@ -12,7 +12,7 @@ function modifyPropertyNode() {
 		modification_mode: "Along life time",
 		user_defined_seconds: 2,
 		user_defined_start: 0,
-		new_value: [0,0,0]	
+		new_value: Float32Array.from([0,0,0])	
 	};
 
 	this.internal = {
@@ -58,6 +58,17 @@ function modifyPropertyNode() {
 	
 	this.addOutput("Particle system", "particle_system");
 }
+
+
+modifyPropertyNode.prototype.onAddPropertyToPanel = function(i, panel)
+{
+	if (i == "new_value" && this.properties.changed_property == "Speed")
+		return addVectorWidget(i, panel, this);
+	if (i == "new_value" && this.properties.changed_property == "Color")
+		return addColorWidget(i, panel, this);
+	else 
+		return false;
+} 
 
 
 /*
@@ -152,7 +163,30 @@ modifyPropertyNode.prototype.changeProperty = function(v)
 		this.internal.last_changed_property = v;
 		modification.changed_property       = v;
 		properties.changed_property         = v;
-		return;
+
+		var inputN = this.inputs[3].name;
+		if(v == "Speed" && inputN != "New speed")
+		{
+			this.disconnectInput(3);
+			this.inputs.splice(3,1);
+		}
+		else if(v == "Color" && inputN != "New color")
+		{
+			this.disconnectInput(3);
+			this.inputs.splice(3,1);
+		}
+		else if(v == "Size" && inputN != "New size")
+		{
+			this.disconnectInput(3);
+			this.inputs.splice(3,1);
+		}
+		else if(v == "Life time" && inputN != "New life time")
+		{
+			this.disconnectInput(3);
+			this.inputs.splice(3,1);
+		}
+		else
+			return;
 	}
 
 	modification.changed_property = v;
@@ -161,7 +195,7 @@ modifyPropertyNode.prototype.changeProperty = function(v)
 	if(v == "Speed")
 	{
 		this.addInput("New speed", "vec3");
-		properties.new_value = [0,0,0];
+		properties.new_value = Float32Array.from([0,0,0]);
 	}
 	else if (v == "Size")
 	{
@@ -266,11 +300,27 @@ modifyPropertyNode.prototype.onPropertyChanged = function(property)
 		break;
 
 		case "new_value":
-			if(properties.changed_property == "Speed" && properties.new_value.length != 3)
-				properties.new_value = [0,0,0];
+			if(properties.changed_property == "Speed")
+				if(properties.new_value.length != 3)
+					properties.new_value = Float32Array.from([0,0,0]);
+				else 
+					{
+						var n_val = this.properties.new_value;
+						
+						for(var i = 0; i < 3; ++i)
+							n_val[i] = isNaN(n_val[i]) ? 0 : n_val[i];
+					}
 
-			if(properties.changed_property == "Color" && properties.new_value.length != 4)
-				properties.new_value = [1,1,1,1];
+			if(properties.changed_property == "Color")
+				if(properties.new_value.length != 4)
+					properties.new_value = [1,1,1,1];
+				else
+				{
+					var n_val = this.properties.new_value;
+
+					for (var i = 0; i < 4; ++i)
+						n_val[i] = Math.min(Math.max(n_val[i], 0.0), 1.0);
+				}
 
 			if((properties.changed_property == "Size" || properties.changed_property == "Life time") 
 				&& (isNaN(properties.new_value) || properties.new_value < 0))
@@ -444,15 +494,21 @@ modifyPropertyNode.prototype.onExecute = function()
 			}
 			else if (properties.changed_property == "Color")
 			{
+				var temp = [0,0,0,0];
+				temp[0]  = final_value[0];
+				temp[1]  = final_value[1];
+				temp[2]  = final_value[2];
+				temp[3]  = final_value[3];
+
 				if(properties.application_mode == "Addition")
 					for (var j = 0; j < 4; ++j)
-						final_value[j] = Math.min(Math.max(particle.iColor[j] + final_value[j], 0), 1);
+						temp[j] = Math.min(Math.max(particle.iColor[j] + final_value[j], 0), 1);
 				else if(properties.application_mode == "Subtraction")
 					for (var j = 0; j < 4; ++j)
-						final_value[j] = Math.min(Math.max(particle.iColor[j] - final_value[j], 0), 1);
+						temp[j] = Math.min(Math.max(particle.iColor[j] - final_value[j], 0), 1);
 
 				for (var j = 0; j < 4; ++j)
-					particle.color[j] = final_value[j] * modifier + particle.iColor[j] * (1.0 - modifier);
+					particle.color[j] = temp[j] * modifier + particle.iColor[j] * (1.0 - modifier);
 			}
 			else if (properties.changed_property == "Life time")
 			{

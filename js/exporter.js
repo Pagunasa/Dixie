@@ -1,10 +1,42 @@
 /*	Guillem Martínez Jiménez		
 *   In this file you can find the exporter
 */
-var addConditions = function(list, id)
+var addTexture = function(texture)
+{
+	var t_prop = texture.prop;
+	var id   = texture.id == undefined ? -1 : texture.id;
+	var file = texture.file;
+
+	if(file == undefined)
+		return {
+			id: id,
+			prop: {
+				subtextures   : false,
+				textures_x    : 1,
+				textures_y    : 1,
+				animated      : false,
+				anim_loop     : false,
+				anim_duration : 0
+			}
+		}
+	else
+		return {
+			id: id,
+			prop: {
+				subtextures   : t_prop.subtextures,
+				textures_x    : t_prop.textures_x,
+				textures_y    : t_prop.textures_y,
+				animated      : t_prop.animated,
+				anim_loop     : t_prop.anim_loop,
+				anim_duration : t_prop.anim_duration
+			}
+		}
+}
+
+var addConditions = function(id)
 {
 	if(id == -1)
-		return;
+		return true;
 
 	var condition = searchCondition(id);
 	var c = {};
@@ -26,13 +58,16 @@ var addConditions = function(list, id)
 		var id1 = condition.id_C1;
 		var id2 = condition.id_C2;
 
+		if(id1 == -1 && id2 == -1)
+			return true;
+
 		if (id1 != -1)
-			addConditions(c.condition, id1);
+			c.conditions[0] = addConditions(id1);
 		if (id2 != -1)
-			addConditions(c.condition, id2);
+			c.conditions[1] = addConditions(id2);
 	}
 
-	list.push(c)
+	return c;
 }
 
 var addToZip = function(file, filename, zip, texture = true)
@@ -54,65 +89,90 @@ var addToZip = function(file, filename, zip, texture = true)
 	zip.file(filename, blob);
 }
 
-var exporter = function()
+var exportSystems = function()
 {
-	if(system_list.length == 0)
-	{
-		export_modal_msg.modal('hide');
-		return;
-	}
-
-	//To be sure that at least one step of the graph have been
-	graph.runStep();
-
-	var exp_file   = [];
+	var exp_file   = {};
 	var exp_system = {};
 	var system, force, condition, modification;
 	var aux_force, aux_cond, aux_mod;
 	var aux_sEmittor, sub_emittor;
 	var o_mesh, aux_mesh;
 	var c_id, condition;
-	var p_data;
+	var p_data, texture, t_prop, taux_prop;
 	
 	var atlas_to_download  = [];
 	var meshes_to_download = [];
 
+	//Save the number of systems
+	exp_file["num_systems"] = system_list.length;
+
 	for (var i = 0; i < system_list.length; ++i)
 	{
+		//Get the system
 		system     = system_list[i];
 		exp_system = {};
 
+		/********************/
+		/*System information*/
+		/********************/
+		//The id of the system
 		exp_system.id  = system.id;
-		exp_system.uvs = system.uvs;
-		
-		exp_system.texture_id      = system.texture.id != undefined ? system.texture.id : -1;
-		exp_system.total_particles = system.total_particles;
-		exp_system.position        = system.position;
-		exp_system.particle_data   = system.particle_data;
-
+		//The source blending factor for the render
 		exp_system.src_bfact = system.src_bfact;
+		//The destiny blending factor for the render
 		exp_system.dst_bfact = system.dst_bfact;
 
-		exp_system.texture_id = system.texture.id;
+		//The origin of the particles in the system
+		exp_system.origin = system.origin;
+		//The original position of the system
+		exp_system.position = system.position;
 
-		if(system.Atlas != undefined)
+		//The spawn mode of the system
+		exp_system.spawn_mode = system.spawn_mode;
+		//The total particles of the system considering all the subemitters
+		//exp_system.total_particles = system.total_particles;
+		//The maximum principal particles of the system
+		exp_system.max_particles = system.max_particles;
+		//The spawn rate of particles in the system
+		exp_system.spawn_rate = system.spawn_rate;
+		//How many particles are spawned per wave in the wave mode
+		exp_system.particles_per_wave = system.particles_per_wave;
+
+
+		/***************/
+		/*Particle data*/
+		/***************/
+		//Al the initialization data for the particle in the system
+		exp_system.particle_data = system.particle_data;
+
+
+		/*********************/
+		/*Texture information*/
+		/*********************/
+		//The atlas load
+		if(system.atlas != undefined)
 		{
 			exp_system.atlasName = "Atlas"+i+".png";
-			atlas_to_download.push({file: exp_system.atlasName, name: "Atlas"+i+".png"});
+			atlas_to_download.push({file: system.atlas, name: exp_system.atlasName});
 		}
 		else
+		{
 			exp_system.atlasName = "None";
+		}
+		//The uvs of every particle in the atlas
+		exp_system.uvs = system.uvs;
+		//Save the texture with his id and properties
+		exp_system.texture = addTexture(system.texture);
 
-		exp_system.origin             = system.origin;
-		exp_system.spawn_rate         = system.spawn_rate;
-		exp_system.spawn_mode         = system.spawn_mode;
-		exp_system.particles_per_wave = system.particles_per_wave;
-		exp_system.max_particles      = system.max_particles;
 
+		/******************/
+		/*Mesh information*/
+		/******************/
+		//Load the origin mesh of the "principal" particles
 		o_mesh = system.origin_mesh;
-
+		//If is not null his name and the model are saved
 		if(o_mesh == undefined)
-			exp_system.origin_mesh = {};
+			exp_system.origin_mesh = {name: "None", modal: []};
 		else
 		{
 			aux_mesh = searchObject(o_mesh.id);
@@ -120,34 +180,48 @@ var exporter = function()
 			meshes_to_download.push({file: aux_mesh.mesh, name: o_mesh.id+"_"+o_mesh.name+".obj"});
 		}
 
+
+		/*************/
+		/*Subemitters*/
+		/*************/
 		var sub_emittors = system.sub_emittors;
 		exp_system.sub_emittors  = [];
 		for (var j = 0; j < sub_emittors.length; ++j)
 		{
 			aux_sEmittor = sub_emittors[j];
+			sub_emittor = {};
 
-			sub_emittor            = {};
-			sub_emittor.id         = aux_sEmittor.id;
-			sub_emittor.texture_id = aux_sEmittor.texture.id != undefined ? aux_sEmittor.texture.id : -1;
-
-			sub_emittor.origin             = aux_sEmittor.origin;
-			sub_emittor.spawn_mode         = aux_sEmittor.spawn_mode;
-
-			sub_emittor.max_particles      = aux_sEmittor.max_particles;
+			//The id of the sub emitter
+			sub_emittor.id = aux_sEmittor.id;
+			//The origin of the sub emitter (by now it's useless, only one origin)
+			sub_emittor.origin = aux_sEmittor.origin;
+			//The spawn mode of the sub emitter (by now it's useless, only one mode)
+			sub_emittor.spawn_mode = aux_sEmittor.spawn_mode;
+			//The max particles of the subemittor
+			sub_emittor.max_particles = aux_sEmittor.max_particles;
+			//How many particles per wave spawns the sub emittor
 			sub_emittor.particles_per_wave = aux_sEmittor.particles_per_wave;
 
-			sub_emittor.texture_id = aux_sEmittor.texture.id;
+			//The init data of the particles of the sub emittor
+			sub_emittor.particle_data = aux_sEmittor.particle_data;
 
+			//The texture information of the subemittor
+			sub_emittor.texture= addTexture(aux_sEmittor.texture);
+
+			//The forces and modifications of the sub emittor
 			sub_emittor.forces        = [];
 			sub_emittor.modifications = [];
 
 			//Add the conditions to the sub emittor
-			sub_emittor.condition = [];
-			addConditions(sub_emittor.condition, aux_sEmittor.condition);
+			sub_emittor.condition = addConditions(aux_sEmittor.condition);
 
 			exp_system.sub_emittors.push(sub_emittor);
 		}
 
+
+		/********/
+		/*Forces*/
+		/********/
 		exp_system.forces  = [];
 		for (var j = 0; j < forces_list.length; ++j)
 		{
@@ -156,12 +230,11 @@ var exporter = function()
 			if (aux_force.reciever == exp_system.id)
 			{
 				force = {};
+
+				//The type of the force
 				force.type = aux_force.type;
-				force.condition = [];
 
-				//Add the conditions to the force
-				addConditions(force.condition, aux_force.condition);
-
+				//Fill the force data depending on the type
 				switch (force.type)
 				{
 					case "gravity":
@@ -184,6 +257,10 @@ var exporter = function()
 					break;
 				}
 
+				//Add the conditions of the force
+				force.condition = addConditions(aux_force.condition);
+
+				//Add the force to the system or subemittor
 				if (aux_force.subReciever == -1)
 					exp_system.forces.push(force);
 				else
@@ -195,6 +272,10 @@ var exporter = function()
 			}
 		}
 
+
+		/***************/
+		/*Modifications*/
+		/***************/
 		exp_system.modifications = [];
 		for (var j = 0; j < modProp_list.length; ++j)
 		{
@@ -203,19 +284,28 @@ var exporter = function()
 			if (aux_mod.reciever == exp_system.id)
 			{
 				modification = {};
-				modification.application_mode     = aux_mod.application_mode;
-				modification.changed_property     = aux_mod.changed_property;
-				modification.equation          	  = aux_mod.equation;
-				modification.modification_mode    = aux_mod.modification_mode;
-				modification.new_value            = aux_mod.new_value;
+
+				//The changed property
+				modification.changed_property = aux_mod.changed_property;
+				//The new value of the propety
+				modification.new_value = aux_mod.new_value;
+
+				//What operation do with the new value
+				modification.application_mode = aux_mod.application_mode;
+				//The equation to follow, by default is lineal
+				modification.equation = aux_mod.equation;
+
+				//If the modification is along the lifetime or defined by the user
+				modification.modification_mode = aux_mod.modification_mode;
+				//When the changes starts
+				modification.user_defined_start = aux_mod.user_defined_start;
+				//How long until achieve the final value
 				modification.user_defined_seconds = aux_mod.user_defined_seconds;
-				modification.user_defined_start   = aux_mod.user_defined_start;
 
-				modification.condition = [];
-
-				//Add the conditions to the force
-				addConditions(modification.condition, aux_mod.condition);
+				//Add the conditions of the modification
+				modification.condition = addConditions(aux_mod.condition);
 			
+				//Add the force to the system or subemittor
 				if (aux_mod.subReciever == -1)
 					exp_system.modifications.push(modification);
 				else
@@ -226,7 +316,9 @@ var exporter = function()
 					}
 			}
 		}
-		exp_file.push(exp_system);
+
+		//Add the system to the file
+		exp_file["system_"+i] = exp_system;
 	}
 
 	var zip = undefined;
@@ -238,7 +330,7 @@ var exporter = function()
 	for (var i = 0; i < meshes_to_download.length; ++i)
 		addToZip(meshes_to_download[i].file, meshes_to_download[i].name, zip, false);
 
-	exp_file = JSON.stringify(exp_file);
+	exp_file = JSON.stringify(exp_file, null, '\t');
 	exp_file = [exp_file];
 
 	var blob = new Blob(exp_file, {type: "application/json"});
@@ -268,143 +360,27 @@ var exporter = function()
 		});
 }
 
-
-/* Link info
-    this.id, --> lo puedo ignorar
-    this.origin_id,
-    this.origin_slot,
-    this.target_id,
-    this.target_slot,
-    this.type --> lo puedo ignorar
-*/
-/*var exporter = function(graphJson)
+var exporter = function()
 {
-	if(graphJson == undefined)
-		return;
-	
-	var exp_file  = {};
-	var exp_nodes = [];
-
-	var links = graphJson.links;
-	var nodes = graphJson.nodes;
-	var node, prop, link;
-	var inputs, input;
-	var outputs, output;
-	var aux_node;
-
-	//Info about version app
-	exp_file.version = 1.0;
-
-
-	for (var i = 0; i < nodes.length; ++i)
+	if(system_list.length == 0)
 	{
-		aux_node = {}; //Reset the auxiliar node variable
-
-		node    = nodes[i];        //Get the node
-		inputs  = node.inputs;     //Get the inputs 
-		outputs = node.outputs;    //Get the outputs
-		prop	= node.properties; //Get the properties
-
-		//Fill the auxiliar node
-		aux_node.id         = node.id;
-		aux_node.type       = node.type;
-		aux_node.properties = prop;
-		aux_node.inputs     = [];
-		aux_node.outputs    = [];
-
-		if(inputs != undefined)
-			for (var j = 0; j < inputs.length; ++j) {
-				input = inputs[j];
-				aux_node.inputs.push(
-					{
-						name: input.name,
-						type: input.type,
-						slot:          j,
-						sender_id:    -1,
-						sender_slot:  -1
-					}
-				);
-			}
-
-		if(outputs != undefined)
-			for (var j = 0; j < outputs.length; ++j) {
-				output = outputs[j];
-				aux_node.outputs.push(
-					{
-						name: output.name,
-						type: output.type,
-						slot:           j,
-						reciever_id:   -1,
-						reciever_slot: -1
-					}
-				);
-			}
-
-		exp_nodes.push(aux_node)
+		export_modal_msg.modal('hide');
+		return;
 	}
 
-	//Fill the inputs and outputs
-	var origin_id, origin_slot, target_id, target_slot;
 
-	for (var i = 0; i < exp_nodes.length; ++i) {
-		node    = exp_nodes[i];
-		outputs = node.outputs;
-		inputs  = node.inputs;
-
-		for (var j = 0; j < links.length; ++j)
-		{
-			link = links[j];
-
-			origin_id   = link[1];
-			origin_slot = link[2];
-			target_id   = link[3];
-			target_slot = link[4];
-
-			//The node sends data
-			if(origin_id == node.id)
+		//To be sure that at least one step of the graph have been
+		$.when(graph.runStep()).then(function(){
+			try 
 			{
-				for(var k = 0; k < outputs.length; ++k)
-				{
-					output = outputs[k];
-					if(output.slot == origin_slot)
-					{
-						output.reciever_id   = target_id;
-						output.reciever_slot = target_slot;
-					}
-				} 
+				exportSystems()
 			}
-
-			//The node recieves data
-			if(target_id == node.id)
+			catch (error)
 			{
-				for(var k = 0; k < inputs.length; ++k)
-				{
-					input = inputs[k];
-					if(input.slot == target_slot)
-					{
-						input.sender_id   = origin_id;
-						input.sender_slot = origin_slot;
-					}
-				} 
+				export_modal_msg.modal('hide');
+		    	createAlert('Holy Guacamole!','Error exporting!!','Something goes wrong... Please save the file as DX and contact us via Github.','danger',true,false,'pageMessages')
 			}
-		}
-	}
-
-	exp_nodes = JSON.stringify(exp_nodes);
-	exp_nodes = [exp_nodes];
-
-	var blob = new Blob(exp_nodes, {type: "application/json"});
-
-	var url = window.URL || window.webkitURL;
-	link = url.createObjectURL(blob);
-
-	var exportedGraph = document.createElement("a");
-	exportedGraph.download = "Graph.json";
-	exportedGraph.href = link;
-
-	document.body.appendChild(exportedGraph);
-	exportedGraph.click();
-	document.body.removeChild(exportedGraph);
-
-	console.log(exp_nodes);
-}*/
+		});	
+	
+	
+}

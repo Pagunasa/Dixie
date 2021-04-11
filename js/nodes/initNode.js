@@ -4,8 +4,8 @@
 */
 function particleDataNode() {
 	this.properties = {
-		max_speed: [1,1,1],
-		min_speed: [-1,-1,-1],
+		max_speed: Float32Array.from([1,1,1]),
+		min_speed: Float32Array.from([-1,-1,-1]),
 
 		max_size: 0.25,
 		min_size: 0.10,
@@ -52,6 +52,15 @@ function particleDataNode() {
 	this.addOutput("Particle data", "p_data");
 }
 
+particleDataNode.prototype.onAddPropertyToPanel = function(i, panel)
+{
+	if( i == "color")
+		return addColorWidget(i, panel, this);
+	else if (i == "min_speed" || i == "max_speed")
+		return addVectorWidget(i, panel, this);
+	else 
+		return false;
+} 
 
 /*
 * 	For show the values when a graph is loaded, when the user change 
@@ -66,12 +75,12 @@ particleDataNode.prototype.onPropertyChanged = function(property)
 	switch (property) {
 		case "max_speed":
 			if(properties.max_speed.length != 3)
-				properties.max_speed = [0,0,0];
+				properties.max_speed = Float32Array.from([0,0,0]);
 		break;
 
 		case "min_speed":
 			if(properties.min_speed.length != 3)
-				properties.min_speed = [0,0,0];
+				properties.min_speed = Float32Array.from([0,0,0]);
 		break;
 
 		case "max_size":
@@ -140,7 +149,7 @@ particleDataNode.prototype.onExecute = function()
 	properties.max_size = input_max_size || properties.max_size;
 	properties.min_size = input_min_size || properties.min_size;
 
-	properties.color = input_color || [1,1,1,1];
+	properties.color = input_color || properties.color;
 	this.texture = input_texture || {file: undefined, id: undefined};
 
 	this.setOutputData(0, {data: properties, texture: this.texture});
@@ -237,7 +246,7 @@ initParticlesNode.prototype.getNextFrame = function(particle)
 		particle.frameY++;
 		particle.frameX = 0;
 
-		if(particle.frameX == sizeX)
+		if(particle.frameY == sizeY)
 			particle.frameY = 0;
 	} 
 
@@ -312,7 +321,7 @@ initParticlesNode.prototype.getCoords = function(frameX = 0, frameY = 0)
 		return [maxX,maxY, minX,maxY, maxX,minY, minX,minY, maxX,minY, minX,maxY];
 	}
 
-	//Get the basic Uvs in the case that the texture isn't animated or have subtextures
+	//Get the Uvs in the case that the texture isn't animated and have subtextures
 	minX = sizeX != 1 ? Math.floor(Math.random() * sizeX)/sizeX : 0;
 	minY = sizeY != 1 ? Math.floor(Math.random() * sizeY)/sizeY : 0;
 
@@ -332,7 +341,7 @@ initParticlesNode.prototype.getCoords = function(frameX = 0, frameY = 0)
 /*
 *	Retuns a the origin of the particle, if is a mesh will return a random point
 *   of the surface and if not will return the origin point defined by the user
-*	@method getCoords
+*	@method generateRandomPoint
 *   @params {Object} The system of the particle
 */
 initParticlesNode.prototype.generateRandomPoint = function(system)
@@ -599,13 +608,23 @@ initParticlesNode.prototype.onExecute = function()
 		}
 
 		var system = this.system_info;
-		system.particle_data = p_prop.data;
 
 		if (type == "sub_emitter" && this.internal.last_sub_id != system_input.id)
 		{
 			var sub_emittors = system.sub_emittors;
 			this.sub_emitter = sub_emittors[system_input.index];
 		}
+
+		//Save the particle data
+		if (type == "emitter")
+		{
+			system.particle_data = p_prop.data;
+		}
+		else if (type == "sub_emitter")
+		{
+			this.sub_emitter.particle_data = p_prop.data;
+		}
+
 
 		var sub_emitter = this.sub_emitter;
 
@@ -625,9 +644,15 @@ initParticlesNode.prototype.onExecute = function()
 		else if (p_prop.texture.file != "" && p_prop.texture.file != undefined)
 		{
 			if( system_input.type == "emitter" )
+			{
 				system.texture.file = p_prop.texture.file;
+				system.texture.prop = p_prop.texture.prop;
+			}
 			else if ( system_input.type == "sub_emitter")
+			{
 				sub_emitter.texture.file = p_prop.texture.file;
+				sub_emitter.texture.prop = p_prop.texture.prop;
+			}
 
 			if(this.internal.last_texture != p_prop.texture.file.data.src)
 			{
