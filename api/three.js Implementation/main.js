@@ -194,6 +194,8 @@ function loadTexture( atlasURL, toSave, graph) {
     loader.load( atlasURL,
         function ( texture ) {
             graph[toSave] = texture;
+            graph.particle_mesh.material.uniforms.u_texture = {value : texture};
+            graph.particle_mesh.material.fragmentShader = textFragment;
         }
     );
 }
@@ -224,7 +226,7 @@ function createParticleMesh( buffers, graph ) {
         },
 
         vertexShader: vertexShader,
-        fragmentShader: graph.atlas != undefined ? textFragment : flatFragment
+        fragmentShader:flatFragment
     } );
 
     //Disable cull face
