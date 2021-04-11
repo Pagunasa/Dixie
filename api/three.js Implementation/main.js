@@ -101,17 +101,17 @@ function init() {
     mesh.position.z = 2;
     scene.add( mesh );
 
+    //Load the shaders
+    vertexShader = document.getElementById( 'vertexShader' ).textContent;
+    flatFragment = document.getElementById( 'flatFragmentShader' ).textContent;
+    textFragment = document.getElementById( 'texturedFragmentShader' ).textContent;
+
     systems = new Dixie(particle_system, createParticleMesh, loadTexture, "Graph");
 
     renderer = new THREE.WebGLRenderer( { antialias: true } );
     renderer.setSize( window.innerWidth, window.innerHeight );
     renderer.setAnimationLoop( animation );
     document.body.appendChild( renderer.domElement );
-
-    //Get the shaders
-    vertexShader = document.getElementById( 'vertexShader' ).textContent;
-    flatFragment = document.getElementById( 'flatFragmentShader' ).textContent;
-    textFragment = document.getElementById( 'texturedFragmentShader' ).textContent;
 }
 
 function animation( time ) {
