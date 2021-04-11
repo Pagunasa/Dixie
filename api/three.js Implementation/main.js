@@ -130,7 +130,7 @@ function animation( time ) {
 
     //Update the uniforms for the particles
     let graphs = systems.graphs;
-    let graph, render_info, uniforms = {};
+    let graph, render_info, uniforms;
     
     //Get the right vector of the camera
     let right = new THREE.Vector3();
@@ -139,17 +139,22 @@ function animation( time ) {
     right.y = mv[4];
     right.z = mv[8];
 
+    //Get the up vector of the camera
+    let up = camera.up;
+
     //In a same frame this uniforms will be the same for all graphs
-    uniforms.u_right = { value : right};
-    uniforms.u_up    = { value : camera.up};
+    right = { value : right};
+    u_up  = { value : camera.up};
 
     for (let i = 0; i < graphs.length; ++i) 
     {
         graph = graphs[i];
         render_info = graph.renderInfo;
 
-        //Clone the uniforms to the graph material
-        graph.particle_mesh.material.uniforms = Object.assign({}, uniforms);
+        //Update the uniforms
+        uniforms = graph.particle_mesh.material.uniforms; 
+        uniforms.u_right = right;
+        uniforms.u_up = up; 
     }
 
     renderer.render( scene, camera );   
@@ -194,8 +199,11 @@ function loadTexture( atlasURL, toSave, graph) {
     loader.load( atlasURL,
         function ( texture ) {
             graph[toSave] = texture;
-            graph.particle_mesh.material.uniforms.u_texture = {value : texture};
-            graph.particle_mesh.material.fragmentShader = textFragment;
+
+            let material = graph.particle_mesh.material; 
+            material.uniforms.u_texture = {value : texture};
+            material.fragmentShader = textFragment;
+            material.needsUpdate = true;
         }
     );
 }
