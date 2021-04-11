@@ -181,12 +181,12 @@ function uploadBuffers( mesh, buffers ) {
     }
 }
 
-function loadTexture( atlasURL, toSave ) {
+function loadTexture( atlasURL, toSave, graph) {
     let loader = new THREE.TextureLoader()
 
     loader.load( atlasURL,
         function ( texture ) {
-            toSave = texture;
+            graph[toSave] = texture;
         }
     );
 }
