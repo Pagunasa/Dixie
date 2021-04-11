@@ -506,7 +506,7 @@ class DixieParticleSystem {
 			}
 
 			//LOAD TEXTURE ATLAS
-			atlas = c_texture_loader_f_(directory_+this.atlasName);
+			c_texture_loader_f_(directory_+"/"+this.atlasName, this.atlas);
 		}
 
 		this.renderInfo = {}
