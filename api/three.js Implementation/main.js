@@ -144,7 +144,7 @@ function animation( time ) {
 
     //In a same frame this uniforms will be the same for all graphs
     right = { value : right};
-    u_up  = { value : camera.up};
+    up  = { value : camera.up};
 
     for (let i = 0; i < graphs.length; ++i) 
     {
