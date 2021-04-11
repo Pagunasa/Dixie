@@ -30,7 +30,7 @@
 	}
 </script>
 
-<script id="fragmentShader" type="x-shader/x-fragment">
+<script id="flatFragmentShader" type="x-shader/x-fragment">
 	varying vec4 v_color;
 	varying float v_visible;
 
@@ -40,7 +40,20 @@
 	}
 </script>
 
+<script id="texturedFragmentShader" type="x-shader/x-fragment">
+	uniform sampler2D u_texture;
 
+	varying vec4 v_color;
+	varying vec2 v_coord;
+	varying float v_visible;
+
+	void main() {
+		if (v_visible == 0.0) discard;
+		vec4 color = v_color * texture(u_texture, v_coord);
+		if(color.a < 0.1) discard;
+		pc_fragColor = color;
+	}
+</script>
 
 <!--<script id="vertexShader2" type="x-shader/x-vertex">
 	attribute vec4 colors;

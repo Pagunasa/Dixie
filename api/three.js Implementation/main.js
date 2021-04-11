@@ -79,6 +79,9 @@ let particle_system = {
     }
 };
 
+//Shaders
+let vertexShader, flatFragment, textFragment;
+
 init();
 
 function init() {
@@ -105,6 +108,10 @@ function init() {
     renderer.setAnimationLoop( animation );
     document.body.appendChild( renderer.domElement );
 
+    //Get the shaders
+    vertexShader = document.getElementById( 'vertexShader' ).textContent;
+    flatFragment = document.getElementById( 'flatFragmentShader' ).textContent;
+    textFragment = document.getElementById( 'texturedFragmentShader' ).textContent;
 }
 
 function animation( time ) {
@@ -216,8 +223,8 @@ function createParticleMesh( buffers, graph ) {
             u_up : { value : camera.up}
         },
 
-        vertexShader: document.getElementById( 'vertexShader' ).textContent,
-        fragmentShader: document.getElementById( 'fragmentShader' ).textContent
+        vertexShader: vertexShader,
+        fragmentShader: graph.atlas != undefined ? textFragment : flatFragment
     } );
 
     //Disable cull face
