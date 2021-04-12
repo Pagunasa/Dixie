@@ -215,7 +215,7 @@ initParticlesNode.prototype.generateParticleInfo = function (properties, system)
 				max_size      : max_size,
 				origin_id     : properties.origin_id,
 				texture       : this.texture,
-				coords        : this.getCoords(0, this.texture != undefined ? this.texture.prop.textures_y-1 : 0)
+				coords        : this.getCoords(0, this.texture != undefined ? (this.texture.prop != undefined ? this.texture.prop.textures_y-1 : 0) : 0)
 			};
 }
 
