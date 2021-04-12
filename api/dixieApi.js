@@ -555,9 +555,9 @@ class DixieParticleSystem {
 			let points;
 
 			if(div_value == 9)
-				points = origin_mesh.vertices.slice(triangle, triangle + div_value);
+				points = this.origin_mesh.vertices.slice(triangle, triangle + div_value);
 			else
-				points = origin_mesh.vertices.slice(triangle == 0 ? 0 : 3, triangle == 0 ? 9 : 12);
+				points = this.origin_mesh.vertices.slice(triangle == 0 ? 0 : 3, triangle == 0 ? 9 : 12);
 
 			let random_point = [0,0,0];
 
