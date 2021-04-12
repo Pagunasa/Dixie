@@ -48,12 +48,12 @@ let particle_system = {
             [
                 0,
                 0,
-                0.0625,
-                0.06739526411657559
+                0.25,
+                0.36633663366336633
             ],
             [
                 0,
-                0.06739526411657559,
+                0.36633663366336633,
                 1,
                 1
             ]
@@ -61,9 +61,9 @@ let particle_system = {
         "texture": {
             "id": 1,
             "prop": {
-                "subtextures": false,
-                "textures_x": 1,
-                "textures_y": 1,
+                "subtextures": true,
+                "textures_x": 8,
+                "textures_y": 3,
                 "animated": false,
                 "anim_loop": false,
                 "anim_duration": 0
