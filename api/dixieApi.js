@@ -1124,7 +1124,7 @@ class Dixie {
 			mesh_.modal = DixieGlobals.identity;
 		}
 
-		if(!validPosInteger(mesh_.triangle_num))
+		if(!this.validPosInteger(mesh_.triangle_num))
 		{
 			warnMsg.push("Number of triangles not defined correctly. Changing mode to Point!!\
 				\n \t Detected value: " +mesh_.triangle_num+". \
@@ -1133,7 +1133,7 @@ class Dixie {
 			origin_ = "Point";
 		}
 		
-		if(!validPosInteger(mesh_.div_value))
+		if(!this.validPosInteger(mesh_.div_value))
 		{
 			warnMsg.push("Number of vertices per triangle not defined correctly. Changing mode to Point!!\
 				\n \t Detected value: " +mesh_.div_value+". \
