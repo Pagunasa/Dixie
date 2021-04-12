@@ -11,7 +11,7 @@ let particle_system = {
         "id": 1,
         "src_bfact": 770,
         "dst_bfact": 1,
-        "origin": "Point",
+        "origin": "Mesh",
         "position": [
             0,
             0,
@@ -23,14 +23,14 @@ let particle_system = {
         "particles_per_wave": 10,
         "particle_data": {
             "max_speed": [
-                1,
-                1,
-                1
+                "0",
+                "0",
+                "0"
             ],
             "min_speed": [
-                -1,
-                -1,
-                -1
+                "0",
+                "0",
+                "0"
             ],
             "max_size": 0.25,
             "min_size": 0.1,
@@ -43,35 +43,41 @@ let particle_system = {
                 1
             ]
         },
-        "atlasName": "Atlas0.png",
-        "uvs": [
-            [
-                0,
-                0,
-                0.25,
-                0.36633663366336633
-            ],
-            [
-                0,
-                0.36633663366336633,
-                1,
-                1
-            ]
-        ],
+        "atlasName": "None",
+        "uvs": [],
         "texture": {
-            "id": 1,
+            "id": -1,
             "prop": {
-                "subtextures": true,
-                "textures_x": 8,
-                "textures_y": 3,
+                "subtextures": false,
+                "textures_x": 1,
+                "textures_y": 1,
                 "animated": false,
                 "anim_loop": false,
                 "anim_duration": 0
             }
         },
         "origin_mesh": {
-            "name": "None",
-            "modal": []
+            "name": "4_pango.obj",
+            "modal": [
+                0.02500000037252903,
+                0,
+                0,
+                0,
+                0,
+                0.02500000037252903,
+                0,
+                0,
+                0,
+                0,
+                0.02500000037252903,
+                0,
+                2,
+                0,
+                0,
+                1
+            ],
+            "triangle_num": 5968,
+            "div_value": 9
         },
         "sub_emittors": [],
         "forces": [],
