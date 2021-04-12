@@ -215,7 +215,7 @@ initParticlesNode.prototype.generateParticleInfo = function (properties, system)
 				max_size      : max_size,
 				origin_id     : properties.origin_id,
 				texture       : this.texture,
-				coords        : this.getCoords()
+				coords        : this.getCoords(0, this.texture.prop.textures_y-1)
 			};
 }
 
@@ -243,11 +243,11 @@ initParticlesNode.prototype.getNextFrame = function(particle)
 
 	if(particle.frameX == sizeX)
 	{
-		particle.frameY++;
+		particle.frameY--;
 		particle.frameX = 0;
 
-		if(particle.frameY == sizeY)
-			particle.frameY = 0;
+		if(particle.frameY < 0)
+			particle.frameY = sizeY-1;
 	} 
 
 	particle.coords = this.getCoords(particle.frameX, particle.frameY);

@@ -576,8 +576,9 @@ Particle.prototype.fill = function(properties, is_Trail = false)
 			t = anim_d == 0 ? lifetime : anim_d;
 		}
 
-		var frame_number = Math.floor(t_prop.textures_x + t_prop.textures_y) - 1; 
-		this.frameRate = (t / frame_number);
+		this.frameY      = t_prop.textures_y - 1; 
+		var frame_number = t_prop.textures_x * t_prop.textures_y; 
+		this.frameRate   = (t / frame_number);
 	}
 }
 

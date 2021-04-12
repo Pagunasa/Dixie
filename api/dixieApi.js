@@ -259,7 +259,8 @@ class DixieParticle {
 					t = anim_d <= 0 ? lifetime : anim_d;
 				}
 
-				let frame_number = Math.floor(t_prop.textures_x + t_prop.textures_y) - 1; 
+				this.frameY      = t_prop.textures_y - 1;  
+				let frame_number = t_prop.textures_x * t_prop.textures_y; 
 				this.frameRate = (t / frame_number);
 			}
 		}
@@ -311,11 +312,11 @@ class DixieParticle {
 
 		if(this.frameX == this.textures_x)
 		{
-			this.frameY++;
+			this.frameY--;
 			this.frameX = 0;
 
-			if(this.frameY == this.textures_y)
-				this.frameY = 0;
+			if(this.frameY < 0)
+				this.frameY = sizeY - 1;
 		}
 
 		this.getCoords();
