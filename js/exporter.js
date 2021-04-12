@@ -176,7 +176,10 @@ var exportSystems = function()
 		else
 		{
 			aux_mesh = searchObject(o_mesh.id);
-			exp_system.origin_mesh = {name:  o_mesh.id+"_"+o_mesh.name+".obj", modal: o_mesh.model};
+			exp_system.origin_mesh = {name:  o_mesh.id+"_"+o_mesh.name+".obj", 
+									  modal: o_mesh.model,
+									  triangle_num : o_mesh.triangle_num,
+									  div_value : o_mesh.name != "plane" ? 9 : 6};
 			meshes_to_download.push({file: aux_mesh.mesh, name: o_mesh.id+"_"+o_mesh.name+".obj"});
 		}
 

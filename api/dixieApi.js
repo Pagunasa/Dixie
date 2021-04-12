@@ -492,7 +492,7 @@ class DixieParticleSystem {
 			}
 
 			modal = this.origin_mesh.modal;
-			mesh  = c_mesh_loader_f_(directory_+this.origin_mesh.name);
+			c_mesh_loader_f_(directory_+"/meshes/"+this.origin_mesh.name, "object", "object_vertices", this);
 
 		}
 		else if(this.origin == "Point")
@@ -532,7 +532,49 @@ class DixieParticleSystem {
 		}
 		else if(this.origin == "Mesh")
 		{
-			return this.position;
+			
+			//Get random ambas
+			let ambda1 = Math.random();
+			let ambda2 = Math.random();
+			let ambda3;
+
+
+			if(ambda1 + ambda2 > 1)
+			{
+				ambda1 = 1 - ambda1;
+				ambda2 = 1 - ambda2;
+			}
+
+			ambda3 = 1 - ambda1 - ambda2;
+
+			let triangle_num = this.origin_mesh.triangle_num;
+			let div_value = this.origin_mesh.div_value;
+
+			//Pick a random triangle
+			let triangle = Math.floor(Math.random()*triangle_num) * div_value;
+			let points;
+
+			if(div_value == 9)
+				points = origin_mesh.vertices.slice(triangle, triangle + div_value);
+			else
+				points = origin_mesh.vertices.slice(triangle == 0 ? 0 : 3, triangle == 0 ? 9 : 12);
+
+			let random_point = [0,0,0];
+
+			//Apply the barycenter coordinate formula to get the point
+			for (var i = 0; i < 3; ++i)
+				random_point[i] = points[i] * ambda1 + points[i+3] * ambda2 + points[i+6] * ambda3;
+			
+			let model = this.origin_mesh.modal;
+
+			//Multiply by the model the random point
+			let x = random_point[0], y = random_point[1], z = random_point[2];
+
+			random_point[0] = model[0] * x + model[4] * y + model[8]  * z + model[12];
+			random_point[1] = model[1] * x + model[5] * y + model[9]  * z + model[13];
+			random_point[2] = model[2] * x + model[6] * y + model[10] * z + model[14];
+
+			return random_point;
 		}
 	}
 
@@ -734,7 +776,7 @@ class Dixie {
 	*	@method constructor
 	*   @params {List/Json} The list of the particles systems or just one
 	*/
-	constructor(graphs_, create_pmesh_f_, load_texture_f_ = undefined, files_directory_ = "") {
+	constructor(graphs_, create_pmesh_f_, load_texture_f_ = undefined, load_mesh_f_ = undefined, files_directory_ = "") {
 		this.graphs = [];
 
 		if(files_directory_ == undefined)
@@ -751,17 +793,17 @@ class Dixie {
 			{
 				for(let i = 0; i < graphs_.length; ++i)
 				{
-					this.loadGraph(graphs_[i], create_pmesh_f_, load_texture_f_);
+					this.loadGraph(graphs_[i], create_pmesh_f_, load_texture_f_, load_mesh_f_);
 				}
 			}
 			else
-				this.loadGraph(graphs_, create_pmesh_f_, load_texture_f_)
+				this.loadGraph(graphs_, create_pmesh_f_, load_texture_f_, load_mesh_f_)
 		}
 		else
 			console.error("Dixie Error!! \n\n\t No data provided. \n\n");
 	}
 
-	loadGraph(graph_, create_pmesh_f_, load_texture_f) {
+	loadGraph(graph_, create_pmesh_f_, load_texture_f, load_mesh_f_) {
 		let num_systems = graph_.num_systems;
 		let graph;
 
@@ -781,7 +823,7 @@ class Dixie {
 		{
 			if(this.validateSystem(graph_["system_"+i], i) != -1)
 			{
-				graph = new DixieParticleSystem(graph_["system_"+i], this.directory, create_pmesh_f_, undefined, load_texture_f);
+				graph = new DixieParticleSystem(graph_["system_"+i], this.directory, create_pmesh_f_, load_mesh_f_, load_texture_f);
 				this.graphs.push(graph);
 			}
 		}
@@ -1080,6 +1122,24 @@ class Dixie {
 		{
 			warnMsg.push("Modal not defined correctly. Inserting the default one!!");
 			mesh_.modal = DixieGlobals.identity;
+		}
+
+		if(!validPosInteger(mesh_.triangle_num))
+		{
+			warnMsg.push("Number of triangles not defined correctly. Changing mode to Point!!\
+				\n \t Detected value: " +mesh_.triangle_num+". \
+				\n \t Expected value: A positive number.");
+
+			origin_ = "Point";
+		}
+		
+		if(!validPosInteger(mesh_.div_value))
+		{
+			warnMsg.push("Number of vertices per triangle not defined correctly. Changing mode to Point!!\
+				\n \t Detected value: " +mesh_.div_value+". \
+				\n \t Expected value: A positive number.");
+		
+			origin_ = "Point";
 		}
 
 		return mesh_;

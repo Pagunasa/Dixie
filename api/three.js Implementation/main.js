@@ -106,7 +106,7 @@ function init() {
     flatFragment = document.getElementById( 'flatFragmentShader' ).textContent;
     textFragment = document.getElementById( 'texturedFragmentShader' ).textContent;
 
-    systems = new Dixie(particle_system, createParticleMesh, loadTexture, "Graph");
+    systems = new Dixie(particle_system, createParticleMesh, loadTexture, loadMesh, "Graph");
 
     renderer = new THREE.WebGLRenderer( { antialias: true } );
     renderer.setSize( window.innerWidth, window.innerHeight );
@@ -194,7 +194,7 @@ function uploadBuffers( mesh, buffers ) {
 }
 
 function loadTexture( atlasURL, toSave, graph) {
-    let loader = new THREE.TextureLoader()
+    let loader = new THREE.TextureLoader();
 
     loader.load( atlasURL,
         function ( texture ) {
@@ -204,6 +204,21 @@ function loadTexture( atlasURL, toSave, graph) {
             material.uniforms.u_texture = {value : texture};
             material.fragmentShader = textFragment;
             material.needsUpdate = true;
+        }
+    );
+}
+
+function loadMesh( meshURL, toSaveMesh, toSaveVertices, graph ) {
+    let loader = new THREE.OBJLoader();
+
+    loader.load( meshURL,
+        function ( object ) {
+            //Update the modal
+            object.modelViewMatrix.elements = graph.origin_mesh.modal;
+            //Save the mesh in the graph
+            graph[toSaveMesh] = object;
+            //Save the vertices
+            graph[toSaveVertices] = object.geometry.attributes.position.array; 
         }
     );
 }
