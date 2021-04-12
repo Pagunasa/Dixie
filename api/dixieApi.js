@@ -316,7 +316,7 @@ class DixieParticle {
 			this.frameX = 0;
 
 			if(this.frameY < 0)
-				this.frameY = sizeY - 1;
+				this.frameY = this.textures_y - 1;
 		}
 
 		this.getCoords();
