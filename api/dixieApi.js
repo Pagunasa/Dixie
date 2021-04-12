@@ -226,6 +226,8 @@ class DixieParticle {
 
 		this.texture_id  = texture_.id;
 		this.subtextures = false;
+		this.textures_x  = 0;
+		this.textures_y  = 0;
 		this.animated    = false;
 		this.frameRate   = 0;
 		this.c_frame     = 0;
@@ -239,11 +241,15 @@ class DixieParticle {
 			this.uvs = uvs_[texture_.id];
 			this.subtextures = t_prop.subtextures;
 
+			if(t_prop.subtextures)
+			{
+				this.textures_x = t_prop.textures_x;
+				this.textures_y = t_prop.textures_y;
+			}
+
 			if(t_prop.animated)
 			{
 				this.animated   = true;
-				this.textures_x = t_prop.textures_x;
-				this.textures_y = t_prop.textures_y;
 
 				let t = lifetime;
 
