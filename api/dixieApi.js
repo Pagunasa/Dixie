@@ -558,9 +558,9 @@ class DixieParticleSystem {
 			let points;
 
 			if(div_value == 9)
-				points = o_mesh.vertices.slice(triangle, triangle + div_value);
+				points = o_mesh.object_vertices.slice(triangle, triangle + div_value);
 			else
-				points = o_mesh.vertices.slice(triangle == 0 ? 0 : 3, triangle == 0 ? 9 : 12);
+				points = o_mesh.object_vertices.slice(triangle == 0 ? 0 : 3, triangle == 0 ? 9 : 12);
 
 			let random_point = [0,0,0];
 
@@ -600,6 +600,7 @@ class DixieParticleSystem {
 
 			let id = to_reset_[0];
 			let particle = this.particles[id];
+			prop_.position = this.setParticlePosition();
 			particle.fill(prop_, texture_, this.uvs); //Reset the particle
 			to_reset_.splice(0,1);
 		}
