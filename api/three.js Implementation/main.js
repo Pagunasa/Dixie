@@ -217,17 +217,17 @@ function loadTexture( atlasURL, toSave, graph) {
     );
 }
 
-function loadMesh( meshURL, toSaveMesh, toSaveVertices, graph ) {
+function loadMesh( meshURL, toSaveMesh, toSaveVertices, meshInGraph ) {
     let loader = new OBJLoader();
 
     loader.load( meshURL,
         function ( object ) {
             //Update the modal
-            object.modelViewMatrix.elements = graph.origin_mesh.modal;
+            object.modelViewMatrix.elements = meshInGraph.modal;
             //Save the mesh in the graph
-            graph[toSaveMesh] = object;
+            meshInGraph[toSaveMesh] = object;
             //Save the vertices
-            graph[toSaveVertices] = object.children[0].geometry.attributes.position.array; 
+            meshInGraph[toSaveVertices] = object.children[0].geometry.attributes.position.array; 
         }
     );
 }
