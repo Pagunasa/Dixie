@@ -486,7 +486,7 @@ class DixieParticle {
 		return undefined;
 	}
 
-	applyModifications(modifications_, dt_) {
+	applyModifications(dt_, modifications_) {
 		let modification, changed_value;
 		let final_value, new_value;
 		let application_mode, x, e;
@@ -1156,6 +1156,7 @@ class Dixie {
 				//Apply the movement
 				particle.move(dt_);
 				particle.applyForces(dt_, forces);
+				particle.applyModifications(dt_, graph.modifications);
 			}
 			
 			//Ordening particles and then the buffers
