@@ -503,6 +503,7 @@ class DixieParticle {
 
 			new_value = modification.new_value;
 			application_mode = modification.application_mode;
+			modification_mode = modification.modification_mode;
 
 			if(modification_mode == "Along life time")
 				e = this.lifetime;
