@@ -489,8 +489,8 @@ class DixieParticle {
 	applyModifications(dt_, modifications_) {
 		let modification, changed_value;
 		let final_value, new_value;
-		let application_mode, x, e;
-		let modification_mode, meet_at;
+		let application_mode, modification_mode, meet_at;
+		let x, e, factor;
 
 		x = this.c_lifetime;
 
