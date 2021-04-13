@@ -547,7 +547,7 @@ class DixieParticle {
 							final_value[i] = this.iColor[i] - final_value[i];
 
 					for(let i = 0; i < 4 ; ++i)
-						this.color = final_value[i] * factor + this.iColor[i] * (1.0 - factor);
+						this.color[i] = final_value[i] * factor + this.iColor[i] * (1.0 - factor);
 				break;
 
 				case "Life time":
@@ -578,7 +578,7 @@ class DixieParticle {
 							final_value[i] = this.iColor[i] - final_value[i];
 			
 					for(let i = 0; i < 4 ; ++i)
-						this.speed = final_value[i] * factor + this.iSpeed[i] * (1.0 - factor);
+						this.speed[i] = final_value[i] * factor + this.iSpeed[i] * (1.0 - factor);
 				break;
 
 				case "Size":
