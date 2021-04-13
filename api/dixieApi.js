@@ -133,6 +133,27 @@ var DixieGlobals =
 		    return c;
 		},
 
+	/*
+	* 	If a equation is gived then this function calculates the factor of the new value using it
+	*	@method computeChangeEquation 
+	*   @params {Number} The value of the X
+	*   @params {List}   The number in front of the X
+	*/
+	computeEquation:  
+		function(equation_, factor_)
+		{
+			let value = 0;
+			let length = equation_.length;
+
+			for (let i = 0; i < length; ++i)
+				value += equation_[i]*Math.pow(factor_, length-1-i);
+
+			if(value >= 0.99)
+				value = 1;
+			
+			return value;
+		},
+
 	//For doing the billboard I follow the next tutorial
 	//http://www.opengl-tutorial.org/intermediate-tutorials/billboards-particles/billboards/
 	vs_particles : '\
@@ -320,6 +341,9 @@ class DixieParticle {
 		{
 			force = forces_[i];
 
+			if(!this.testCondition(force.condition))
+				continue;
+
 			switch (force.type) {
 				case "gravity":
 					for(let j = 0; j < 3; ++j)
@@ -352,6 +376,221 @@ class DixieParticle {
 					for(let j = 0; j < 3; ++j)
 						this.position[j] = distance[j] * distance_factor * dt_;
 				break; 
+			}
+		}
+	}
+
+	testCondition(condition_) {
+		
+		if(condition_ == true)
+			return true;
+
+		let meet = false;
+		let c;
+
+		switch (condition_.type) {
+			case "condition":
+				let tested_value;
+				let value_to_test = condition_.value;
+
+				if(condition_.one_time)
+					for(let i = 0; i < this.conditions_meet.length; ++i)
+						if(this.conditions_meet[i].id == condition_.id)
+							return false;
+
+				switch (condition_.property) {
+					case "Life time":
+						tested_value = this.lifetime;
+					break;
+
+					case "Speed":
+						tested_value = this.speed;
+					break;
+
+					case "Size":
+						tested_value = this.size;
+					break;
+				}
+
+				switch (condition_.operator) {
+					case "Equals":
+						if (tested_value == value_to_test)
+							meet = true;
+					break;
+
+					case "Greater than":
+						if (tested_value > value_to_test)
+							meet = true;
+					break;
+
+					case "Less than":
+						if (tested_value < value_to_test)
+							meet = true;
+					break;
+				
+					case "Greater than or equals":
+						if (tested_value >= value_to_test)
+							meet = true;
+					break;
+
+					case "Less than or equals":
+						if (tested_value <= value_to_test)
+							meet = true;
+					break;
+
+					case "No equals":
+						if (tested_value != value_to_test)
+							meet = true;
+					break;
+				}
+
+				if(meet)
+				{
+					c = getCondition(condition_.id)
+					
+					if(c == undefined)
+						this.conditions_meet.push({id: condition_.id, meet_at: this.c_lifetime})
+					else
+						c.meet_at = this.c_lifetime;
+				}
+			break;
+
+			case "merged condition":
+				let conditions = condition_.conditions;
+				switch (condition_.mode) {
+					case "And":
+						return testCondition(conditions[0]) && testCondition(conditions[1]);
+					break;
+
+					case "Or":
+						return testCondition(conditions[0]) || testCondition(conditions[1]);
+					break;
+				}
+			break;
+		}
+
+		return meet;
+	}
+
+	getCondition(id_) {
+		let conditions = this.conditions_meet;
+		let c;
+
+		for(let i = 0; i < conditions.length; ++i)
+		{
+  			c = conditions[i];
+  			if(c.id == id_)
+  				return c;
+		}
+
+		return undefined;
+	}
+
+	applyModifications(modifications_, dt_) {
+		let modification, changed_value;
+		let final_value, new_value;
+		let application_mode, x, e;
+		let modification_mode, meet_at;
+
+		x = this.c_lifetime;
+
+		for(let i = 0; i < modifications_.length; ++i)
+		{
+			modification = modifications_[i];
+
+			if(!this.testCondition(modification.condition))
+				continue;
+
+			new_value = modification.new_value;
+			application_mode = modification.application_mode;
+
+			if(modification_mode == "Along life time")
+				e = this.lifetime;
+			else if(modification_mode == "User defined")
+			{
+				//The conditions aren't meeted
+				if(x < modification.user_defined_start)
+					continue;
+
+				e = modification.user_defined_seconds + modification.user_defined_start;
+
+				//If is not true
+				if(!modification.condition)
+				{
+					meet_at = this.getCondition(modification.condition.id).meet_at;
+					e += meet_at;
+				}
+			}
+
+			//Compute the factor
+			factor = x / e;
+
+			if(modification.equation.length > 0)
+				factor = DixieGlobals.computeEquation(modification.equation, factor)
+
+			switch (modification.changed_property) {
+				case "Color":
+					changed_value = this.color;
+
+					final_value = [0,0,0,0];
+					final_value[0] = new_value[0];
+					final_value[1] = new_value[1];
+					final_value[2] = new_value[2];
+					final_value[3] = new_value[3];
+
+					if(application_mode == "Addition")
+						for(let i = 0; i < 4; ++i)
+							final_value[i] = this.iColor[i] + final_value[i];
+					else if(application_mode == "Subtraction")
+						for(let i = 0; i < 4; ++i)
+							final_value[i] = this.iColor[i] - final_value[i];
+
+					for(let i = 0; i < 4 ; ++i)
+						this.color = final_value[i] * factor + this.iColor[i] * (1.0 - factor);
+				break;
+
+				case "Life time":
+					changed_value = this.lifetime;
+					final_value = new_value; 
+
+					if(properties.application_mode == "Addition")
+						final_value += this.iLifetime;
+					else if(properties.application_mode == "Subtraction")
+						final_value = Math.max(this.iLifetime - final_value, 0);
+
+					this.lifetime = final_value * factor + this.iLifetime * (1.0 - factor);
+				break;
+
+				case "Speed":
+					changed_value = this.speed;
+
+					final_value = [0,0,0];
+					final_value[0] = new_value[0];
+					final_value[1] = new_value[1];
+					final_value[2] = new_value[2];
+
+					if(application_mode == "Addition")
+						for(let i = 0; i < 3; ++i)
+							final_value[i] = this.iColor[i] + final_value[i];
+					else if(application_mode == "Subtraction")
+						for(let i = 0; i < 3; ++i)
+							final_value[i] = this.iColor[i] - final_value[i];
+			
+					for(let i = 0; i < 4 ; ++i)
+						this.speed = final_value[i] * factor + this.iSpeed[i] * (1.0 - factor);
+				break;
+
+				case "Size":
+					changed_value = this.size;
+					final_value = new_value; 
+
+					if(properties.application_mode == "Addition")
+						final_value += this.iSize;
+					else if(properties.application_mode == "Subtraction")
+						final_value = Math.max(this.iSize - final_value, 0);
+
+					this.size = final_value * factor + this.iSize * (1.0 - factor);
+				break;
 			}
 		}
 	}
@@ -1216,6 +1455,16 @@ class Dixie {
 
 		let type = condition_.type;
 
+		if(!this.validPosInteger(condition_.id))
+		{
+			warnMsg.push("Invalid id for the condition in "+systemName_+". Deleting the condition...\
+					\n \t Detected value: "+condition_.id+". \
+					\n \t Expected value: A positive integer.");
+
+			condition_ = true;
+			return;
+		}
+
 		if(!this.validString(type, DixieGlobals.cond_type))
 		{
 			warnMsg.push("Invalid condition type for "+ systemName_ +". Deleting the condition...\
@@ -1438,6 +1687,17 @@ class Dixie {
 				warnMsg.push("Invalid application for the modification "+i+" in "+ systemName_ +". Deleting the modification...\
 					\n \t Detected value: " +modification.user_defined_seconds+". \
 					\n \t Expected values: A positive number.");
+
+				modifications_.splice(i, 1);
+				i--;
+				continue;
+			}
+
+			if(!this.validArray(modification.equation, -1, true))
+			{
+				warnMsg.push("Invalid equation for the modification "+i+" in "+ systemName_ +". Deleting the modification...\
+					\n \t Detected value: " +modification.equation+". \
+					\n \t Expected values: An arrayt of numbers.");
 
 				modifications_.splice(i, 1);
 				i--;

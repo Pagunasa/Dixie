@@ -451,7 +451,7 @@ modifyPropertyNode.prototype.onExecute = function()
 				if(condition != undefined)
 					e += particles_condition_list[i].meet_at;
 
-				if(x < properties.user_defined_start) continue; //That means that the condition is already meeted
+				if(x < properties.user_defined_start) continue; //That means that the conditions are not meeted
 			}
 
 			var modifier = Math.clamp(x / e, 0.0, 1.0); //The clamp is mandatory for avoid computacion errors

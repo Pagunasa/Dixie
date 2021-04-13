@@ -40,6 +40,7 @@ var addConditions = function(id)
 
 	var condition = searchCondition(id);
 	var c = {};
+	c.id = id;
 
 	if(condition.type == "c")
 	{
@@ -296,7 +297,7 @@ var exportSystems = function()
 				//What operation do with the new value
 				modification.application_mode = aux_mod.application_mode;
 				//The equation to follow, by default is lineal
-				modification.equation = aux_mod.equation;
+				modification.equation = aux_mod.equation || [];
 
 				//If the modification is along the lifetime or defined by the user
 				modification.modification_mode = aux_mod.modification_mode;
