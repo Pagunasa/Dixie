@@ -1175,28 +1175,31 @@ class Dixie {
 				origin_ = "Point";
 			}
 		}
-		else if (mesh_.name != "None" && !this.validArray(mesh_.modal, 16, true))
+		else if (mesh_.name != "None")
 		{
-			warnMsg.push("Modal not defined correctly. Inserting the default one!!");
-			mesh_.modal = DixieGlobals.identity;
-		}
+			if(!this.validArray(mesh_.modal, 16, true))
+			{
+				warnMsg.push("Modal not defined correctly. Inserting the default one!!");
+				mesh_.modal = DixieGlobals.identity;	
+			}
+			
+			if(!this.validPosInteger(mesh_.triangle_num))
+			{
+				warnMsg.push("Number of triangles not defined correctly. Changing mode to Point!!\
+					\n \t Detected value: " +mesh_.triangle_num+". \
+					\n \t Expected value: A positive number.");
 
-		if(!this.validPosInteger(mesh_.triangle_num))
-		{
-			warnMsg.push("Number of triangles not defined correctly. Changing mode to Point!!\
-				\n \t Detected value: " +mesh_.triangle_num+". \
-				\n \t Expected value: A positive number.");
-
-			origin_ = "Point";
-		}
-		
-		if(!this.validPosInteger(mesh_.div_value))
-		{
-			warnMsg.push("Number of vertices per triangle not defined correctly. Changing mode to Point!!\
-				\n \t Detected value: " +mesh_.div_value+". \
-				\n \t Expected value: A positive number.");
-		
-			origin_ = "Point";
+				origin_ = "Point";
+			}
+			
+			if(!this.validPosInteger(mesh_.div_value))
+			{
+				warnMsg.push("Number of vertices per triangle not defined correctly. Changing mode to Point!!\
+					\n \t Detected value: " +mesh_.div_value+". \
+					\n \t Expected value: A positive number.");
+			
+				origin_ = "Point";
+			}
 		}
 
 		return mesh_;
@@ -1670,7 +1673,7 @@ class Dixie {
 			returnValue = -1;
 		}
 
-		if (!this.validPosInteger(s.spawn_rate))
+		if (!this.validateDecimal(s.spawn_rate, true))
 		{
 			errorMsg.push("Spawn rate not defined correctly for the "+systemName+". Stopping loading...\
 				\n \t Value found: " + s.spawn_mode + ". \
