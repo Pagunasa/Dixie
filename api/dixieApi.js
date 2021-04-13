@@ -492,7 +492,7 @@ class DixieParticleSystem {
 			}
 
 			modal = this.origin_mesh.modal;
-			c_mesh_loader_f_(directory_+"/meshes/"+this.origin_mesh.name, "object", "object_vertices", this);
+			c_mesh_loader_f_(directory_+"/meshes/"+this.origin_mesh.name, "object", "object_vertices", this.origin_mesh);
 
 		}
 		else if(this.origin == "Point")
@@ -532,12 +532,15 @@ class DixieParticleSystem {
 		}
 		else if(this.origin == "Mesh")
 		{
+			let o_mesh = this.origin_mesh;
+
+			if(o_mesh.object == undefined)
+				return this.position;
 			
 			//Get random ambas
 			let ambda1 = Math.random();
 			let ambda2 = Math.random();
 			let ambda3;
-
 
 			if(ambda1 + ambda2 > 1)
 			{
@@ -547,17 +550,17 @@ class DixieParticleSystem {
 
 			ambda3 = 1 - ambda1 - ambda2;
 
-			let triangle_num = this.origin_mesh.triangle_num;
-			let div_value = this.origin_mesh.div_value;
+			let triangle_num = o_mesh.triangle_num;
+			let div_value = o_mesh.div_value;
 
 			//Pick a random triangle
 			let triangle = Math.floor(Math.random()*triangle_num) * div_value;
 			let points;
 
 			if(div_value == 9)
-				points = this.origin_mesh.vertices.slice(triangle, triangle + div_value);
+				points = o_mesh.vertices.slice(triangle, triangle + div_value);
 			else
-				points = this.origin_mesh.vertices.slice(triangle == 0 ? 0 : 3, triangle == 0 ? 9 : 12);
+				points = o_mesh.vertices.slice(triangle == 0 ? 0 : 3, triangle == 0 ? 9 : 12);
 
 			let random_point = [0,0,0];
 
@@ -565,7 +568,7 @@ class DixieParticleSystem {
 			for (var i = 0; i < 3; ++i)
 				random_point[i] = points[i] * ambda1 + points[i+3] * ambda2 + points[i+6] * ambda3;
 			
-			let model = this.origin_mesh.modal;
+			let model = o_mesh.modal;
 
 			//Multiply by the model the random point
 			let x = random_point[0], y = random_point[1], z = random_point[2];
