@@ -215,7 +215,7 @@ function loadTexture( atlasURL, toSave, graph) {
 }
 
 function loadMesh( meshURL, toSaveMesh, toSaveVertices, graph ) {
-    let loader = new THREE.OBJLoader();
+    let loader = new OBJLoader();
 
     loader.load( meshURL,
         function ( object ) {
@@ -224,7 +224,7 @@ function loadMesh( meshURL, toSaveMesh, toSaveVertices, graph ) {
             //Save the mesh in the graph
             graph[toSaveMesh] = object;
             //Save the vertices
-            graph[toSaveVertices] = object.geometry.attributes.position.array; 
+            graph[toSaveVertices] = object.children[0].geometry.attributes.position.array; 
         }
     );
 }
