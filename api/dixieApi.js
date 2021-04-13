@@ -115,6 +115,24 @@ var DixieGlobals =
 		  return Math.random() * (max - min) + min;
 		},
 
+	/*
+	* 	This method returns the cross product of two vectors
+	*	@method cross
+	*	@params {vector3} the first vector
+	*	@params {vector3} the second vector
+	*/
+	cross:
+		function(a, b)
+		{
+		    var c = new Float32Array(3);
+		    
+		    c[0] = a[1]*b[2] - a[2]*b[1];
+		    c[1] = a[2]*b[0] - a[0]*b[2];
+		    c[2] = a[0]*b[1] - a[1]*b[0];
+
+		    return c;
+		},
+
 	//For doing the billboard I follow the next tutorial
 	//http://www.opengl-tutorial.org/intermediate-tutorials/billboards-particles/billboards/
 	vs_particles : '\
@@ -295,11 +313,46 @@ class DixieParticle {
 	}
 
 	applyForces(dt_, forces_) {
-		let force;
+		let force, distance = [0,0,0], distance_factor;
+		let v_vortex;
 
 		for(let i = 0; i < forces_.length; ++i)
 		{
 			force = forces_[i];
+
+			switch (force.type) {
+				case "gravity":
+					for(let j = 0; j < 3; ++j)
+						this.position[j] += force.direction[j] * force.strength * dt_;
+				break;
+
+				case "vortex":
+					//First to all the distance between the particle and the vortex is calculated
+					for(let j = 0; j < 3; ++j)
+						distance[j] = this.position[j] - force.position[j];
+
+					//Then the cross product and the distance factor are computed
+					v_vortex = DixieGlobals.cross(force.angular_speed, distance);
+					//The distance factor uses a formula which is based on inverse square distance, avoiding singularity at the center
+					distance_factor = 1/(1+(distance[0]*distance[0]+distance[1]*distance[1]+distance[2]*distance[2])/force.scale);
+
+					for(let j = 0; j < 3; ++j)
+						this.position[j] += v_vortex[j] * distance_factor * dt_;
+				break;
+
+				case "magnet":
+					//First to all the distance between the particle and the vortex is calculated
+					for(let j = 0; j < 3; ++j)
+						distance[j] = this.position[j] - force.position[j];
+
+					//The distance factor uses a formula which is based on inverse square distance, avoiding singularity at the center
+					distance_factor = 1/(1+(distance[0]*distance[0]+distance[1]*distance[1]+distance[2]*distance[2])/force.scale);
+					distance_factor *= force.strength;
+
+					for(let j = 0; j < 3; ++j)
+						this.position[j] = distance[j] * distance_factor * dt_;
+				break; 
+			}
 		}
 	}
 
