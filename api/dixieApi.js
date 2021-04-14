@@ -555,9 +555,9 @@ class DixieParticle {
 					changed_value = this.lifetime;
 					final_value = new_value; 
 
-					if(properties.application_mode == "Addition")
+					if(application_mode == "Addition")
 						final_value += this.iLifetime;
-					else if(properties.application_mode == "Subtraction")
+					else if(application_mode == "Subtraction")
 						final_value = Math.max(this.iLifetime - final_value, 0);
 
 					this.lifetime = final_value * factor + this.iLifetime * (1.0 - factor);
@@ -586,9 +586,9 @@ class DixieParticle {
 					changed_value = this.size;
 					final_value = new_value; 
 
-					if(properties.application_mode == "Addition")
+					if(application_mode == "Addition")
 						final_value += this.iSize;
-					else if(properties.application_mode == "Subtraction")
+					else if(application_mode == "Subtraction")
 						final_value = Math.max(this.iSize - final_value, 0);
 
 					this.size = final_value * factor + this.iSize * (1.0 - factor);
