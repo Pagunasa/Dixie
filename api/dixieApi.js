@@ -447,7 +447,7 @@ class DixieParticle {
 
 				if(meet)
 				{
-					c = getCondition(condition_.id)
+					c = this.getCondition(condition_.id)
 					
 					if(c == undefined)
 						this.conditions_meet.push({id: condition_.id, meet_at: this.c_lifetime})
