@@ -147,7 +147,7 @@ function animation( time ) {
     eye[1] = c_pos.y;
     eye[2] = c_pos.z;
 
-    systems.update( clock.getDelta()*secToMs, eye, getBufferData, uploadBuffers);
+    systems.update( clock.getDelta(), eye, getBufferData, uploadBuffers);
 
     //Update the uniforms for the particles
     let graphs = systems.graphs;
