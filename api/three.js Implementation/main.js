@@ -7,7 +7,7 @@ let clock;
 
 //Particles
 let systems, bufferData;
-let msToSec = 1/1000;
+let secToMs = 1/1000;
 let blending_factors = {
     "Zero" : THREE.ZeroFactor,
     "One"  : THREE.OneFactor,
@@ -76,62 +76,26 @@ let particle_system = {
             "modal": []
         },
         "sub_emittors": [],
-        "forces": [],
-        "modifications": [
+        "forces": [
             {
-                "changed_property": "Speed",
-                "new_value": [
-                    0,
-                    0,
-                    0
+                "type": "magnet",
+                "position": [
+                    "2",
+                    "2",
+                    "0"
                 ],
-                "application_mode": "Equalization",
-                "equation": [],
-                "modification_mode": "Along life time",
-                "user_defined_start": 0,
-                "user_defined_seconds": 2,
-                "condition": true
-            },
-            {
-                "changed_property": "Color",
-                "new_value": [
+                "strength": -3,
+                "scale": 4,
+                "color": [
                     1,
-                    0,
                     1,
-                    0
+                    1,
+                    1
                 ],
-                "application_mode": "Equalization",
-                "equation": [],
-                "modification_mode": "Along life time",
-                "user_defined_start": 0,
-                "user_defined_seconds": 2,
-                "condition": {
-                    "id": 5,
-                    "type": "condition",
-                    "one_time": false,
-                    "operator": "Greater than",
-                    "property": "Life time",
-                    "value": 1
-                }
-            },
-            {
-                "changed_property": "Size",
-                "new_value": 1,
-                "application_mode": "Equalization",
-                "equation": [
-                    -12.884726434374253,
-                    84.51072549184474,
-                    -131.76407316229316,
-                    69.12069535074953,
-                    -8.98262124592835,
-                    0
-                ],
-                "modification_mode": "Along life time",
-                "user_defined_start": 0,
-                "user_defined_seconds": 2,
                 "condition": true
             }
-        ]
+        ],
+        "modifications": []
     }
 };
 
@@ -182,7 +146,7 @@ function animation( time ) {
     eye[1] = c_pos.y;
     eye[2] = c_pos.z;
 
-    systems.update( clock.getDelta(), eye, getBufferData, uploadBuffers);
+    systems.update( clock.getDelta()*secToMs, eye, getBufferData, uploadBuffers);
 
     //Update the uniforms for the particles
     let graphs = systems.graphs;
