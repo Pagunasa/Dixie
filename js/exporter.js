@@ -90,6 +90,20 @@ var addToZip = function(file, filename, zip, texture = true)
 	zip.file(filename, blob);
 }
 
+//Variable for transfrom the values of the blending factors to a string
+var blending_factors = {
+	gl.ZERO : "Zero",
+	gl.ONE  : "One",
+	gl.SRC_COLOR : "Source Color",
+	gl.ONE_MINUS_SRC_COLOR : "One minus source color",
+	gl.DST_COLOR : "Destination color",
+	gl.ONE_MINUS_DST_COLOR : "One minus destination color",
+	gl.SRC_ALPHA : "Source alpha",
+	gl.ONE_MINUS_SRC_ALPHA : "One minus source alpha",
+	gl.DST_ALPHA : "Destination alpha",
+	gl.ONE_MINUS_DST_ALPHA : "One minus destination alpha"
+} 
+
 var exportSystems = function()
 {
 	var exp_file   = {};
@@ -119,9 +133,9 @@ var exportSystems = function()
 		//The id of the system
 		exp_system.id  = system.id;
 		//The source blending factor for the render
-		exp_system.src_bfact = system.src_bfact;
+		exp_system.src_bfact = blending_factors[system.src_bfact];
 		//The destiny blending factor for the render
-		exp_system.dst_bfact = system.dst_bfact;
+		exp_system.dst_bfact = blending_factors[system.dst_bfact];
 
 		//The origin of the particles in the system
 		exp_system.origin = system.origin;

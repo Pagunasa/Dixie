@@ -3,6 +3,7 @@
 */
 var DixieGlobals =
 {
+	blending_factors : ["Zero", "One", "Source Color", "One minus source color", "Destination color", "One minus destination color", "Source alpha", "One minus source alpha", "Destination alpha", "One minus destination alpha"],
 	possible_origins : ["Point", "Mesh"],
 	spawn_modes      : ["Linear", "Waves"],
 	
@@ -17,8 +18,8 @@ var DixieGlobals =
 	mod_appl : ["Equalization", "Addition", "Subtraction"],
 	mod_modi : ["Along life time", "User defined"],
 
-	defaultSrcbValue : 770,
-	defaultDstbValue : 1,
+	defaultSrcbValue : "Source alpha",
+	defaultDstbValue : "One",
 	defaultOrigin    : "Point",
 	defaultPosition  : [0,0,0],
 	defaultAtlasName : "None",
@@ -1886,15 +1887,19 @@ class Dixie {
 		let systemName = "principal system " + index_;
 		let returnValue = 1;
 
-		if (!this.validInteger(s.src_bfact))
+		if (!this.validString(s.src_bfact, DixieGlobals.blending_factors))
 		{
-			warnMsg.push("No src_bfact defined for "+systemName+". Inserting a default one!!");
+			warnMsg.push("No src_bfact defined for "+systemName+". Inserting a default one!!\
+				\n\t Value found: " + s.src_bfact +". \
+				\n\t Value expected: A string with value " + DixieGlobals.blending_factors + ".");
 			s.src_bfact = DixieGlobals.defaultSrcbValue;
 		}
 
-		if (!this.validInteger(s.dst_bfact))
+		if (!this.validString(s.dst_bfact, DixieGlobals.blending_factors))
 		{
-			warnMsg.push("No dst_bfact defined for "+systemName+". Inserting a default one!!");
+			warnMsg.push("No dst_bfact defined for "+systemName+". Inserting a default one!!\
+				\n\t Value found: " + s.dst_bfact +". \
+				\n\t Value expected: A string with value " + DixieGlobals.blending_factors + ".");
 			s.dst_bfact = DixieGlobals.defaultDstbValue;
 		}
 

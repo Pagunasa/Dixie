@@ -8,12 +8,24 @@ let clock;
 //Particles
 let systems, bufferData;
 let msToSec = 1/1000;
+let blending_factors = {
+    "Zero" : THREE.ZeroFactor,
+    "One"  : THREE.OneFactor,
+    "Source Color" : THREE.SrcColorFactor,
+    "One minus source color" : THREE.OneMinusSrcColorFactor,
+    "Destination color" : THREE.DstColorFactor,
+    "One minus destination color" : THREE.OneMinusDstColorFactor,
+    "Source alpha" : THREE.SrcAlphaFactor,
+    "One minus source alpha" : THREE.OneMinusSrcAlphaFactor,
+    "Destination alpha" : THREE.DstAlphaFactor,
+    "One minus destination alpha" : THREE.OneMinusDstAlphaFactor
+}
 let particle_system = {
  "num_systems": 3,
     "system_0": {
         "id": 64,
-        "src_bfact": 770,
-        "dst_bfact": 1,
+        "src_bfact": "Source alpha",
+        "dst_bfact": "One",
         "origin": "Point",
         "position": [
             0,
@@ -106,8 +118,8 @@ let particle_system = {
     },
     "system_1": {
         "id": 65,
-        "src_bfact": 770,
-        "dst_bfact": 1,
+        "src_bfact": "Source alpha",
+        "dst_bfact": "One",
         "origin": "Point",
         "position": [
             0,
@@ -206,8 +218,8 @@ let particle_system = {
     },
     "system_2": {
         "id": 66,
-        "src_bfact": 770,
-        "dst_bfact": 771,
+        "src_bfact": "Source alpha",
+        "dst_bfact": "One minus source alpha",
         "origin": "Point",
         "position": [
             0,
@@ -215,7 +227,7 @@ let particle_system = {
             0
         ],
         "spawn_mode": "Linear",
-        "max_particles": 100,
+        "max_particles": 300,
         "spawn_rate": 10,
         "particles_per_wave": 10,
         "particle_data": {
@@ -478,8 +490,8 @@ function createParticleMesh( buffers, graph ) {
     //Set the blending
     s_material.blending = THREE.CustomBlending;
     s_material.blendEquation = THREE.AddEquation;
-    s_material.blendSrc = THREE.SrcAlphaFactor;
-    s_material.blendDst = THREE.OneMinusSrcAlphaFactor;
+    s_material.blendSrc = blending_factors[graph.src_bfact];
+    s_material.blendDst = blending_factors[graph.dst_bfact];
 
     //Disable the depth test and depth mask
     s_material.depthTest  = true;

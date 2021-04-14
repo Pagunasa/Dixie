@@ -1020,7 +1020,6 @@ function chargeTexture(node, node_properties, url, def_text = "NONE")
 	loading_texture_modal.modal('show');
 	loading_texture_modal.on('shown.bs.modal', 
 		function(e){
-			console.log("HI");
 			$.when(GL.Texture.fromURL(url, {}, function(t,u){node.afterLoading(t,u)}))
 				.then(
 					function(){
