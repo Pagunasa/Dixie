@@ -375,7 +375,7 @@ class DixieParticle {
 					distance_factor *= force.strength;
 
 					for(let j = 0; j < 3; ++j)
-						this.position[j] = distance[j] * distance_factor * dt_;
+						this.position[j] += distance[j] * distance_factor * dt_;
 				break; 
 			}
 		}

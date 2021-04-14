@@ -78,14 +78,18 @@ let particle_system = {
         "sub_emittors": [],
         "forces": [
             {
-                "type": "magnet",
+                "type": "vortex",
                 "position": [
-                    "2",
-                    "2",
-                    "0"
+                    0,
+                    0,
+                    0
                 ],
-                "strength": -3,
-                "scale": 4,
+                "angular_speed": [
+                    "2",
+                    "2",
+                    0
+                ],
+                "scale": 10,
                 "color": [
                     1,
                     1,
