@@ -1799,7 +1799,7 @@ class Dixie {
 								force.position = DixieGlobals.defaultMagnet.position;
 							}
 
-							if(!this.validateDecimal(force.strength, 3))
+							if(!this.validateDecimal(force.strength))
 							{
 								warnMsg.push("The strength for the magnet point in the "+systemName_+" of the force number "+i+" is not valid. Inserting the default one...\
 									\n \t Detected force: " + force.strength+". \
