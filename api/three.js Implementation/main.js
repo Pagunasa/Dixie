@@ -21,7 +21,7 @@ let blending_factors = {
     "One minus destination alpha" : THREE.OneMinusDstAlphaFactor
 }
 let particle_system = {
- "num_systems": 1,
+    "num_systems": 1,
     "system_0": {
         "id": 1,
         "src_bfact": "Source alpha",
@@ -76,30 +76,62 @@ let particle_system = {
             "modal": []
         },
         "sub_emittors": [],
-        "forces": [
+        "forces": [],
+        "modifications": [
             {
-                "type": "vortex",
-                "position": [
+                "changed_property": "Speed",
+                "new_value": [
                     0,
                     0,
                     0
                 ],
-                "angular_speed": [
-                    "2",
-                    "2",
+                "application_mode": "Equalization",
+                "equation": [],
+                "modification_mode": "Along life time",
+                "user_defined_start": 0,
+                "user_defined_seconds": 2,
+                "condition": true
+            },
+            {
+                "changed_property": "Color",
+                "new_value": [
+                    1,
+                    0,
+                    1,
                     0
                 ],
-                "scale": 10,
-                "color": [
-                    1,
-                    1,
-                    1,
-                    1
+                "application_mode": "Equalization",
+                "equation": [],
+                "modification_mode": "Along life time",
+                "user_defined_start": 0,
+                "user_defined_seconds": 2,
+                "condition": {
+                    "id": 5,
+                    "type": "condition",
+                    "one_time": false,
+                    "operator": "Greater than",
+                    "property": "Life time",
+                    "value": 1
+                }
+            },
+            {
+                "changed_property": "Size",
+                "new_value": 1,
+                "application_mode": "Equalization",
+                "equation": [
+                    -12.884726434374253,
+                    84.51072549184474,
+                    -131.76407316229316,
+                    69.12069535074953,
+                    -8.98262124592835,
+                    0
                 ],
+                "modification_mode": "Along life time",
+                "user_defined_start": 0,
+                "user_defined_seconds": 2,
                 "condition": true
             }
-        ],
-        "modifications": []
+        ]
     }
 };
 
