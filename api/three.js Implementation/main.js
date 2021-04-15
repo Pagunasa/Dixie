@@ -171,7 +171,7 @@ let particle_system = {
                     }
                 ],
                 "modifications": [],
-                "condition": true
+                "condition": "On particle die"
             }
         ],
         "forces": [],
