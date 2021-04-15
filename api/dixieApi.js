@@ -924,8 +924,8 @@ class DixieParticleSystem {
 
 			let id = to_reset_[0];
 			let particle = this.particles[id];
-			
-			if(origin_ == "sub_emitter")
+
+			if(origin_ == "emitter")
 				prop_.position = this.setParticlePosition();
 
 			particle.fill(prop_, texture_, this.uvs); //Reset the particle
@@ -954,7 +954,7 @@ class DixieParticleSystem {
 			to_reset = sub_emitter.particles_to_reset;
 			p_data = sub_emitter.particle_data;
 			texture = sub_emitter.texture;
-			max_particles = sub_emitter.max_particles;
+			max_particles = sub_emitter.max_particles * this.max_particles;
 
 			for(let j = 0; j < ids.length; ++j)
 			{

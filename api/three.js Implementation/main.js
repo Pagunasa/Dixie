@@ -163,10 +163,10 @@ let particle_system = {
                         "type": "gravity",
                         "direction": [
                             0,
-                            0,
+                            -1,
                             0
                         ],
-                        "strength": 1,
+                        "strength": 2,
                         "condition": true
                     }
                 ],
