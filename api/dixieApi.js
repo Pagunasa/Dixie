@@ -689,7 +689,7 @@ class DixieParticle {
 		this.updateLifetime(dt_, to_reset_);
 		
 		if(this.visibility == 0)
-			continue;
+			return;
 
 		this.getNextFrame();
 
