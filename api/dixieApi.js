@@ -1782,7 +1782,7 @@ class Dixie {
 	}
 
 	validateForces(forces_, systemName_, warnMsg) {
-		if(forces_ == undefined || !this.validArray(forces_))
+		if(forces_ == undefined || !Dixie.validArray(forces_))
 		{
 			warnMsg.push("Forces not defined correctly for "+systemName_+". Inserting the default ones...");
 			forces_ = DixieGlobals.defaultForces;
