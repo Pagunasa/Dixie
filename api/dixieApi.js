@@ -942,7 +942,7 @@ class DixieParticleSystem {
 		{
 			sub_emittor = this.sub_emittors[i];
 			condition = sub_emittor.condition;
-			ids = sub_emittor.sub_emissions_ids;
+			ids = sub_emittor.particles_ids;
 
 			for(let j = 0; j < ids.length; ++j)
 			{
@@ -1169,10 +1169,10 @@ class Dixie {
 			for(let j = 0; j < sub_emittors.length; ++j)
 			{
 				sub_emitter = sub_emittors[j];
-				particles_ids = sub_emitter.sub_emissions_ids;
+				particles_ids = sub_emitter.particles_ids;
 
 				forces = sub_emitter.forces;
-				to_reset = sub_emitter.sub_emissions_to_reset;
+				to_reset = sub_emitter.particles_to_reset;
 				modifications = sub_emitter.modifications;
 
 				for(let k = 0; k < particles_ids.length; ++k)
