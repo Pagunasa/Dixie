@@ -942,7 +942,7 @@ class DixieParticleSystem {
 		for(let i = 0; i < this.sub_emittors.length; ++i)
 		{
 			sub_emitter = this.sub_emittors[i];
-			condition = sub_emittor.condition;
+			condition = sub_emitter.condition;
 
 			for(let j = 0; j < ids.length; ++j)
 			{
