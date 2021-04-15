@@ -479,6 +479,13 @@ html,body {
 	}
 }
 
+@media only screen and (max-height: 800px) {
+	.node_properties {
+		max-height: 650px;
+		overflow: auto;
+	}
+}
+
 @media only screen and (max-height: 750px) {
 	.node_properties {
 		max-height: 450px;
