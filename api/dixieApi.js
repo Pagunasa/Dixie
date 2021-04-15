@@ -953,7 +953,7 @@ class DixieParticleSystem {
 				{
 					sub_emitter.particle_data.position = particle.position;
 
-					for(let k = 0; k < sub_emittor.particles_per_wave; ++k)
+					for(let k = 0; k < sub_emitter.particles_per_wave; ++k)
 						this.addParticle("sub_emitter", sub_emitter.max_particles, this.sub_emissions_ids, this.sub_emissions_to_reset, sub_emitter.particle_data, sub_emitter.texture)
 				}
 			}	
