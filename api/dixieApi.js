@@ -873,7 +873,7 @@ class DixieParticleSystem {
 		}
 
 		this.renderInfo = {}
-		this.renderInfo.o_modal = modal;
+		this.renderInfo.o_modal = modal.slice(0);
 		this.renderInfo.modal = modal;
 		this.renderInfo.atlas = atlas;
 		this.renderInfo.origin_mesh = mesh;
