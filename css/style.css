@@ -481,7 +481,7 @@ html,body {
 
 @media only screen and (max-height: 800px) {
 	.node_properties {
-		max-height: 650px;
+		max-height: 450px;
 		overflow: auto;
 	}
 }
