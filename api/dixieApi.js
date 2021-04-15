@@ -748,6 +748,38 @@ class DixieParticleSystem {
 		this.createParticleMesh(create_pmesh_f_);
 	}
 
+	displace(pos_) {
+		let renderInfo = this.renderInfo;
+		let modal = renderInfo.modal;
+
+		if(pos_ != undefined)
+		{
+
+			//Apply the translation
+			modal[12] += pos_[0];
+			modal[13] += pos_[1];
+			modal[14] += pos_[2];
+		}
+	}
+
+	setDisplacement(pos_) {
+		let renderInfo = this.renderInfo;
+		let modal = renderInfo.modal;
+
+		if(pos_ != undefined)
+		{
+			//Apply the translation
+			modal[12] = pos_[0];
+			modal[13] = pos_[1];
+			modal[14] = pos_[2];
+		}
+	}
+
+	resetDisplacement() {
+		let renderInfo = this.renderInfo;
+		renderInfo.modal = renderInfo.o_modal.splice(0); 
+	}
+
 	getTotalParticles() {
 		let subParticles = 0;
 		let max_particles = this.max_particles;
@@ -797,7 +829,7 @@ class DixieParticleSystem {
 		buffers.push({name: "colors",   inShader: "a_color",   size: size4,     elems: 4, type: "Float32Array", data: colors_data});
 		buffers.push({name: "visible",  inShader: "a_visible", size: particles, elems: 1, type: "Float32Array", data: visible_data});
 
-		this.particle_mesh = create_pmesh_f_(buffers, this);
+		this.particle_mesh = create_pmesh_f_(buffers, graph.src_bfact, graph.dst_bfact);
 	}
 
 	createRenderInfo(directory_, c_mesh_loader_f_ = undefined, c_texture_loader_f_ = undefined) {
@@ -837,12 +869,13 @@ class DixieParticleSystem {
 		}
 
 		this.renderInfo = {}
-		this.renderInfo.modal         = modal;
-		this.renderInfo.atlas         = atlas;
-		this.renderInfo.origin_mesh   = mesh;
+		this.renderInfo.o_modal = modal;
+		this.renderInfo.modal = modal;
+		this.renderInfo.atlas = atlas;
+		this.renderInfo.origin_mesh = mesh;
 		this.renderInfo.particle_mesh = this.particle_mesh;
-		this.renderInfo.src_bfact     = this.src_bfact;
-		this.renderInfo.dst_bfact     = this.dst_bfact;
+		this.renderInfo.src_bfact = this.src_bfact;
+		this.renderInfo.dst_bfact = this.dst_bfact;
 	}
 
 	setParticlePosition() {
@@ -1204,26 +1237,26 @@ class Dixie {
 		}
 	}
 
-	validInteger(int_) {
+	static validInteger(int_) {
 		return (int_ != undefined && Number.isInteger(int_))
 	}
 
-	validateDecimal(double_ , pos = false) {
+	static validateDecimal(double_ , pos = false) {
 		if(pos)
 			return (!isNaN(double_) && double_ >= 0);
 		else
 			return !isNaN(double_);
 	}
 
-	validPosInteger(int_) {
+	static validPosInteger(int_) {
 		return (int_ != undefined && int_ >= 0 && Number.isInteger(int_));
 	}
 
-	validString(string_, values_) {
+	static validString(string_, values_) {
 		return (string_ != undefined && values_.includes(string_));
 	}
 
-	validArray(array_, size_ = -1, numeric_ = false, max_ = undefined, min_ = undefined) {
+	static validArray(array_, size_ = -1, numeric_ = false, max_ = undefined, min_ = undefined) {
 		if (array_ == undefined)
 			return false;
 
@@ -1272,7 +1305,7 @@ class Dixie {
 		return isValid;
 	}
 
-	validBoolean(bool_) {
+	static validBoolean(bool_) {
 		return (typeof bool_ == "boolean" ? true : false);
 	}
 

@@ -324,7 +324,7 @@ function loadMesh( meshURL, toSaveMesh, toSaveVertices, meshInGraph ) {
     );
 }
 
-function createParticleMesh( buffers, graph ) {
+function createParticleMesh( buffers, src_bfact_, dst_bfact_ ) {
     //Geometry creation
     let geometry = new THREE.BufferGeometry();
 
@@ -359,8 +359,8 @@ function createParticleMesh( buffers, graph ) {
     //Set the blending
     s_material.blending = THREE.CustomBlending;
     s_material.blendEquation = THREE.AddEquation;
-    s_material.blendSrc = blending_factors[graph.src_bfact];
-    s_material.blendDst = blending_factors[graph.dst_bfact];
+    s_material.blendSrc = blending_factors[src_bfact_];
+    s_material.blendDst = blending_factors[dst_bfact_];
 
     //Disable the depth test and depth mask
     s_material.depthTest  = true;
