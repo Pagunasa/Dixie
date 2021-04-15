@@ -777,7 +777,11 @@ class DixieParticleSystem {
 
 	resetDisplacement() {
 		let renderInfo = this.renderInfo;
-		renderInfo.modal = renderInfo.o_modal.slice(0); 
+		let modal = renderInfo.modal;
+		let o_modal = renderInfo.o_modal;
+
+		for(let i = 0; i < modal.length; ++i)
+			modal[i] = o_modal[i];
 	}
 
 	getTotalParticles() {
