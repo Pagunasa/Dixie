@@ -381,14 +381,14 @@ class DixieParticle {
 		}
 	}
 
-	testCondition(condition_) {
+	testCondition(condition_, dt_ = 0.0) {
 		
 		if(condition_ == true)
 			return true;
 		else if (condition_ == "On particle die")
 		{
 			let diff = this.lifetime - this.c_lifetime;
-			if(diff <= 0 && this.visibility != 0)
+			if(diff <= dt_ && this.visibility != 0)
 				return true;
 			else
 				return false;
@@ -927,7 +927,7 @@ class DixieParticleSystem {
 		}
 	}
 
-	spawnParticles() {
+	spawnParticles(dt_) {
 		//First to all spawn the particles for the emitters
 		if(this.spawn_mode == "Linear" && this.time_pased >= this.spawn_period)
 			this.addParticle("emitter", this.max_particles, this.particles_ids, this.particles_to_reset, this.particle_data, this.texture);
@@ -955,9 +955,9 @@ class DixieParticleSystem {
 				id = ids[j].id;
 				particle = this.particles[id];
 
-				if(particle.testCondition(condition))
+				if(particle.testCondition(condition, dt_))
 				{
-					sub_emitter.particle_data.position = particle.position;
+					p_data.position = particle.position;
 
 					for(let k = 0; k < sub_emitter.particles_per_wave; ++k)
 						this.addParticle("sub_emitter", max_particles, sub_ids, to_reset, p_data, texture);
@@ -1152,7 +1152,7 @@ class Dixie {
 		{
 			graph = this.graphs[i];
 			graph.time_pased += dt_;
-			graph.spawnParticles();
+			graph.spawnParticles(dt_);
 
 			forces = graph.forces;
 
