@@ -937,12 +937,18 @@ class DixieParticleSystem {
 	
 		let sub_emitter, condition, id, particle;
 		let ids = this.particles_ids;
+		let sub_ids, to_reset, p_data, texture, max_particles;
 
 		//Then the subemittors
 		for(let i = 0; i < this.sub_emittors.length; ++i)
 		{
 			sub_emitter = this.sub_emittors[i];
 			condition = sub_emitter.condition;
+			sub_ids = sub_emitter.particles_ids;
+			to_reset = sub_emitter.particles_to_reset;
+			p_data = sub_emitter.particle_data;
+			texture = sub_emitter.texture;
+			max_particles = sub_emitter.max_particles;
 
 			for(let j = 0; j < ids.length; ++j)
 			{
@@ -954,7 +960,7 @@ class DixieParticleSystem {
 					sub_emitter.particle_data.position = particle.position;
 
 					for(let k = 0; k < sub_emitter.particles_per_wave; ++k)
-						this.addParticle("sub_emitter", sub_emitter.max_particles, this.sub_emissions_ids, this.sub_emissions_to_reset, sub_emitter.particle_data, sub_emitter.texture)
+						this.addParticle("sub_emitter", max_particles, sub_ids, to_reset, p_data, texture);
 				}
 			}	
 		}
