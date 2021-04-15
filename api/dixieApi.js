@@ -385,6 +385,14 @@ class DixieParticle {
 		
 		if(condition_ == true)
 			return true;
+		else if (condition_ == "On particle die")
+		{
+			let diff = this.lifetime - this.c_lifetime;
+			if(diff <= 0 && this.visibility != 0)
+				return true;
+			else
+				return false;
+		}
 
 		let meet = false;
 		let c;
@@ -676,6 +684,20 @@ class DixieParticle {
 
 		this.coords = [maxX,maxY, minX,maxY, maxX,minY, minX,minY, maxX,minY, minX,maxY]; 
 	}
+
+	update(dt_, to_reset_, forces_, modifications_) {
+		this.updateLifetime(dt_, to_reset_);
+		
+		if(this.visibility == 0)
+			continue;
+
+		this.getNextFrame();
+
+		//Apply the movement
+		this.move(dt_);
+		this.applyForces(dt_, forces_);
+		this.applyModifications(dt_, modifications_);
+	}
 }
 
 class DixieParticleSystem {
@@ -696,6 +718,10 @@ class DixieParticleSystem {
 		this.particles_ids      = [];
 		this.particles_to_reset = [];
 
+		//Create an all_ids this is just for ordening the particles
+		this.all_ids = [];
+
+		//Create the sub emission info
 		this.sub_emissions_ids  = [];
 
 		for(let i = 0; i < this.sub_emittors.length; ++i)
@@ -875,8 +901,8 @@ class DixieParticleSystem {
 		}
 	}
 
-	addParticle(origin_, ids_, to_reset_, prop_, texture_) {
-		if(this.max_particles > ids_.length)
+	addParticle(origin_, max_particles_, ids_, to_reset_, prop_, texture_) {
+		if(max_particles_ > ids_.length)
 		{
 			this.time_pased = 0.0;
 
@@ -886,6 +912,7 @@ class DixieParticleSystem {
 			particle.fill(prop_, texture_, this.uvs, origin_, id);
 
 			ids_.push({id : id, distance_to_camera : 0.0});
+			this.all_ids.push({id : id, distance_to_camera : 0.0});
 			this.particles.push(particle)
 		}
 		else if(to_reset_.length > 0)
@@ -903,27 +930,32 @@ class DixieParticleSystem {
 	spawnParticles() {
 		//First to all spawn the particles for the emitters
 		if(this.spawn_mode == "Linear" && this.time_pased >= this.spawn_period)
-			this.addParticle("emitter", this.particles_ids, this.particles_to_reset, this.particle_data, this.texture);
+			this.addParticle("emitter", this.max_particles, this.particles_ids, this.particles_to_reset, this.particle_data, this.texture);
 		else if(this.spawn_mode == "Waves" && this.time_pased >= this.spawn_rate)
 			for(let i = 0; i < this.particles_per_wave; ++i)
-				this.addParticle("emitter", this.particles_ids, this.particles_to_reset, this.particle_data, this.texture);
+				this.addParticle("emitter", this.max_particles, this.particles_ids, this.particles_to_reset, this.particle_data, this.texture);
 	
 		//Then the subemittors
-		/*for(let i = 0; i < this.sub_emittors.length; ++i)
+		for(let i = 0; i < this.sub_emittors.length; ++i)
 		{
 			let sub_emittor = this.sub_emittors[i];
-			let condition   = [];
+			let condition = sub_emittor.condition;
 			let id, diff, particle;
 
-			if(condition == true)
+			for(let j = 0; j < this.particles_ids.length; ++j)
 			{
-				for(let j = 0; j < this.particles_ids.length; ++j)
+				id = particles_ids[j].id;
+				particle = this.particles[id];
+
+				if(particle.testCondition(condition))
 				{
-					id = particles_ids[j].id;
-					particle = this.particles[id];
-				}	
-			}
-		}*/
+					sub_emitter.particle_data.position = particle.position;
+
+					for(let k = 0; k < sub_emittor.particles_per_wave; ++k)
+						this.addParticle("sub_emitter", sub_emitter.max_particles, this.sub_emissions_ids, this.sub_emissions_to_reset, sub_emitter.particle_data, sub_emitter.texture)
+				}
+			}	
+		}
 	}
 
 	orderParticles(camera_eye_) {
@@ -933,9 +965,9 @@ class DixieParticleSystem {
 
 			let distance = [0,0,0], id, particle;
 
-			for(let i = 0; i < this.particles_ids.length; ++i)
+			for(let i = 0; i < this.all_ids.length; ++i)
 			{
-				id = this.particles_ids[i].id;
+				id = this.all_ids[i].id;
 				particle = this.particles[id];
 
 				for(let j = 0; j < 3; ++j)
@@ -987,58 +1019,33 @@ class DixieParticleSystem {
 			console.error("Dixie Error!! \n\n\t Vertices buffer not provided!! \n\n");
 			return;	
 		}
-	/*	else if(!Array.isArray(vertices))
-		{
-			console.error("Dixie Error!! \n\n\t Vertices buffer must be an Array!! \n\n");
-			return;	
-		}*/
 
 		if(visible == undefined)
 		{
 			console.error("Dixie Error!! \n\n\t Visible buffer not provided!! \n\n");
 			return;	
 		}
-	/*	else if(!Array.isArray(visible))
-		{
-			console.error("Dixie Error!! \n\n\t Visible buffer must be an Array!! \n\n");
-			return;	
-		}*/
 
 		if(colors == undefined)
 		{
 			console.error("Dixie Error!! \n\n\t Colors buffer not provided!! \n\n");
 			return;	
 		}
-	/*	else if(!Array.isArray(colors))
-		{
-			console.error("Dixie Error!! \n\n\t Colors buffer must be an Array!! \n\n");
-			return;	
-		}*/
 
 		if(size == undefined)
 		{
 			console.error("Dixie Error!! \n\n\t Size buffer not provided!! \n\n");
 			return;	
 		}
-	/*	else if(!Array.isArray(size))
-		{
-			console.error("Dixie Error!! \n\n\t Size buffer must be an Array!! \n\n");
-			return;	
-		}*/
 
 		if(coords == undefined)
 		{
 			console.error("Dixie Error!! \n\n\t Coords buffer not provided!! \n\n");
 			return;	
-		}	
-	/*	else if(!Array.isArray(coords))
-		{
-			console.error("Dixie Error!! \n\n\t Coords buffer must be an Array!! \n\n");
-			return;	
-		}*/
+		}
 		
 		let particles = this.particles;
-		let ids = this.particles_ids, id;
+		let ids = this.all_ids, id;
 		let particle;
 
 		for(let i = 0; i < ids.length; ++i)
@@ -1129,6 +1136,8 @@ class Dixie {
 
 	update(dt_,camera_eye_, get_buffers_f_, upload_f_) {
 		let graph, particles, particles_ids, forces, particle;
+		let sub_emittors, sub_emitter;
+		let to_reset, modifications;
 		let id;
 
 		for(let i = 0; i < this.graphs.length; ++i)
@@ -1141,24 +1150,36 @@ class Dixie {
 
 			particles = graph.particles;
 			particles_ids = graph.particles_ids;
+			to_reset = graph.particles_to_reset;
+			modifications = graph.modifications;
 
 			//Particles basic movement
 			for(let j = 0; j < particles_ids.length; ++j)
 			{
 				id = particles_ids[j].id;
 				particle = particles[id];
+				particle.update(dt_, to_reset, forces, modifications);
+			}
 
-				particle.updateLifetime(dt_, graph.particles_to_reset);
-				
-				if(particle.visibility == 0)
-					continue;
+			sub_emittors = this.sub_emittors;
 
-				particle.getNextFrame();
+			//SubEmissions basic movement
+			for(let j = 0; j < sub_emittors.length; ++j)
+			{
+				sub_emitter = sub_emittors[j];
+				particles_ids = sub_emitter.sub_emissions_ids;
 
-				//Apply the movement
-				particle.move(dt_);
-				particle.applyForces(dt_, forces);
-				particle.applyModifications(dt_, graph.modifications);
+				forces = sub_emitter.forces;
+				to_reset = sub_emitter.sub_emissions_to_reset;
+				modifications = sub_emitter.modifications;
+
+				for(let k = 0; k < particles_ids.length; ++k)
+				{
+					id = particles_ids[k].id;
+					particle = particles[id];
+
+					particle.update(dt_, to_reset, forces, modifications);
+				}
 			}
 			
 			//Ordening particles and then the buffers

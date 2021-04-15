@@ -232,6 +232,8 @@ var exportSystems = function()
 
 			//Add the conditions to the sub emittor
 			sub_emittor.condition = addConditions(aux_sEmittor.condition);
+			if(sub_emittor.condition == true)
+				sub_emittor.condition = "On particle die"
 
 			exp_system.sub_emittors.push(sub_emittor);
 		}

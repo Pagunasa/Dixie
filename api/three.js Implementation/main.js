@@ -26,7 +26,7 @@ let particle_system = {
         "id": 1,
         "src_bfact": "Source alpha",
         "dst_bfact": "One",
-        "origin": "Point",
+        "origin": "Mesh",
         "position": [
             0,
             0,
@@ -38,17 +38,17 @@ let particle_system = {
         "particles_per_wave": 10,
         "particle_data": {
             "max_speed": [
-                1,
-                1,
-                1
+                0,
+                2,
+                0
             ],
             "min_speed": [
-                -1,
-                -1,
-                -1
+                0,
+                0.5,
+                0
             ],
-            "max_size": 0.25,
-            "min_size": 0.1,
+            "max_size": 0.5,
+            "min_size": 0.25,
             "max_life_time": 10,
             "min_life_time": 5,
             "color": [
@@ -58,10 +58,29 @@ let particle_system = {
                 1
             ]
         },
-        "atlasName": "None",
-        "uvs": [],
+        "atlasName": "Atlas0.png",
+        "uvs": [
+            [
+                0,
+                0,
+                0.0625,
+                0.06035889070146819
+            ],
+            [
+                0,
+                0.06035889070146819,
+                1,
+                0.8955954323001631
+            ],
+            [
+                0,
+                0.9037520391517129,
+                1,
+                1.0081566068515497
+            ]
+        ],
         "texture": {
-            "id": -1,
+            "id": 1,
             "prop": {
                 "subtextures": false,
                 "textures_x": 1,
@@ -72,66 +91,91 @@ let particle_system = {
             }
         },
         "origin_mesh": {
-            "name": "None",
-            "modal": []
+            "name": "15_plane.obj",
+            "modal": [
+                10,
+                0,
+                0,
+                0,
+                0,
+                6.123233998228043e-16,
+                10,
+                0,
+                0,
+                -1,
+                6.123234262925839e-17,
+                0,
+                0,
+                0,
+                0,
+                1
+            ],
+            "triangle_num": 2,
+            "div_value": 6
         },
-        "sub_emittors": [],
-        "forces": [],
-        "modifications": [
+        "sub_emittors": [
             {
-                "changed_property": "Speed",
-                "new_value": [
-                    0,
-                    0,
-                    0
+                "id": 16,
+                "origin": "Point",
+                "spawn_mode": "Waves",
+                "max_particles": 10,
+                "particles_per_wave": 10,
+                "particle_data": {
+                    "max_speed": [
+                        0.15,
+                        0.15,
+                        0.15
+                    ],
+                    "min_speed": [
+                        -0.15,
+                        -0.15,
+                        -0.15
+                    ],
+                    "max_size": 1,
+                    "min_size": 0.5,
+                    "max_life_time": 2,
+                    "min_life_time": 1,
+                    "color": [
+                        1,
+                        1,
+                        1,
+                        1
+                    ],
+                    "position": [
+                        -0.5599990909009867,
+                        9.511611019512486,
+                        -0.5274700346948391
+                    ]
+                },
+                "texture": {
+                    "id": 2,
+                    "prop": {
+                        "subtextures": true,
+                        "textures_x": 6,
+                        "textures_y": 1,
+                        "animated": true,
+                        "anim_loop": false,
+                        "anim_duration": 0
+                    }
+                },
+                "forces": [
+                    {
+                        "type": "gravity",
+                        "direction": [
+                            0,
+                            0,
+                            0
+                        ],
+                        "strength": 1,
+                        "condition": true
+                    }
                 ],
-                "application_mode": "Equalization",
-                "equation": [],
-                "modification_mode": "Along life time",
-                "user_defined_start": 0,
-                "user_defined_seconds": 2,
-                "condition": true
-            },
-            {
-                "changed_property": "Color",
-                "new_value": [
-                    1,
-                    0,
-                    1,
-                    0
-                ],
-                "application_mode": "Equalization",
-                "equation": [],
-                "modification_mode": "Along life time",
-                "user_defined_start": 0,
-                "user_defined_seconds": 2,
-                "condition": {
-                    "id": 5,
-                    "type": "condition",
-                    "one_time": false,
-                    "operator": "Greater than",
-                    "property": "Life time",
-                    "value": 1
-                }
-            },
-            {
-                "changed_property": "Size",
-                "new_value": 1,
-                "application_mode": "Equalization",
-                "equation": [
-                    -12.884726434374253,
-                    84.51072549184474,
-                    -131.76407316229316,
-                    69.12069535074953,
-                    -8.98262124592835,
-                    0
-                ],
-                "modification_mode": "Along life time",
-                "user_defined_start": 0,
-                "user_defined_seconds": 2,
+                "modifications": [],
                 "condition": true
             }
-        ]
+        ],
+        "forces": [],
+        "modifications": []
     }
 };
 
