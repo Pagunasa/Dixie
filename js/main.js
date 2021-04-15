@@ -965,7 +965,7 @@ gl.onupdate = function( dt ) {
 
 	var force, system;
 	var particle_list, particle_ids, subem_ids;
-	var distance;
+	var distance, position;
 	var textures, changes, mergerOut, sub_emittor;
 
 	//The model of the forces and systems is updated
@@ -986,8 +986,13 @@ gl.onupdate = function( dt ) {
 		particle_list = system.particles_list;
 		particle_ids  = system.particles_ids;
         subem_ids     = mergeSubEmittorsIds(system, system.sub_emittors);
+		position      = system.position;
 
-		mat4.setTranslation(system.model, system.position);
+		mat4.setTranslation(system.model, position);
+
+		//In case that the origin is a mesh then we use the translation from the model to order
+		if(system.origin == "Mesh")
+			mat4.getTranslation(position, origin_mesh.model);
 
 		distance = [0,0,0];
 		for(var k = 0; k < 3; ++k)
