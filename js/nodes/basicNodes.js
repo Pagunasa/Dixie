@@ -752,6 +752,16 @@ function meshLoadNode() {
 	this.addOutput("Mesh"  , "mesh");
 }
 
+meshLoadNode.prototype.onAddPropertyToPanel = function(i, panel)
+{
+	if( i == "color")
+		return addColorWidget(i, panel, this);
+	else if (i == "position")
+		return addVectorWidget(i, panel, this);
+	else 
+		return false;
+} 
+
 
 /*
 * 	Enable/Disable the visibility of the mesh

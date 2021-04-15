@@ -1185,6 +1185,20 @@ class Dixie {
 		}
 	}
 
+	move(new_pos_) {
+		let graphs = this.graphs;
+
+		for(let i = 0; i < graphs.length; ++i)
+			graphs[i].displace(new_pos_);
+	}
+
+	resetMove() {
+		let graphs = this.graphs;
+
+		for(let i = 0; i < graphs.length; ++i)
+			graphs[i].resetDisplacement();	
+	}
+
 	update(dt_,camera_eye_, get_buffers_f_, upload_f_) {
 		let graph, particles, particles_ids, forces, particle;
 		let sub_emittors, sub_emitter;
