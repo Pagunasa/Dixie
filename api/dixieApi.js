@@ -981,11 +981,11 @@ class DixieParticleSystem {
 				for(let j = 0; j < 3; ++j)
 					distance[j] = particle.position[j] - camera_eye_[j];
 
-				this.particles_ids[i].distance_to_camera = Math.sqrt((distance[0]*distance[0]+distance[1]*distance[1]+distance[2]*distance[2]));
+				this.all_ids[i].distance_to_camera = Math.sqrt((distance[0]*distance[0]+distance[1]*distance[1]+distance[2]*distance[2]));
 			}
 
 			//Ordening (descendent)
-			this.particles_ids.sort(function(a,b){
+			this.all_ids.sort(function(a,b){
 				return b.distance_to_camera - a.distance_to_camera;
 			});
 
