@@ -935,14 +935,14 @@ class DixieParticleSystem {
 			for(let i = 0; i < this.particles_per_wave; ++i)
 				this.addParticle("emitter", this.max_particles, this.particles_ids, this.particles_to_reset, this.particle_data, this.texture);
 	
-		let sub_emittor, condition, id, particle, ids;
+		let sub_emitter, condition, id, particle;
+		let ids = this.particles_ids;
 
 		//Then the subemittors
 		for(let i = 0; i < this.sub_emittors.length; ++i)
 		{
-			sub_emittor = this.sub_emittors[i];
+			sub_emitter = this.sub_emittors[i];
 			condition = sub_emittor.condition;
-			ids = sub_emittor.particles_ids;
 
 			for(let j = 0; j < ids.length; ++j)
 			{
