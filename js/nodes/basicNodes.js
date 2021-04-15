@@ -758,6 +758,10 @@ meshLoadNode.prototype.onAddPropertyToPanel = function(i, panel)
 		return addColorWidget(i, panel, this);
 	else if (i == "position")
 		return addVectorWidget(i, panel, this);
+	else if (i == "rotation")
+		return addVectorWidget(i, panel, this);
+	else if (i == "scale")
+		return addVectorWidget(i, panel, this);
 	else 
 		return false;
 } 
