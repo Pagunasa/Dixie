@@ -1281,7 +1281,7 @@ class Dixie {
 					{
 						a_value =  value[j];
 
-						if(!this.validateDecimal(a_value))
+						if(!Dixie.validateDecimal(a_value))
 							return false;
 						else if (max_ != undefined && min_ != undefined) 
 						{
@@ -1292,7 +1292,7 @@ class Dixie {
 				}
 				else
 				{
-					if(!this.validateDecimal(value))
+					if(!Dixie.validateDecimal(value))
 						return false;
 					else if (max_ != undefined && min_ != undefined) 
 					{
@@ -1319,7 +1319,7 @@ class Dixie {
 		{
 			let defaultData = DixieGlobals.defaultParticleData;
 
-			if (!this.validArray(p_data_.max_speed, 3, true))
+			if (!Dixie.validArray(p_data_.max_speed, 3, true))
 			{
 				warnMsg.push("Max speed not defined correctly for the particles in the "+ error_on_ +". Inserting a default one!!\
 					\n \t Detected value: " + p_data_.max_speed + ". \
@@ -1327,7 +1327,7 @@ class Dixie {
 				p_data_.max_speed = defaultData.max_speed;
 			}
 
-			if (!this.validArray(p_data_.min_speed, 3, true))
+			if (!Dixie.validArray(p_data_.min_speed, 3, true))
 			{
 				warnMsg.push("Min speed not defined correctly for the particles in the "+ error_on_ +". Inserting a default one!!\
 					\n \t Detected value: " + p_data_.min_speed + ". \
@@ -1335,7 +1335,7 @@ class Dixie {
 				p_data_.max_speed = defaultData.min_speed;
 			}
 
-			if (!this.validateDecimal(p_data_.max_size, true))
+			if (!Dixie.validateDecimal(p_data_.max_size, true))
 			{
 				warnMsg.push("Max size not defined correctly for the particles in the "+ error_on_ +". Inserting a default one!!\
 					\n \t Detected value: " + p_data_.max_size + ". \
@@ -1343,7 +1343,7 @@ class Dixie {
 				p_data_.max_speed = defaultData.max_size;
 			}
 
-			if (!this.validateDecimal(p_data_.min_size, true))
+			if (!Dixie.validateDecimal(p_data_.min_size, true))
 			{
 				warnMsg.push("Min size not defined correctly for the particles in the "+ error_on_ +". Inserting a default one!!\
 					\n \t Detected value: " + p_data_.min_size + ". \
@@ -1351,7 +1351,7 @@ class Dixie {
 				p_data_.max_speed = defaultData.min_size;
 			}
 
-			if (!this.validateDecimal(p_data_.max_life_time, true))
+			if (!Dixie.validateDecimal(p_data_.max_life_time, true))
 			{
 				warnMsg.push("Max life time not defined correctly for the particles in the "+ error_on_ +". Inserting a default one!!\
 					\n \t Detected value: " + p_data_.max_life_time + ". \
@@ -1359,7 +1359,7 @@ class Dixie {
 				p_data_.max_life_time = defaultData.max_life_time;
 			}
 
-			if (!this.validateDecimal(p_data_.min_life_time, true))
+			if (!Dixie.validateDecimal(p_data_.min_life_time, true))
 			{
 				warnMsg.push("Min life time not defined correctly for the particles in the "+ error_on_ +". Inserting a default one!!\
 					\n \t Detected value: " + p_data_.min_life_time + ". \
@@ -1367,7 +1367,7 @@ class Dixie {
 				p_data_.min_life_time = defaultData.min_life_time;
 			}
 
-			if(!this.validArray(p_data_.color, 4, true, 1.0, 0.0))
+			if(!Dixie.validArray(p_data_.color, 4, true, 1.0, 0.0))
 			{
 				warnMsg.push("Color not defined correctly for the particles in the "+ error_on_ +". Inserting a default one!!\
 					\n \t Detected value: " + p_data_.color + ". \
@@ -1413,7 +1413,7 @@ class Dixie {
 				let data = texture_.prop;
 				let defaultData = DixieGlobals.defaultTexture.prop;
 
-				if(!this.validBoolean(data.subtextures))
+				if(!Dixie.validBoolean(data.subtextures))
 				{
 					warnMsg.push("Subtextures not defined correctly for the texture of " + error_on_ + ". Defining the default one.\
 						\n \t Detected value: " +data.subtextures+". \
@@ -1422,7 +1422,7 @@ class Dixie {
 					data.subtextures = defaultData.subtextures;
 				}
 
-				if(!this.validPosInteger(data.textures_x))
+				if(!Dixie.validPosInteger(data.textures_x))
 				{
 					warnMsg.push("Subtextures in X are not defined correctly for the texture of " + error_on_ + ". Defining the default one.\
 						\n \t Detected value: " +data.textures_x+". \
@@ -1431,7 +1431,7 @@ class Dixie {
 					data.textures_x = defaultData.textures_x;
 				}
 
-				if(!this.validPosInteger(data.textures_y))
+				if(!Dixie.validPosInteger(data.textures_y))
 				{
 					warnMsg.push("Subtextures in Y are not defined correctly for the texture of " + error_on_ + ". Defining the default one.\
 						\n \t Detected value: " +data.textures_y+". \
@@ -1440,7 +1440,7 @@ class Dixie {
 					data.textures_y = defaultData.textures_y;
 				}
 
-				if(!this.validBoolean(data.animated))
+				if(!Dixie.validBoolean(data.animated))
 				{
 					warnMsg.push("Animated not defined correctly for the texture of " + error_on_ + ". Defining the default one.\
 						\n \t Detected value: " +data.animated+". \
@@ -1449,7 +1449,7 @@ class Dixie {
 					data.animated = defaultData.animated;
 				}
 
-				if(!this.validBoolean(data.anim_loop))
+				if(!Dixie.validBoolean(data.anim_loop))
 				{
 					warnMsg.push("Animation loop not defined correctly for the texture of " + error_on_ + ". Defining the default one.\
 					\n \t Detected value: " +data.anim_loop+". \
@@ -1458,7 +1458,7 @@ class Dixie {
 					data.anim_loop = defaultData.anim_loop;
 				}
 
-				if(!this.validateDecimal(data.anim_duration, true))
+				if(!Dixie.validateDecimal(data.anim_duration, true))
 				{
 					warnMsg.push("The duration of the animation is not defined correctly for the texture of " + error_on_ + ". Defining the default one.\
 					\n \t Detected value: " +data.anim_duration+". \
@@ -1487,13 +1487,13 @@ class Dixie {
 		}
 		else if (mesh_.name != "None")
 		{
-			if(!this.validArray(mesh_.modal, 16, true))
+			if(!Dixie.validArray(mesh_.modal, 16, true))
 			{
 				warnMsg.push("Modal not defined correctly. Inserting the default one!!");
 				mesh_.modal = DixieGlobals.identity;	
 			}
 			
-			if(!this.validPosInteger(mesh_.triangle_num))
+			if(!Dixie.validPosInteger(mesh_.triangle_num))
 			{
 				warnMsg.push("Number of triangles not defined correctly. Changing mode to Point!!\
 					\n \t Detected value: " +mesh_.triangle_num+". \
@@ -1502,7 +1502,7 @@ class Dixie {
 				origin_ = "Point";
 			}
 			
-			if(!this.validPosInteger(mesh_.div_value))
+			if(!Dixie.validPosInteger(mesh_.div_value))
 			{
 				warnMsg.push("Number of vertices per triangle not defined correctly. Changing mode to Point!!\
 					\n \t Detected value: " +mesh_.div_value+". \
@@ -1528,7 +1528,7 @@ class Dixie {
 
 		let type = condition_.type;
 
-		if(!this.validPosInteger(condition_.id))
+		if(!Dixie.validPosInteger(condition_.id))
 		{
 			warnMsg.push("Invalid id for the condition in "+systemName_+". Deleting the condition...\
 					\n \t Detected value: "+condition_.id+". \
@@ -1538,7 +1538,7 @@ class Dixie {
 			return;
 		}
 
-		if(!this.validString(type, DixieGlobals.cond_type))
+		if(!Dixie.validString(type, DixieGlobals.cond_type))
 		{
 			warnMsg.push("Invalid condition type for "+ systemName_ +". Deleting the condition...\
 					\n \t Detected value: " +type+". \
@@ -1550,7 +1550,7 @@ class Dixie {
 
 		if(type == "condition")
 		{
-			if(!this.validBoolean(condition_.one_time))
+			if(!Dixie.validBoolean(condition_.one_time))
 			{
 				warnMsg.push("Invalid condition one time for the condition in "+systemName_+". Setting to false...\
 					\n \t Detected value: "+condition_.one_time+". \
@@ -1559,7 +1559,7 @@ class Dixie {
 				condition_.one_time = false;
 			}
 
-			if(!this.validString(condition_.operator, DixieGlobals.cond_oper))
+			if(!Dixie.validString(condition_.operator, DixieGlobals.cond_oper))
 			{
 				warnMsg.push("Invalid operator for the condition in "+systemName_+". Deleting the condition...\
 					\n \t Detected value: "+condition_.operator+". \
@@ -1569,7 +1569,7 @@ class Dixie {
 				return;
 			}
 
-			if(!this.validString(condition_.property, DixieGlobals.cond_prop))
+			if(!Dixie.validString(condition_.property, DixieGlobals.cond_prop))
 			{
 				warnMsg.push("Invalid property for the condition in "+systemName_+". Deleting the condition...\
 					\n \t Detected value: "+condition_.property+". \
@@ -1583,7 +1583,7 @@ class Dixie {
 			switch (condition_.property)
 			{
 				case "Speed":
-					if(!this.validArray(value, 3, true))
+					if(!Dixie.validArray(value, 3, true))
 					{
 						warnMsg.push("Invalid value for the condition in "+systemName_+". Deleting the condition...\
 							\n \t Detected value: "+value+". \
@@ -1595,7 +1595,7 @@ class Dixie {
 				break;
 
 				case "Life time":
-					if(!this.validateDecimal(value , true))
+					if(!Dixie.validateDecimal(value , true))
 					{
 						warnMsg.push("Invalid value for the condition in "+systemName_+". Deleting the condition...\
 							\n \t Detected value: "+value+". \
@@ -1607,7 +1607,7 @@ class Dixie {
 				break;
 
 				case "Size":
-					if(!this.validateDecimal(value , true))
+					if(!Dixie.validateDecimal(value , true))
 					{
 						warnMsg.push("Invalid value for the condition in "+systemName_+". Deleting the condition...\
 							\n \t Detected value: "+value+". \
@@ -1621,7 +1621,7 @@ class Dixie {
 		}
 		else if(type == "merged conditions")
 		{
-			if(!this.validString(condition_.mode, DixieGlobals.cond_mode))
+			if(!Dixie.validString(condition_.mode, DixieGlobals.cond_mode))
 			{
 				warnMsg.push("Invalid merge mode for the condition in "+systemName_+". Deleting the condition...\
 					\n \t Detected value: "+condition_.mode+". \
@@ -1631,7 +1631,7 @@ class Dixie {
 				return;
 			}
 
-			if(!this.validArray(condition_.conditions))
+			if(!Dixie.validArray(condition_.conditions))
 			{
 				warnMsg.push("Merged conditions corrupted for the condition in "+systemName_+". Deleting the condition...");
 
@@ -1664,7 +1664,7 @@ class Dixie {
 			modification = modifications_[i];
 			prop = modification.changed_property;
 
-			if(!this.validString(prop, DixieGlobals.mod_prop))
+			if(!Dixie.validString(prop, DixieGlobals.mod_prop))
 			{
 				warnMsg.push("Invalid property for the modification "+i+" for "+ systemName_ +". Deleting the modification...\
 					\n \t Detected value: " +prop+". \
@@ -1681,7 +1681,7 @@ class Dixie {
 			switch (prop)
 			{
 				case "Speed":
-					if(!this.validArray(value, 3, true))
+					if(!Dixie.validArray(value, 3, true))
 					{
 						warnMsg.push("Invalid value for the modification "+i+" in "+systemName_+". Deleting the modification...\
 							\n \t Detected value: "+value+". \
@@ -1694,7 +1694,7 @@ class Dixie {
 				break;
 
 				case "Life time":
-					if(!this.validateDecimal(value , true))
+					if(!Dixie.validateDecimal(value , true))
 					{
 						warnMsg.push("Invalid value for the modification "+i+" in "+systemName_+". Deleting the modification...\
 							\n \t Detected value: "+value+". \
@@ -1707,7 +1707,7 @@ class Dixie {
 				break;
 
 				case "Size":
-					if(!this.validateDecimal(value , true))
+					if(!Dixie.validateDecimal(value , true))
 					{
 						warnMsg.push("Invalid value for the modification "+i+" in "+systemName_+". Deleting the modification...\
 							\n \t Detected value: "+value+". \
@@ -1720,7 +1720,7 @@ class Dixie {
 				break;
 
 				case "Color":
-					if(!this.validArray(value, 4, true, 1.0, 0.0))
+					if(!Dixie.validArray(value, 4, true, 1.0, 0.0))
 					{
 						warnMsg.push("Invalid value for the modification "+i+" in "+systemName_+". Deleting the modification...\
 							\n \t Detected value: "+value+". \
@@ -1733,7 +1733,7 @@ class Dixie {
 				break;
 			}
 
-			if(!this.validString(modification.application_mode, DixieGlobals.mod_appl))
+			if(!Dixie.validString(modification.application_mode, DixieGlobals.mod_appl))
 			{
 				warnMsg.push("Invalid application for the modification "+i+" in "+ systemName_ +". Deleting the modification...\
 					\n \t Detected value: " +modification.application_mode+". \
@@ -1744,7 +1744,7 @@ class Dixie {
 				continue;
 			}
 
-			if(!this.validateDecimal(modification.user_defined_start, true))
+			if(!Dixie.validateDecimal(modification.user_defined_start, true))
 			{
 				warnMsg.push("Invalid application for the modification "+i+" in "+ systemName_ +". Deleting the modification...\
 					\n \t Detected value: " +modification.user_defined_start+". \
@@ -1755,7 +1755,7 @@ class Dixie {
 				continue;
 			}
 
-			if(!this.validateDecimal(modification.user_defined_seconds, true))
+			if(!Dixie.validateDecimal(modification.user_defined_seconds, true))
 			{
 				warnMsg.push("Invalid application for the modification "+i+" in "+ systemName_ +". Deleting the modification...\
 					\n \t Detected value: " +modification.user_defined_seconds+". \
@@ -1766,7 +1766,7 @@ class Dixie {
 				continue;
 			}
 
-			if(!this.validArray(modification.equation, -1, true))
+			if(!Dixie.validArray(modification.equation, -1, true))
 			{
 				warnMsg.push("Invalid equation for the modification "+i+" in "+ systemName_ +". Deleting the modification...\
 					\n \t Detected value: " +modification.equation+". \
@@ -1794,7 +1794,7 @@ class Dixie {
 			{
 				force = forces_[i];
 
-				if(!this.validString(force.type, DixieGlobals.force_types)) 
+				if(!Dixie.validString(force.type, DixieGlobals.force_types)) 
 				{
 					warnMsg.push("Unknown forces detected in the "+systemName_+" of the force number "+i+". Sending a squad to delete the force...\
 						\n \t Detected force: " + force.type+". \
@@ -1809,7 +1809,7 @@ class Dixie {
 					switch (force.type)	
 					{
 						case "gravity":
-							if(!this.validArray(force.direction, 3, true))
+							if(!Dixie.validArray(force.direction, 3, true))
 							{
 								warnMsg.push("The direction for the gravity in the "+systemName_+" of the force number "+i+" is not valid. Inserting the default one...\
 									\n \t Detected force: " + force.direction+". \
@@ -1817,7 +1817,7 @@ class Dixie {
 								force.direction = DixieGlobals.defaultGravity.direction;
 							}
 
-							if(!this.validInteger(force.strength))
+							if(!Dixie.validInteger(force.strength))
 							{
 								warnMsg.push("The value of the strength in the "+systemName_+" of the force number "+i+" is not valid. Inserting the default one...\
 									\n \t Detected force: " + force.strength+". \
@@ -1827,7 +1827,7 @@ class Dixie {
 						break;
 
 						case "vortex":
-							if(!this.validArray(force.position, 3, true))
+							if(!Dixie.validArray(force.position, 3, true))
 							{
 								warnMsg.push("The position for the vortex in the "+systemName_+" of the force number "+i+" is not valid. Inserting the default one...\
 									\n \t Detected force: " + force.position+". \
@@ -1835,7 +1835,7 @@ class Dixie {
 								force.position = DixieGlobals.defaultVortex.position;
 							}
 
-							if(!this.validArray(force.angular_speed, 3, true))
+							if(!Dixie.validArray(force.angular_speed, 3, true))
 							{
 								warnMsg.push("The angular speed for the vortex in the "+systemName_+" of the force number "+i+" is not valid. Inserting the default one...\
 									\n \t Detected force: " + force.angular_speed+". \
@@ -1843,7 +1843,7 @@ class Dixie {
 								force.angular_speed = DixieGlobals.defaultVortex.angular_speed;
 							}
 
-							if(!this.validateDecimal(force.scale, true))
+							if(!Dixie.validateDecimal(force.scale, true))
 							{
 								warnMsg.push("The scale for the vortex in the "+systemName_+" of the force number "+i+" is not valid. Inserting the default one...\
 									\n \t Detected force: " + force.scale+". \
@@ -1851,7 +1851,7 @@ class Dixie {
 								force.scale = DixieGlobals.defaultVortex.scale;
 							}
 
-							if(!this.validArray(force.color, 4, true, 1.0, 0.0))
+							if(!Dixie.validArray(force.color, 4, true, 1.0, 0.0))
 							{
 								warnMsg.push("The color for the vortex in the "+systemName_+" of the force number "+i+" is not valid. Inserting the default one...\
 									\n \t Detected force: " + force.color+". \
@@ -1861,7 +1861,7 @@ class Dixie {
 						break;
 
 						case "magnet":
-							if(!this.validArray(force.position, 3, true))
+							if(!Dixie.validArray(force.position, 3, true))
 							{
 								warnMsg.push("The position for the magnet point in the "+systemName_+" of the force number "+i+" is not valid. Inserting the default one...\
 									\n \t Detected force: " + force.position+". \
@@ -1869,7 +1869,7 @@ class Dixie {
 								force.position = DixieGlobals.defaultMagnet.position;
 							}
 
-							if(!this.validateDecimal(force.strength))
+							if(!Dixie.validateDecimal(force.strength))
 							{
 								warnMsg.push("The strength for the magnet point in the "+systemName_+" of the force number "+i+" is not valid. Inserting the default one...\
 									\n \t Detected force: " + force.strength+". \
@@ -1877,7 +1877,7 @@ class Dixie {
 								force.strength = DixieGlobals.defaultMagnet.strength;
 							}
 
-							if(!this.validateDecimal(force.scale, true))
+							if(!Dixie.validateDecimal(force.scale, true))
 							{
 								warnMsg.push("The scale for the magnet point in the "+systemName_+" of the force number "+i+" is not valid. Inserting the default one...\
 									\n \t Detected force: " + force.scale+". \
@@ -1885,7 +1885,7 @@ class Dixie {
 								force.scale = DixieGlobals.defaultMagnet.scale;
 							}
 
-							if(!this.validArray(force.color, 4, true, 1.0, 0.0))
+							if(!Dixie.validArray(force.color, 4, true, 1.0, 0.0))
 							{
 								warnMsg.push("The color for the magnet point in the "+systemName_+" of the force number "+i+" is not valid. Inserting the default one...\
 									\n \t Detected force: " + force.color +". \
@@ -1908,7 +1908,7 @@ class Dixie {
 		{
 			se = sub_emittors_[i];
 
-			if (!this.validString(se.origin, DixieGlobals.possible_origins))
+			if (!Dixie.validString(se.origin, DixieGlobals.possible_origins))
 			{
 				errorMsg.push("No origin defined for the sub emittor "+i+" of the "+systemName_+". Deleting sub emittor...\
 					\n \t Value found: " + se.origin + ". \
@@ -1919,7 +1919,7 @@ class Dixie {
 				continue;
 			}
 
-			if (!this.validPosInteger(se.max_particles))
+			if (!Dixie.validPosInteger(se.max_particles))
 			{
 				errorMsg.push("Max particles not defined correctly for the sub emittor "+i+" of the "+systemName_+". Deleting sub emittor...\
 					\n \t Value found: " + se.max_particles + ". \
@@ -1930,7 +1930,7 @@ class Dixie {
 				continue;
 			}
 
-			if (!this.validPosInteger(se.particles_per_wave))
+			if (!Dixie.validPosInteger(se.particles_per_wave))
 			{
 				errorMsg.push("Particles per wave not defined correctly for the sub emittor "+i+" of the "+systemName_+". Deleting sub emittor...\
 					\n \t Value found: " + se.particles_per_wave + ". \
@@ -1957,7 +1957,7 @@ class Dixie {
 		let systemName = "principal system " + index_;
 		let returnValue = 1;
 
-		if (!this.validString(s.src_bfact, DixieGlobals.blending_factors))
+		if (!Dixie.validString(s.src_bfact, DixieGlobals.blending_factors))
 		{
 			warnMsg.push("No src_bfact defined for "+systemName+". Inserting a default one!!\
 				\n\t Value found: " + s.src_bfact +". \
@@ -1965,7 +1965,7 @@ class Dixie {
 			s.src_bfact = DixieGlobals.defaultSrcbValue;
 		}
 
-		if (!this.validString(s.dst_bfact, DixieGlobals.blending_factors))
+		if (!Dixie.validString(s.dst_bfact, DixieGlobals.blending_factors))
 		{
 			warnMsg.push("No dst_bfact defined for "+systemName+". Inserting a default one!!\
 				\n\t Value found: " + s.dst_bfact +". \
@@ -1973,7 +1973,7 @@ class Dixie {
 			s.dst_bfact = DixieGlobals.defaultDstbValue;
 		}
 
-		if (!this.validString(s.origin, DixieGlobals.possible_origins))
+		if (!Dixie.validString(s.origin, DixieGlobals.possible_origins))
 		{
 			errorMsg.push("No origin defined for the "+systemName+". Stopping loading...\
 				\n \t Value found: " + s.origin + ". \
@@ -1982,7 +1982,7 @@ class Dixie {
 			returnValue = -1;
 		}
 
-		if (!this.validArray(s.position, 3, true))
+		if (!Dixie.validArray(s.position, 3, true))
 		{
 			warnMsg.push("Position not defined correctly for "+systemName+". Inserting a default one!!\
 				\n \t Value found: " +s.position+". \
@@ -1992,7 +1992,7 @@ class Dixie {
 			returnValue = -1;
 		}
 
-		if (!this.validString(s.spawn_mode, DixieGlobals.spawn_modes))
+		if (!Dixie.validString(s.spawn_mode, DixieGlobals.spawn_modes))
 		{
 			errorMsg.push("Spawn mode not defined correctly for the "+systemName+". Stopping loading...\
 				\n \t Value found: " + s.spawn_mode + ". \
@@ -2001,7 +2001,7 @@ class Dixie {
 			returnValue = -1;
 		}
 
-		if (!this.validPosInteger(s.max_particles))
+		if (!Dixie.validPosInteger(s.max_particles))
 		{
 			errorMsg.push("Max particles not defined correctly for the "+systemName+". Stopping loading...\
 				\n \t Value found: " + s.max_particles + ". \
@@ -2010,7 +2010,7 @@ class Dixie {
 			returnValue = -1;
 		}
 
-		if (!this.validateDecimal(s.spawn_rate, true))
+		if (!Dixie.validateDecimal(s.spawn_rate, true))
 		{
 			errorMsg.push("Spawn rate not defined correctly for the "+systemName+". Stopping loading...\
 				\n \t Value found: " + s.spawn_mode + ". \
@@ -2019,7 +2019,7 @@ class Dixie {
 			returnValue = -1;
 		}
 
-		if (!this.validPosInteger(s.particles_per_wave))
+		if (!Dixie.validPosInteger(s.particles_per_wave))
 		{
 			errorMsg.push("Particles per wave not defined correctly for the "+systemName+". Stopping loading...\
 				\n \t Value found: " + s.particles_per_wave + ". \
@@ -2037,7 +2037,7 @@ class Dixie {
 			s.atlasName = DixieGlobals.defaultAtlasName;
 		}
 
-		if(!this.validArray(s.uvs, -1, true))
+		if(!Dixie.validArray(s.uvs, -1, true))
 		{
 			warnMsg.push("No uvs provided for "+systemName+". Inserting empty uvs...");
 			s.uvs = DixieGlobals.defaultUvs;
@@ -2049,7 +2049,7 @@ class Dixie {
 		s.texture     = this.validateTexture(s.atlasName, s.texture, systemName, warnMsg);
 		s.origin_mesh = this.validateMesh(s.origin_mesh, s.origin, warnMsg);
 
-		if(s.sub_emittors == undefined || !this.validArray(s.sub_emittors))
+		if(s.sub_emittors == undefined || !Dixie.validArray(s.sub_emittors))
 		{
 			warnMsg.push("Sub emittors not defined correctly for "+systemName+". Inserting the default ones...");
 		}
