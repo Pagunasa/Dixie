@@ -1484,6 +1484,8 @@ class Dixie {
 		}
 		else if (condition_ == true || condition_.length == 0) 
 			return true;
+		else if (condition_ == "On particle die")
+			return "On particle die"
 
 		let type = condition_.type;
 
