@@ -198,7 +198,7 @@ function init() {
     material = new THREE.MeshNormalMaterial();
 
     mesh = new THREE.Mesh( geometry, material );
-    mesh.position.z = 2;
+    mesh.position.z = 5;
     mesh.position.x = -2;
     scene.add( mesh );
 
