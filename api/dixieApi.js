@@ -1163,7 +1163,7 @@ class Dixie {
 				particle.update(dt_, to_reset, forces, modifications);
 			}
 
-			sub_emittors = this.sub_emittors;
+			sub_emittors = graph.sub_emittors;
 
 			//SubEmissions basic movement
 			for(let j = 0; j < sub_emittors.length; ++j)
