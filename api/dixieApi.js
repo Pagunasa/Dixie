@@ -908,7 +908,10 @@ class DixieParticleSystem {
 
 			let particle = new DixieParticle();
 			let id = this.particles.length;
-			prop_.position = this.setParticlePosition();
+			
+			if(origin_ == "emitter")
+				prop_.position = this.setParticlePosition();
+
 			particle.fill(prop_, texture_, this.uvs, origin_, id);
 
 			ids_.push({id : id, distance_to_camera : 0.0});
@@ -921,7 +924,10 @@ class DixieParticleSystem {
 
 			let id = to_reset_[0];
 			let particle = this.particles[id];
-			prop_.position = this.setParticlePosition();
+			
+			if(origin_ == "sub_emitter")
+				prop_.position = this.setParticlePosition();
+
 			particle.fill(prop_, texture_, this.uvs); //Reset the particle
 			to_reset_.splice(0,1);
 		}
