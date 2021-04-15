@@ -992,7 +992,7 @@ gl.onupdate = function( dt ) {
 
 		//In case that the origin is a mesh then we use the translation from the model to order
 		if(system.origin == "Mesh")
-			mat4.getTranslation(position, origin_mesh.model);
+			mat4.getTranslation(position, system.origin_mesh.model);
 
 		distance = [0,0,0];
 		for(var k = 0; k < 3; ++k)
