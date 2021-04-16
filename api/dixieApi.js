@@ -1165,6 +1165,7 @@ class DixieParticleSystem {
 class Dixie {
 
 	constructor() {
+		this.version = 0.21;
 		this.graphs = [];
 	}
 

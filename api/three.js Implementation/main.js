@@ -475,6 +475,9 @@ let vertexShader, flatFragment, textFragment;
 init();
 
 function init() {
+    //Inicialize the up and right vectors
+    right = new THREE.Vector3();
+    up = new THREE.Vector3();
 
     clock = new THREE.Clock();
     clock.start();
@@ -498,7 +501,7 @@ function init() {
     textFragment = document.getElementById( 'texturedFragmentShader' ).textContent;
 
     systems = new Dixie();
-    systems.add("Fire", fire_system, createParticleMesh, loadTexture, loadMesh, "Graph1")
+    systems.add("Fire", fire_system, createParticleMesh, loadTexture, loadMesh, "Graph1");
 
     renderer = new THREE.WebGLRenderer( { antialias: true } );
     renderer.setSize( window.innerWidth, window.innerHeight );
@@ -507,10 +510,6 @@ function init() {
 
     //Set the camera controls
     controls = new OrbitControls( camera, renderer.domElement );
-
-    //Inicialize the up and right vectors
-    right = new THREE.Vector3();
-    up = new THREE.Vector3();
 }
 
 function animation( time ) {
