@@ -180,6 +180,294 @@ let particle_system = {
         "modifications": []
     }
 };
+let fire_system = {
+    "num_systems": 3,
+    "system_0": {
+        "id": 64,
+        "src_bfact": "Source alpha",
+        "dst_bfact": "One",
+        "origin": "Point",
+        "position": [
+            0,
+            0,
+            0
+        ],
+        "spawn_mode": "Linear",
+        "max_particles": 100,
+        "spawn_rate": 10,
+        "particles_per_wave": 10,
+        "particle_data": {
+            "max_speed": [
+                0.25,
+                1,
+                0.25
+            ],
+            "min_speed": [
+                -0.25,
+                0.5,
+                -0.25
+            ],
+            "max_size": 4,
+            "min_size": 2,
+            "max_life_time": 7,
+            "min_life_time": 5,
+            "color": [
+                0.972,
+                0.945,
+                0.549,
+                1
+            ]
+        },
+        "atlasName": "Atlas0.png",
+        "uvs": [
+            [
+                0,
+                0,
+                0.0625,
+                0.06739526411657559
+            ],
+            [
+                0,
+                0.06739526411657559,
+                1,
+                1
+            ]
+        ],
+        "texture": {
+            "id": 1,
+            "prop": {
+                "subtextures": false,
+                "textures_x": 1,
+                "textures_y": 1,
+                "animated": false,
+                "anim_loop": false,
+                "anim_duration": 0
+            }
+        },
+        "origin_mesh": {
+            "name": "None",
+            "modal": []
+        },
+        "sub_emittors": [],
+        "forces": [],
+        "modifications": [
+            {
+                "changed_property": "Color",
+                "new_value": [
+                    1,
+                    0.449,
+                    0.007,
+                    0.5000000000000002
+                ],
+                "application_mode": "Equalization",
+                "equation": [
+                    -446.5844149551731,
+                    869.8236164532682,
+                    -550.7976741479964,
+                    137.84847355308065,
+                    -9.290000903169316,
+                    0
+                ],
+                "modification_mode": "Along life time",
+                "user_defined_start": 0,
+                "user_defined_seconds": 8.49,
+                "condition": true
+            }
+        ]
+    },
+    "system_1": {
+        "id": 65,
+        "src_bfact": "Source alpha",
+        "dst_bfact": "One",
+        "origin": "Point",
+        "position": [
+            0,
+            0,
+            0
+        ],
+        "spawn_mode": "Waves",
+        "max_particles": 50,
+        "spawn_rate": 0.25,
+        "particles_per_wave": 10,
+        "particle_data": {
+            "max_speed": [
+                0.75,
+                1,
+                0.75
+            ],
+            "min_speed": [
+                -0.75,
+                0.5,
+                -0.75
+            ],
+            "max_size": 0.25,
+            "min_size": 0.15,
+            "max_life_time": 13,
+            "min_life_time": 11,
+            "color": [
+                0.93,
+                0.44900000000000007,
+                0.007,
+                1
+            ]
+        },
+        "atlasName": "Atlas1.png",
+        "uvs": [
+            [
+                0,
+                0,
+                0.0625,
+                0.06739526411657559
+            ],
+            [
+                0,
+                0.06739526411657559,
+                1,
+                1
+            ]
+        ],
+        "texture": {
+            "id": 1,
+            "prop": {
+                "subtextures": false,
+                "textures_x": 1,
+                "textures_y": 1,
+                "animated": false,
+                "anim_loop": false,
+                "anim_duration": 0
+            }
+        },
+        "origin_mesh": {
+            "name": "None",
+            "modal": []
+        },
+        "sub_emittors": [],
+        "forces": [],
+        "modifications": [
+            {
+                "changed_property": "Speed",
+                "new_value": [
+                    0,
+                    -1,
+                    0
+                ],
+                "application_mode": "Equalization",
+                "equation": [],
+                "modification_mode": "Along life time",
+                "user_defined_start": 0,
+                "user_defined_seconds": 8.49,
+                "condition": true
+            },
+            {
+                "changed_property": "Color",
+                "new_value": [
+                    0.93,
+                    0.44900000000000007,
+                    0.007,
+                    0
+                ],
+                "application_mode": "Equalization",
+                "equation": [],
+                "modification_mode": "Along life time",
+                "user_defined_start": 0,
+                "user_defined_seconds": 8.49,
+                "condition": true
+            }
+        ]
+    },
+    "system_2": {
+        "id": 66,
+        "src_bfact": "Source alpha",
+        "dst_bfact": "One minus source alpha",
+        "origin": "Point",
+        "position": [
+            0,
+            2,
+            0
+        ],
+        "spawn_mode": "Linear",
+        "max_particles": 200,
+        "spawn_rate": 10,
+        "particles_per_wave": 10,
+        "particle_data": {
+            "max_speed": [
+                0.25,
+                2,
+                0.25
+            ],
+            "min_speed": [
+                -0.25,
+                1.5,
+                -0.25
+            ],
+            "max_size": 4,
+            "min_size": 2,
+            "max_life_time": 15,
+            "min_life_time": 13,
+            "color": [
+                0.6200000000000001,
+                0.468,
+                0.368,
+                0
+            ]
+        },
+        "atlasName": "Atlas2.png",
+        "uvs": [
+            [
+                0,
+                0,
+                0.0625,
+                0.06739526411657559
+            ],
+            [
+                0,
+                0.06739526411657559,
+                1,
+                1
+            ]
+        ],
+        "texture": {
+            "id": 1,
+            "prop": {
+                "subtextures": false,
+                "textures_x": 1,
+                "textures_y": 1,
+                "animated": false,
+                "anim_loop": false,
+                "anim_duration": 0
+            }
+        },
+        "origin_mesh": {
+            "name": "None",
+            "modal": []
+        },
+        "sub_emittors": [],
+        "forces": [],
+        "modifications": [
+            {
+                "changed_property": "Color",
+                "new_value": [
+                    0.52,
+                    0.468,
+                    0.368,
+                    0.6099999999999997
+                ],
+                "application_mode": "Equalization",
+                "equation": [
+                    20.525491539864817,
+                    -45.819188017464846,
+                    28.577419466320897,
+                    -3.2837229887207418,
+                    0
+                ],
+                "modification_mode": "Along life time",
+                "user_defined_start": 0,
+                "user_defined_seconds": 8.49,
+                "condition": true
+            }
+        ]
+    }
+};
 
 //Shaders
 let vertexShader, flatFragment, textFragment;
@@ -209,7 +497,7 @@ function init() {
     flatFragment = document.getElementById( 'flatFragmentShader' ).textContent;
     textFragment = document.getElementById( 'texturedFragmentShader' ).textContent;
 
-    systems = new Dixie(particle_system, createParticleMesh, loadTexture, loadMesh, "Graph");
+    systems = new Dixie(fire_system, createParticleMesh, loadTexture, loadMesh, "Graph1");
 
     renderer = new THREE.WebGLRenderer( { antialias: true } );
     renderer.setSize( window.innerWidth, window.innerHeight );
