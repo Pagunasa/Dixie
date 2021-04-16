@@ -224,8 +224,6 @@ function animation( time ) {
     mesh.rotation.x = time / 2000;
     mesh.rotation.y = time / 1000;
 
-    controls.update();
-
     let c_pos = camera.position;
     
     let eye = [0,0,0];
@@ -245,6 +243,8 @@ function animation( time ) {
     right.x = mv[0];
     right.y = mv[4];
     right.z = mv[8];
+
+    controls.update();
 
     //Get the up vector of the camera
     let up = camera.up;

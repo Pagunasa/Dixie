@@ -908,7 +908,7 @@ class DixieParticleSystem {
 			ambda3 = 1 - ambda1 - ambda2;
 
 			let triangle_num = o_mesh.triangle_num;
-			let div_value = o_mesh.div_value;
+			let div_value = 9;
 
 			//Pick a random triangle
 			let triangle = Math.floor(Math.random()*triangle_num) * div_value;
