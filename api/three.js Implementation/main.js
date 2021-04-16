@@ -543,16 +543,16 @@ function animation( time ) {
     //Update the uniforms for the particles
     let graphs = systems.graphs;
     let render_info, uniforms;
-    let systems, system;
+    let sy, system;
 
 
     for (let i = 0; i < graphs.length; ++i) 
     {
-        systems = graphs[i].DixieGraph.systems;
+        sy = graphs[i].graph.systems;
 
-        for(let j = 0; j < systems.length; ++j)
+        for(let j = 0; j < sy.length; ++j)
         {
-            system = systems[j];
+            system = sy[j];
             render_info = system.renderInfo;
 
             //Update the uniforms
