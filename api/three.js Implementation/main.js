@@ -8,6 +8,7 @@ let clock;
 
 //Particles
 let systems, bufferData;
+let right, up;
 let secToMs = 1/1000;
 let blending_factors = {
     "Zero" : THREE.ZeroFactor,
@@ -217,6 +218,10 @@ function init() {
 
     //Set the camera controls
     controls = new OrbitControls( camera, renderer.domElement );
+
+    //Inicialize the up and right vectors
+    right = new THREE.Vector3();
+    up = new THREE.Vector3();
 }
 
 function animation( time ) {
@@ -237,21 +242,18 @@ function animation( time ) {
     let graphs = systems.graphs;
     let graph, render_info, uniforms;
     
-    //Get the right vector of the camera
-    let right = new THREE.Vector3();
-    let mv = camera.modelViewMatrix.elements;
+    //Get the right and up vectors of the camera
+    let mv = camera.matrixWorldInverse.elements;
+
     right.x = mv[0];
     right.y = mv[4];
     right.z = mv[8];
+    right.normalize();
 
-    controls.update();
-
-    //Get the up vector of the camera
-    let up = camera.up;
-
-    //In a same frame this uniforms will be the same for all graphs
-    right = { value : right};
-    up  = { value : camera.up};
+    up.x = mv[1];
+    up.y = mv[5];
+    up.z = mv[9];
+    up.normalize();
 
     for (let i = 0; i < graphs.length; ++i) 
     {
@@ -260,10 +262,11 @@ function animation( time ) {
 
         //Update the uniforms
         uniforms = graph.particle_mesh.material.uniforms; 
-        uniforms.u_right = right;
-        uniforms.u_up = up; 
+        uniforms.u_right.value = right;
+        uniforms.u_up.value = up; 
     }
 
+    controls.update();
     renderer.render( scene, camera );   
 }
 
