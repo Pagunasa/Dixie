@@ -1169,8 +1169,8 @@ class Dixie {
 	}
 
 	add(name_, graph_, create_pmesh_f_, load_texture_f_ = undefined, load_mesh_f_ = undefined, files_directory_ = "") {
-		let graph = new DixieGraph(graph_, create_pmesh_f_, load_texture_f_ = undefined, load_mesh_f_ = undefined, files_directory_ = "");
-		graphs.push({name: name_, graph, directory: files_directory_});
+		let graph = new DixieGraph(graph_, create_pmesh_f_, load_texture_f_, load_mesh_f_, files_directory_ );
+		this.graphs.push({name: name_, graph, directory: files_directory_});
 	}
 
 	update(dt_,camera_eye_, get_buffers_f_, upload_f_) {
