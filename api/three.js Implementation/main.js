@@ -497,7 +497,8 @@ function init() {
     flatFragment = document.getElementById( 'flatFragmentShader' ).textContent;
     textFragment = document.getElementById( 'texturedFragmentShader' ).textContent;
 
-    systems = new Dixie(fire_system, createParticleMesh, loadTexture, loadMesh, "Graph1");
+    systems = new Dixie();
+    systems.add("Fire", fire_system, createParticleMesh, loadTexture, loadMesh, "Graph1")
 
     renderer = new THREE.WebGLRenderer( { antialias: true } );
     renderer.setSize( window.innerWidth, window.innerHeight );
@@ -526,10 +527,6 @@ function animation( time ) {
 
     systems.update( clock.getDelta(), eye, getBufferData, uploadBuffers);
 
-    //Update the uniforms for the particles
-    let graphs = systems.graphs;
-    let graph, render_info, uniforms;
-    
     //Get the right and up vectors of the camera
     let mv = camera.matrixWorldInverse.elements;
 
@@ -543,15 +540,35 @@ function animation( time ) {
     up.z = mv[9];
     up.normalize();
 
+
+    //Update the uniforms for the particles
+    let graphs = systems.graphs;
+    let render_info, uniforms;
+    let systems, system;
+
+
     for (let i = 0; i < graphs.length; ++i) 
     {
-        graph = graphs[i];
+        systems = graphs[i].DixieGraph.systems;
+
+        for(let j = 0; j < systems.length; ++j)
+        {
+            system = systems[j];
+            render_info = system.renderInfo;
+
+            //Update the uniforms
+            uniforms = system.particle_mesh.material.uniforms; 
+            uniforms.u_right.value = right;
+            uniforms.u_up.value = up; 
+        }
+
+        /*graph = graphs[i];
         render_info = graph.renderInfo;
 
         //Update the uniforms
         uniforms = graph.particle_mesh.material.uniforms; 
         uniforms.u_right.value = right;
-        uniforms.u_up.value = up; 
+        uniforms.u_up.value = up; */
     }
 
     controls.update();
@@ -621,7 +638,7 @@ function loadMesh( meshURL, toSaveMesh, toSaveVertices, meshInGraph ) {
     );
 }
 
-function createParticleMesh( buffers, src_bfact_, dst_bfact_ ) {
+function createParticleMesh( buffers, src_bfact_, dst_bfact_, id_ ) {
     //Geometry creation
     let geometry = new THREE.BufferGeometry();
 
@@ -669,5 +686,12 @@ function createParticleMesh( buffers, src_bfact_, dst_bfact_ ) {
     let p_mesh = new THREE.Mesh( geometry, s_material );
     scene.add( p_mesh );
 
+    //Add the id of the system
+    id_ = p_mesh.uuid;
+
     return p_mesh;
+}
+
+function orderSystems( systems_ids_ ) {
+
 }

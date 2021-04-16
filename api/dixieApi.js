@@ -710,6 +710,8 @@ class DixieParticleSystem {
 		Object.assign(this, data_);
 		this.getTotalParticles();
 
+		this.id;
+
 		//Original position
 		this.o_position = this.position.slice(0);
 
@@ -756,8 +758,7 @@ class DixieParticleSystem {
 		{
 			if(this.origin == "Mesh")
 			{
-				let renderInfo = this.renderInfo;
-				let modal = renderInfo.modal;
+				let modal = this.renderInfo.modal;
 
 				//Apply the translation
 				modal[12] += pos_[0];
@@ -777,19 +778,30 @@ class DixieParticleSystem {
 		{
 			if(this.origin == "Mesh")
 			{
-				let renderInfo = this.renderInfo;
-				let modal = renderInfo.modal;
+				let modal = this.renderInfo.modal;
 
 				//Apply the translation
 				modal[12] = pos_[0];
 				modal[13] = pos_[1];
 				modal[14] = pos_[2];	
 			}
-			else if (this.origin == "Point")
+			else if(this.origin == "Point")
 			{
 				for(let i = 0; i < 3; ++i)
 					this.position[i] = pos_[i];
 			}
+		}
+	}
+
+	getIdPosition() {
+		if(this.origin == "Mesh")
+		{
+			let modal = this.renderInfo.modal;
+			return {id: this.id, position: [modal[12], modal[13], modal[14]]};
+		}
+		else if(this.origin == "Point")
+		{
+			return {id: this.id, position: this.position};
 		}
 	}
 
@@ -859,7 +871,7 @@ class DixieParticleSystem {
 		buffers.push({name: "colors",   inShader: "a_color",   size: size4,     elems: 4, type: "Float32Array", data: colors_data});
 		buffers.push({name: "visible",  inShader: "a_visible", size: particles, elems: 1, type: "Float32Array", data: visible_data});
 
-		this.particle_mesh = create_pmesh_f_(buffers, this.src_bfact, this.dst_bfact);
+		this.particle_mesh = create_pmesh_f_(buffers, this.src_bfact, this.dst_bfact, this.id);
 	}
 
 	createRenderInfo(directory_, c_mesh_loader_f_ = undefined, c_texture_loader_f_ = undefined) {
@@ -1150,16 +1162,33 @@ class DixieParticleSystem {
 	}
 } 
 
-
-
 class Dixie {
+
+	constructor() {
+		this.graphs = [];
+	}
+
+	add(name_, graph_, create_pmesh_f_, load_texture_f_ = undefined, load_mesh_f_ = undefined, files_directory_ = "") {
+		let graph = new DixieGraph(graph_, create_pmesh_f_, load_texture_f_ = undefined, load_mesh_f_ = undefined, files_directory_ = "");
+		graphs.push({name: name_, graph, directory: files_directory_});
+	}
+
+	update(dt_,camera_eye_, get_buffers_f_, upload_f_) {
+		let graphs = this.graphs;
+
+		for(let i = 0; i < graphs.length; ++i)
+			graphs[i].update(dt_, camera_eye_, get_buffers_f_, upload_f_);
+	}
+}
+
+class DixieGraph {
 	/*
 	*	The constructor of the API
 	*	@method constructor
 	*   @params {List/Json} The list of the particles systems or just one
 	*/
 	constructor(graphs_, create_pmesh_f_, load_texture_f_ = undefined, load_mesh_f_ = undefined, files_directory_ = "") {
-		this.graphs = [];
+		this.systems = [];
 
 		if(files_directory_ == undefined)
 		{
@@ -1171,15 +1200,14 @@ class Dixie {
 			
 		if(graphs_ != undefined)
 		{
-			if(Array.isArray(graphs_))
+			/*if(Array.isArray(graphs_))
 			{
 				for(let i = 0; i < graphs_.length; ++i)
-				{
 					this.loadGraph(graphs_[i], create_pmesh_f_, load_texture_f_, load_mesh_f_);
-				}
+				
 			}
-			else
-				this.loadGraph(graphs_, create_pmesh_f_, load_texture_f_, load_mesh_f_)
+			else*/
+			this.loadGraph(graphs_, create_pmesh_f_, load_texture_f_, load_mesh_f_)
 		}
 		else
 			console.error("Dixie Error!! \n\n\t No data provided. \n\n");
@@ -1206,20 +1234,20 @@ class Dixie {
 			if(this.validateSystem(graph_["system_"+i], i) != -1)
 			{
 				graph = new DixieParticleSystem(graph_["system_"+i], this.directory, create_pmesh_f_, load_mesh_f_, load_texture_f);
-				this.graphs.push(graph);
+				this.systems.push(graph);
 			}
 		}
 	}
 
 	move(new_pos_) {
-		let graphs = this.graphs;
+		let graphs = this.systems;
 
 		for(let i = 0; i < graphs.length; ++i)
 			graphs[i].displace(new_pos_);
 	}
 
 	resetMove() {
-		let graphs = this.graphs;
+		let graphs = this.systems;
 
 		for(let i = 0; i < graphs.length; ++i)
 			graphs[i].resetDisplacement();	
@@ -1231,9 +1259,11 @@ class Dixie {
 		let to_reset, modifications;
 		let id;
 
-		for(let i = 0; i < this.graphs.length; ++i)
+		let systems = this.systems;
+
+		for(let i = 0; i < systems.length; ++i)
 		{
-			graph = this.graphs[i];
+			graph = systems[i];
 			graph.time_pased += dt_;
 			graph.spawnParticles(dt_);
 
