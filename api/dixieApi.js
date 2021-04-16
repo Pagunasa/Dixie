@@ -710,6 +710,9 @@ class DixieParticleSystem {
 		Object.assign(this, data_);
 		this.getTotalParticles();
 
+		//Original position
+		this.o_position = this.position.slice(0);
+
 		this.update_frame = 5;
 		this.frames_until_update = 0;
 
@@ -749,39 +752,62 @@ class DixieParticleSystem {
 	}
 
 	displace(pos_) {
-		let renderInfo = this.renderInfo;
-		let modal = renderInfo.modal;
-
 		if(pos_ != undefined)
 		{
+			if(this.origin == "Mesh")
+			{
+				let renderInfo = this.renderInfo;
+				let modal = renderInfo.modal;
 
-			//Apply the translation
-			modal[12] += pos_[0];
-			modal[13] += pos_[1];
-			modal[14] += pos_[2];
+				//Apply the translation
+				modal[12] += pos_[0];
+				modal[13] += pos_[1];
+				modal[14] += pos_[2];	
+			}
+			else if (this.origin == "Point")
+			{
+				for(let i = 0; i < 3; ++i)
+					this.position[i] += pos_[i];
+			}
 		}
 	}
 
 	setDisplacement(pos_) {
-		let renderInfo = this.renderInfo;
-		let modal = renderInfo.modal;
-
 		if(pos_ != undefined)
 		{
-			//Apply the translation
-			modal[12] = pos_[0];
-			modal[13] = pos_[1];
-			modal[14] = pos_[2];
+			if(this.origin == "Mesh")
+			{
+				let renderInfo = this.renderInfo;
+				let modal = renderInfo.modal;
+
+				//Apply the translation
+				modal[12] = pos_[0];
+				modal[13] = pos_[1];
+				modal[14] = pos_[2];	
+			}
+			else if (this.origin == "Point")
+			{
+				for(let i = 0; i < 3; ++i)
+					this.position[i] = pos_[i];
+			}
 		}
 	}
 
 	resetDisplacement() {
-		let renderInfo = this.renderInfo;
-		let modal = renderInfo.modal;
-		let o_modal = renderInfo.o_modal;
 
-		for(let i = 0; i < modal.length; ++i)
-			modal[i] = o_modal[i];
+		if(this.origin == "Mesh")
+		{
+			let renderInfo = this.renderInfo;
+			let modal = renderInfo.modal;
+			let o_modal = renderInfo.o_modal;
+
+			for(let i = 0; i < modal.length; ++i)
+				modal[i] = o_modal[i];
+		}
+		else if(this.origin == "Point")
+		{
+			this.position = this.o_position.slice(0);
+		}
 	}
 
 	getTotalParticles() {
@@ -855,9 +881,9 @@ class DixieParticleSystem {
 		{
 			modal = [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1];
 			//Apply the translation
-			modal[12] = this.position[0];
+			/*modal[12] = this.position[0];
 			modal[13] = this.position[1];
-			modal[14] = this.position[2];
+			modal[14] = this.position[2];*/
 		}	
 
 		if(this.atlasName != DixieGlobals.defaultAtlasName)
