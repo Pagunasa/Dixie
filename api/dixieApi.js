@@ -1179,6 +1179,78 @@ class Dixie {
 		for(let i = 0; i < graphs.length; ++i)
 			graphs[i].update(dt_, camera_eye_, get_buffers_f_, upload_f_);
 	}
+
+	static validInteger(int_) {
+		return (int_ != undefined && Number.isInteger(int_))
+	}
+
+	static validateDecimal(double_ , pos = false) {
+		if(pos)
+			return (!isNaN(double_) && double_ >= 0);
+		else
+			return !isNaN(double_);
+	}
+
+	static validPosInteger(int_) {
+		return (int_ != undefined && int_ >= 0 && Number.isInteger(int_));
+	}
+
+	static validString(string_, values_) {
+		return (string_ != undefined && values_.includes(string_));
+	}
+
+	static validArray(array_, size_ = -1, numeric_ = false, max_ = undefined, min_ = undefined) {
+		if (array_ == undefined)
+			return false;
+
+		let isValid = true;
+		let value = 0, a_value = 0;
+
+		if(size_ > 0)
+			isValid = Array.isArray(array_) && array_.length == size_;
+		else
+			isValid = Array.isArray(array_);
+
+		if(!isValid || !numeric_)
+			return isValid;
+		else
+			for (let i = 0; i < array_.length; ++i)
+			{
+				value = array_[i];
+
+				if(Array.isArray(value))
+				{
+					for(let j = 0; j < value.length; ++j)
+					{
+						a_value =  value[j];
+
+						if(!Dixie.validateDecimal(a_value))
+							return false;
+						else if (max_ != undefined && min_ != undefined) 
+						{
+							if(a_value > max_ || value < min_)
+								return false;
+						}
+					}
+				}
+				else
+				{
+					if(!Dixie.validateDecimal(value))
+						return false;
+					else if (max_ != undefined && min_ != undefined) 
+					{
+						if(value > max_ || value < min_)
+							return false;
+					}
+				}
+			}
+
+		return isValid;
+	}
+
+	static validBoolean(bool_) {
+		return (typeof bool_ == "boolean" ? true : false);
+	}
 }
 
 class DixieGraph {
@@ -1309,78 +1381,6 @@ class DixieGraph {
 			let buffers = get_buffers_f_(graph.particle_mesh);
 			graph.orderBuffers(camera_eye_, buffers, upload_f_)
 		}
-	}
-
-	static validInteger(int_) {
-		return (int_ != undefined && Number.isInteger(int_))
-	}
-
-	static validateDecimal(double_ , pos = false) {
-		if(pos)
-			return (!isNaN(double_) && double_ >= 0);
-		else
-			return !isNaN(double_);
-	}
-
-	static validPosInteger(int_) {
-		return (int_ != undefined && int_ >= 0 && Number.isInteger(int_));
-	}
-
-	static validString(string_, values_) {
-		return (string_ != undefined && values_.includes(string_));
-	}
-
-	static validArray(array_, size_ = -1, numeric_ = false, max_ = undefined, min_ = undefined) {
-		if (array_ == undefined)
-			return false;
-
-		let isValid = true;
-		let value = 0, a_value = 0;
-
-		if(size_ > 0)
-			isValid = Array.isArray(array_) && array_.length == size_;
-		else
-			isValid = Array.isArray(array_);
-
-		if(!isValid || !numeric_)
-			return isValid;
-		else
-			for (let i = 0; i < array_.length; ++i)
-			{
-				value = array_[i];
-
-				if(Array.isArray(value))
-				{
-					for(let j = 0; j < value.length; ++j)
-					{
-						a_value =  value[j];
-
-						if(!Dixie.validateDecimal(a_value))
-							return false;
-						else if (max_ != undefined && min_ != undefined) 
-						{
-							if(a_value > max_ || value < min_)
-								return false;
-						}
-					}
-				}
-				else
-				{
-					if(!Dixie.validateDecimal(value))
-						return false;
-					else if (max_ != undefined && min_ != undefined) 
-					{
-						if(value > max_ || value < min_)
-							return false;
-					}
-				}
-			}
-
-		return isValid;
-	}
-
-	static validBoolean(bool_) {
-		return (typeof bool_ == "boolean" ? true : false);
 	}
 
 	validateParticleData(p_data_, error_on_, warnMsg) {
