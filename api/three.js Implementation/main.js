@@ -1,7 +1,8 @@
 import * as THREE from 'https://threejs.org/build/three.module.js';
 import { OBJLoader } from 'https://threejs.org/examples/jsm/loaders/OBJLoader.js';
+import { OrbitControls } from 'https://threejs.org/examples/jsm/controls/OrbitControls.js';
 
-let camera, scene, renderer;
+let camera, controls, scene, renderer;
 let geometry, material, mesh;
 let clock;
 
@@ -213,12 +214,17 @@ function init() {
     renderer.setSize( window.innerWidth, window.innerHeight );
     renderer.setAnimationLoop( animation );
     document.body.appendChild( renderer.domElement );
+
+    //Set the camera controls
+    controls = new OrbitControls( camera, renderer.domElement );
 }
 
 function animation( time ) {
 
     mesh.rotation.x = time / 2000;
     mesh.rotation.y = time / 1000;
+
+    controls.update();
 
     let c_pos = camera.position;
     
