@@ -638,7 +638,7 @@ function loadMesh( meshURL, toSaveMesh, toSaveVertices, meshInGraph ) {
     );
 }
 
-function createParticleMesh( buffers, src_bfact_, dst_bfact_, set_id_ ) {
+function createParticleMesh( buffers, src_bfact_, dst_bfact_, set_id_, t_modal_ ) {
     //Geometry creation
     let geometry = new THREE.BufferGeometry();
 
@@ -684,6 +684,7 @@ function createParticleMesh( buffers, src_bfact_, dst_bfact_, set_id_ ) {
     geometry.computeBoundingBox();
 
     let p_mesh = new THREE.Mesh( geometry, s_material );
+    p_mesh.modelViewMatrix.elements = t_modal_;
     scene.add( p_mesh );
 
     //Add the id of the system

@@ -711,6 +711,7 @@ class DixieParticleSystem {
 		this.getTotalParticles();
 
 		this.id;
+		this.transformModal = DixieGlobals.identity.slice(0);
 
 		//Original position
 		this.o_position = this.position.slice(0);
@@ -882,7 +883,7 @@ class DixieParticleSystem {
 		buffers.push({name: "colors",   inShader: "a_color",   size: size4,     elems: 4, type: "Float32Array", data: colors_data});
 		buffers.push({name: "visible",  inShader: "a_visible", size: particles, elems: 1, type: "Float32Array", data: visible_data});
 
-		this.particle_mesh = create_pmesh_f_(buffers, this.src_bfact, this.dst_bfact, this.setId.bind(this));
+		this.particle_mesh = create_pmesh_f_(buffers, this.src_bfact, this.dst_bfact, this.setId.bind(this), this.transformModal);
 	}
 
 	createRenderInfo(directory_, c_mesh_loader_f_ = undefined, c_texture_loader_f_ = undefined) {
