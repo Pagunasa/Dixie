@@ -1172,6 +1172,12 @@ class DixieParticleSystem {
 
 		upload_function_(this.particle_mesh, buffers_data_);
 	}
+
+
+
+	resetTransforms() {
+		this.transformModal = DixieGlobals.identity.slice(0);
+	}
 } 
 
 class Dixie {
@@ -1315,6 +1321,40 @@ class Dixie {
 
 	static validBoolean(bool_) {
 		return (typeof bool_ == "boolean" ? true : false);
+	}
+
+	static rotateSystemX( modal_, angle_ ) {
+		let s = Math.sin( angle_ );
+		let c = Math.cos( angle_ );
+	}
+
+	static rotateSystemY( modal_, angle_ ) {
+		let s = Math.sin( angle_ );
+		let c = Math.cos( angle_ );
+	}
+
+	static rotateSystemZ( modal_, angle_ ) {
+		let s = Math.sin( angle_ );
+		let c = Math.cos( angle_ );	
+	}
+
+	static scaleSystem(modal_, axis_, scale_) {
+		let x = scale_[0], 
+		y = scale_[1],
+		z = scale_[2];
+
+		modal_[0] *= x;
+		modal_[1] *= x;
+		modal_[2] *= x;
+		modal_[3] *= x;
+		modal_[4] *= y;
+		modal_[5] *= y;
+		modal_[6] *= y;
+		modal_[7] *= y;
+		modal_[8] *= z;
+		modal_[9] *= z;
+		modal_[10] *= z;
+		modal_[11] *= z;
 	}
 }
 
