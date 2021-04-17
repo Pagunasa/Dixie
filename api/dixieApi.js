@@ -1204,7 +1204,7 @@ class Dixie {
 		for(let i = 0; i < graphs.length; ++i)
 			graphs[i].graph.update(dt_, camera_eye_, get_buffers_f_, upload_f_);
 
-		order_meshs_f_(getOrderedGraphs(camera_eye_));
+		order_meshs_f_(this.getOrderedGraphs(camera_eye_));
 	}
 
 	getOrderedGraphs(camera_eye_) {
