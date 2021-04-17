@@ -753,6 +753,11 @@ class DixieParticleSystem {
 		this.createParticleMesh(create_pmesh_f_);
 	}
 
+	setId(id_) {
+		this.id = id_;
+	}
+
+
 	changeUpdateRate(new_rate_) {
 		if(Dixie.validPosInteger(new_rate_))
 			this.update_frame = new_rate_;
@@ -877,7 +882,7 @@ class DixieParticleSystem {
 		buffers.push({name: "colors",   inShader: "a_color",   size: size4,     elems: 4, type: "Float32Array", data: colors_data});
 		buffers.push({name: "visible",  inShader: "a_visible", size: particles, elems: 1, type: "Float32Array", data: visible_data});
 
-		this.particle_mesh = create_pmesh_f_(buffers, this.src_bfact, this.dst_bfact, this.id);
+		this.particle_mesh = create_pmesh_f_(buffers, this.src_bfact, this.dst_bfact, this.setId);
 	}
 
 	createRenderInfo(directory_, c_mesh_loader_f_ = undefined, c_texture_loader_f_ = undefined) {

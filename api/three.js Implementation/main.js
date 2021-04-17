@@ -637,7 +637,7 @@ function loadMesh( meshURL, toSaveMesh, toSaveVertices, meshInGraph ) {
     );
 }
 
-function createParticleMesh( buffers, src_bfact_, dst_bfact_, id_ ) {
+function createParticleMesh( buffers, src_bfact_, dst_bfact_, set_id_ ) {
     //Geometry creation
     let geometry = new THREE.BufferGeometry();
 
@@ -686,7 +686,7 @@ function createParticleMesh( buffers, src_bfact_, dst_bfact_, id_ ) {
     scene.add( p_mesh );
 
     //Add the id of the system
-    id_ = p_mesh.uuid;
+    set_id_(p_mesh.uuid);
 
     return p_mesh;
 }
