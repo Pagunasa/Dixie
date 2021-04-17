@@ -753,6 +753,13 @@ class DixieParticleSystem {
 		this.createParticleMesh(create_pmesh_f_);
 	}
 
+	changeUpdateRate(new_rate_) {
+		if(Dixie.validPosInteger(new_rate_))
+			this.update_frame = new_rate_;
+		else
+			console.error("Dixie Error!! \n\n\t The new update rate must be a positive integer!! \n\n");
+	}
+
 	displace(pos_) {
 		if(pos_ != undefined)
 		{
@@ -806,7 +813,6 @@ class DixieParticleSystem {
 	}
 
 	resetDisplacement() {
-
 		if(this.origin == "Mesh")
 		{
 			let renderInfo = this.renderInfo;
@@ -1174,11 +1180,55 @@ class Dixie {
 		this.graphs.push({name: name_, graph});
 	}
 
-	update(dt_,camera_eye_, get_buffers_f_, upload_f_) {
+	update(dt_,camera_eye_, get_buffers_f_, upload_f_, order_meshs_f_) {
 		let graphs = this.graphs;
+
+		if(get_buffers_f_ == undefined)
+		{
+			console.error("Dixie Error!! \n\n\t Get buffers function no provided!! \n\n");
+			return;
+		}
+
+		if(upload_f_ == undefined)
+		{
+			console.error("Dixie Error!! \n\n\t Upload buffers function no provided!! \n\n");
+			return;
+		}
+
+		if(order_meshs_f_ == undefined)
+		{
+			console.error("Dixie Error!! \n\n\t Order meshes function no provided!! \n\n");
+			return;
+		}
 
 		for(let i = 0; i < graphs.length; ++i)
 			graphs[i].graph.update(dt_, camera_eye_, get_buffers_f_, upload_f_);
+
+		order_meshs_f_(getOrderedGraphs(camera_eye_));
+	}
+
+	getOrderedGraphs(camera_eye_) {
+		let graphs = this.graphs, graph, idPos;
+		let distance = [0, 0, 0];
+		let ordered = [], pos;
+
+		for(let i = 0; i < graphs.length; ++i)
+		{
+			idPos = graph.getIdPosition();
+			pos = idPos.position;
+
+			for(let j = 0; j < 3; ++j)
+				distance[j] = pos[j] - camera_eye_[j];
+
+			ordered.push({id: idPos.id, distance: distance.slice(0)})
+		}
+
+		//Ordening (descendent)
+		ordered.sort(function(a,b){
+			return b.distance - a.distance;
+		});
+
+		return ordered;
 	}
 
 	static validInteger(int_) {
@@ -1329,8 +1379,7 @@ class DixieGraph {
 	update(dt_,camera_eye_, get_buffers_f_, upload_f_) {
 		let graph, particles, particles_ids, forces, particle;
 		let sub_emittors, sub_emitter;
-		let to_reset, modifications;
-		let id;
+		let id, to_reset, modifications;
 
 		let systems = this.systems;
 

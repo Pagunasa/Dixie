@@ -524,7 +524,7 @@ function animation( time ) {
     eye[1] = c_pos.y;
     eye[2] = c_pos.z;
 
-    systems.update( clock.getDelta(), eye, getBufferData, uploadBuffers);
+    systems.update( clock.getDelta(), eye, getBufferData, uploadBuffers, orderSystems );
 
     //Get the right and up vectors of the camera
     let mv = camera.matrixWorldInverse.elements;
@@ -691,6 +691,16 @@ function createParticleMesh( buffers, src_bfact_, dst_bfact_, id_ ) {
     return p_mesh;
 }
 
-function orderSystems( systems_ids_ ) {
+function orderSystems( new_order_ ) {
+    //Get the emitters
+    let to_order = scene.children.splice(1, 3);
 
+    for(let i = 0; i < new_order_.length; ++i)
+    {
+        for(let j = 0; j < to_order.length; ++j)
+        {
+            if(new_order_[i].id == to_order[j].uuid)
+                scene.children.push(to_order[j]);
+        }
+    }
 }
