@@ -506,6 +506,7 @@ function init() {
     renderer = new THREE.WebGLRenderer( { antialias: true } );
     renderer.setSize( window.innerWidth, window.innerHeight );
     renderer.setAnimationLoop( animation );
+    renderer.sortObjects = false;
     document.body.appendChild( renderer.domElement );
 
     //Set the camera controls
