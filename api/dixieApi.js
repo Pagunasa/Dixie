@@ -882,7 +882,7 @@ class DixieParticleSystem {
 		buffers.push({name: "colors",   inShader: "a_color",   size: size4,     elems: 4, type: "Float32Array", data: colors_data});
 		buffers.push({name: "visible",  inShader: "a_visible", size: particles, elems: 1, type: "Float32Array", data: visible_data});
 
-		this.particle_mesh = create_pmesh_f_(buffers, this.src_bfact, this.dst_bfact, this.setId);
+		this.particle_mesh = create_pmesh_f_(buffers, this.src_bfact, this.dst_bfact, this.setId.bind(this));
 	}
 
 	createRenderInfo(directory_, c_mesh_loader_f_ = undefined, c_texture_loader_f_ = undefined) {
@@ -1215,7 +1215,7 @@ class Dixie {
 	getOrderedGraphs(camera_eye_) {
 		let graphs = this.graphs, graph, idPos;
 		let systems;
-		let distance = [0, 0, 0];
+		let distance = [0, 0, 0], length;
 		let ordered = [], pos;
 
 		for(let i = 0; i < graphs.length; ++i)
@@ -1231,7 +1231,8 @@ class Dixie {
 				for(let k = 0; k < 3; ++k)
 					distance[k] = pos[k] - camera_eye_[k];
 
-				ordered.push({id: idPos.id, distance: distance.slice(0)})
+				length = Math.sqrt(distance[0]*distance[0] + distance[1]*distance[1] + distance[2]*distance[2]);
+				ordered.push({id: idPos.id, distance: length})
 			}
 		}
 
