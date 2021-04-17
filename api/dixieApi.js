@@ -1209,19 +1209,25 @@ class Dixie {
 
 	getOrderedGraphs(camera_eye_) {
 		let graphs = this.graphs, graph, idPos;
+		let systems;
 		let distance = [0, 0, 0];
 		let ordered = [], pos;
 
 		for(let i = 0; i < graphs.length; ++i)
 		{
-			graph = graphs[i];
-			idPos = graph.getIdPosition();
-			pos = idPos.position;
+			graph = graphs[i].graph;
+			systems = graph.systems;
 
-			for(let j = 0; j < 3; ++j)
-				distance[j] = pos[j] - camera_eye_[j];
+			for(let j = 0; j < systems.length; ++j)
+			{
+				idPos = systems[j].getIdPosition();
+				pos = idPos.position;
 
-			ordered.push({id: idPos.id, distance: distance.slice(0)})
+				for(let k = 0; k < 3; ++k)
+					distance[k] = pos[k] - camera_eye_[k];
+
+				ordered.push({id: idPos.id, distance: distance.slice(0)})
+			}
 		}
 
 		//Ordening (descendent)
