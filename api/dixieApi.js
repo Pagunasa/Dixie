@@ -1214,6 +1214,7 @@ class Dixie {
 
 		for(let i = 0; i < graphs.length; ++i)
 		{
+			graph = graphs[i];
 			idPos = graph.getIdPosition();
 			pos = idPos.position;
 
