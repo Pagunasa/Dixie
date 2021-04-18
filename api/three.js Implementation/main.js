@@ -500,8 +500,8 @@ function init() {
     flatFragment = document.getElementById( 'flatFragmentShader' ).textContent;
     textFragment = document.getElementById( 'texturedFragmentShader' ).textContent;
 
-    systems = new Dixie();
-    systems.add("Fire", fire_system, createParticleMesh, loadTexture, loadMesh, "Graph1");
+ //   systems = new Dixie();
+ //   systems.add("Fire", fire_system, createParticleMesh, loadTexture, loadMesh, "Graph1");
 
     renderer = new THREE.WebGLRenderer( { antialias: true } );
     renderer.setSize( window.innerWidth, window.innerHeight );
@@ -525,7 +525,7 @@ function animation( time ) {
     eye[1] = c_pos.y;
     eye[2] = c_pos.z;
 
-    systems.update( clock.getDelta(), eye, getBufferData, uploadBuffers, orderSystems );
+//    systems.update( clock.getDelta(), eye, getBufferData, uploadBuffers, orderSystems );
 
     //Get the right and up vectors of the camera
     let mv = camera.matrixWorldInverse.elements;
@@ -542,7 +542,7 @@ function animation( time ) {
 
 
     //Update the uniforms for the particles
-    let graphs = systems.graphs;
+/*  let graphs = systems.graphs;
     let render_info, uniforms;
     let sy, system;
 
@@ -561,16 +561,8 @@ function animation( time ) {
             uniforms.u_right.value = right;
             uniforms.u_up.value = up; 
         }
-
-        /*graph = graphs[i];
-        render_info = graph.renderInfo;
-
-        //Update the uniforms
-        uniforms = graph.particle_mesh.material.uniforms; 
-        uniforms.u_right.value = right;
-        uniforms.u_up.value = up; */
     }
-
+*/
     controls.update();
     renderer.render( scene, camera );   
 }
