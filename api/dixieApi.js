@@ -712,6 +712,8 @@ class DixieParticleSystem {
 
 		this.id;
 		this.transformModal = DixieGlobals.identity.slice(0);
+		this.rotation = [0, 0, 0];
+		this.scale = [0, 0, 0];
 
 		//Original position
 		this.o_position = this.position.slice(0);
@@ -1172,24 +1174,42 @@ class DixieParticleSystem {
 		upload_function_(this.particle_mesh, buffers_data_);
 	}
 
-	rotateX(rad_) {
+	rotateX(rad_, update_cbk_) {
+		this.rotation[0] += rad_;
 		Dixie.rotateSystemX(this.transformModal, rad_);
+
+		update_cbk_(this.id, this.transformModal, this.rotation);
 	}
 
-	rotateY(rad_) {
+	rotateY(rad_, update_cbk_) {
+		this.rotation[1] += rad_;
 		Dixie.rotateSystemY(this.transformModal, rad_);
+
+		update_cbk_(this.id, this.transformModal, this.rotation);
 	}
 
-	rotateZ(rad_) {
+	rotateZ(rad_, update_cbk_) {
+		this.rotation[2] += rad_;
 		Dixie.rotateSystemZ(this.transformModal, rad_);
+
+		update_cbk_(this.id, this.transformModal, this.rotation);
 	}
 
 	scale(scale_) {
+		this.scale[0] += scale_[0];
+		this.scale[1] += scale_[1];
+		this.scale[2] += scale_[2];
 		Dixie.scaleSystem(this.transformModal, scale_);
+
+		update_cbk_(this.id this.transformModal, this.scale);
 	}
 
-	resetTransforms() {
+	resetTransforms(update_cbk_) {
+		this.rotation = [0,0,0];
+		this.scale = [0,0,0];
 		this.transformModal = DixieGlobals.identity.slice(0);
+
+		update_cbk_(this.id, this.transformModal, this.rotation, this.scale);
 	}
 } 
 
@@ -1298,7 +1318,7 @@ class Dixie {
 		}
 	}
 
-	rotateX(rad_, graph_name_ = undefined) {
+	rotateX(rad_, graph_name_ = undefined, update_cbk_ = undefined) {
 		let graphs = this.graphs, graph;
 
 		for(let i = 0; i < graphs.length; ++i)
@@ -1306,13 +1326,13 @@ class Dixie {
 			graph = graphs[i];
 			
 			if(graph_name_ == undefined)
-				graph.graph.rotateX(rad_);
+				graph.graph.rotateX(rad_, update_cbk_);
 			else(graph_name_ == graph.name)	
-				graph.graph.rotateX(rad_);
+				graph.graph.rotateX(rad_, update_cbk_);
 		}
 	}
 
-	rotateY(rad_, graph_name_ = undefined) {
+	rotateY(rad_, graph_name_ = undefined, update_cbk_ = undefined) {
 		let graphs = this.graphs, graph;
 
 		for(let i = 0; i < graphs.length; ++i)
@@ -1320,13 +1340,13 @@ class Dixie {
 			graph = graphs[i];
 			
 			if(graph_name_ == undefined)
-				graph.graph.rotateY(rad_);
+				graph.graph.rotateY(rad_, update_cbk_);
 			else(graph_name_ == graph.name)	
-				graph.graph.rotateY(rad_);
+				graph.graph.rotateY(rad_, update_cbk_);
 		}
 	}
 
-	rotateZ(rad_, graph_name = undefined) {
+	rotateZ(rad_, graph_name = undefined, update_cbk_ = undefined) {
 		let graphs = this.graphs, graph;
 
 		for(let i = 0; i < graphs.length; ++i)
@@ -1334,13 +1354,13 @@ class Dixie {
 			graph = graphs[i];
 			
 			if(graph_name_ == undefined)
-				graph.graph.rotateZ(rad_);
+				graph.graph.rotateZ(rad_, update_cbk_);
 			else(graph_name_ == graph.name)	
-				graph.graph.rotateZ(rad_);
+				graph.graph.rotateZ(rad_, update_cbk_);
 		}			
 	}
 
-	scale(scale_) {
+	scale(scale_, update_cbk_ = undefined) {
 		let graphs = this.graphs, graph;
 
 		for(let i = 0; i < graphs.length; ++i)
@@ -1348,13 +1368,13 @@ class Dixie {
 			graph = graphs[i];
 			
 			if(graph_name_ == undefined)
-				graph.graph.scale(scale_);
+				graph.graph.scale(scale_, update_cbk_);
 			else(graph_name_ == graph.name)	
-				graph.graph.scale(scale_);
+				graph.graph.scale(scale_, update_cbk_);
 		}	
 	}
 
-	resetTransforms(graph_name_ = undefined) {
+	resetTransforms(graph_name_ = undefined, update_cbk_ = undefined) {
 		let graphs = this.graphs, graph;
 
 		for(let i = 0; i < graphs.length; ++i)
@@ -1362,9 +1382,9 @@ class Dixie {
 			graph = graphs[i];
 			
 			if(graph_name_ == undefined)
-				graph.graph.resetTransforms();
+				graph.graph.resetTransforms(update_cbk_);
 			else(graph_name_ == graph.name)	
-				graph.graph.resetTransforms();
+				graph.graph.resetTransforms(update_cbk_);
 		}	
 	}
 
@@ -1567,32 +1587,39 @@ class DixieGraph {
 			graphs[i].displace(new_pos_);
 	}
 
-	rotateX(rad_) {
+	rotateX(rad_, update_cbk_) {
 		let graphs = this.systems;
 
 		for(let i = 0; i < graphs.length; ++i)
-			graphs[i].rotateX(rad_);
+			graphs[i].rotateX(rad_, update_cbk_);
 	}
 	
-	rotateY(rad_) {
+	rotateY(rad_, update_cbk_) {
 		let graphs = this.systems;
 
 		for(let i = 0; i < graphs.length; ++i)
-			graphs[i].rotateY(rad_);
+			graphs[i].rotateY(rad_, update_cbk_);
 	}
 
-	rotateZ(rad_) {
+	rotateZ(rad_, update_cbk_) {
 		let graphs = this.systems;
 
 		for(let i = 0; i < graphs.length; ++i)
-			graphs[i].rotateZ(rad_);
+			graphs[i].rotateZ(rad_, update_cbk_);
 	}
 
-	scale(scale_) {
+	scale(scale_, update_cbk_) {
 		let graphs = this.systems;
 
 		for(let i = 0; i < graphs.length; ++i)
-			graphs[i].scale(scale_);
+			graphs[i].scale(scale_, update_cbk_);
+	}
+
+	resetTransforms(update_cbk_) {
+		let graphs = this.systems;
+
+		for(let i = 0; i < graphs.length; ++i)
+			graphs[i].resetTransforms(update_cbk_);
 	}
 
 	resetMove() {
