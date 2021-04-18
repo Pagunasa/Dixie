@@ -1188,6 +1188,12 @@ class Dixie {
 	}
 
 	add(name_, graph_, create_pmesh_f_, load_texture_f_ = undefined, load_mesh_f_ = undefined, files_directory_ = "") {
+		if(name_ == undefined) 
+		{
+			console.Warning("Dixie Warning!! \n\n\t No name provided, setting to None \n\n");
+			name_ = "None";
+		}
+
 		let graph = new DixieGraph(graph_, create_pmesh_f_, load_texture_f_, load_mesh_f_, files_directory_ );
 		this.graphs.push({name: name_, graph});
 	}
@@ -1249,6 +1255,13 @@ class Dixie {
 		});
 
 		return ordered;
+	}
+
+	move(new_pos_) {
+		let graphs = this.graphs;
+
+		for(let i = 0; graphs.length; ++i)
+			graphs[i].move(new_pos_);	
 	}
 
 	static validInteger(int_) {
@@ -1326,16 +1339,43 @@ class Dixie {
 	static rotateSystemX( modal_, angle_ ) {
 		let s = Math.sin( angle_ );
 		let c = Math.cos( angle_ );
+
+		modal_[4] = modal_[4] * c + modal_[8] * s;
+		modal_[5] = modal_[5] * c + modal_[9] * s;
+		modal_[6] = modal_[6] * c + modal_[10] * s;
+		modal_[7] = modal_[7] * c + modal_[11] * s;
+		modal_[8] = modal_[8] * c - modal_[4] * s;
+		modal_[9] = modal_[9] * c - modal_[5] * s;
+		modal_[10] = modal_[10] * c - modal_[6] * s;
+		modal_[11] = modal_[11] * c - modal_[7] * s;
 	}
 
 	static rotateSystemY( modal_, angle_ ) {
 		let s = Math.sin( angle_ );
 		let c = Math.cos( angle_ );
+
+		modal_[0] = modal_[0] * c - modal_[8] * s;
+		modal_[1] = modal_[1] * c - modal_[9] * s;
+		modal_[2] = modal_[2] * c - modal_[10] * s;
+		modal_[3] = modal_[3] * c - modal_[11] * s;
+		modal_[8] = modal_[0] * s + modal_[8] * c;
+		modal_[9] = modal_[1] * s + modal_[9] * c;
+		modal_[10] = modal_[2] * s + modal_[10] * c;
+		modal_[11] = modal_[3] * s + modal_[11] * c;
 	}
 
 	static rotateSystemZ( modal_, angle_ ) {
 		let s = Math.sin( angle_ );
-		let c = Math.cos( angle_ );	
+		let c = Math.cos( angle_ );
+
+		modal_[0] = modal_[0] * c + modal_[4] * s;
+		modal_[1] = modal_[1] * c + modal_[5] * s;
+		modal_[2] = modal_[2] * c + modal_[6] * s;
+		modal_[3] = modal_[3] * c + modal_[7] * s;
+		modal_[4] = modal_[4] * c - modal_[0] * s;
+		modal_[5] = modal_[5] * c - modal_[1] * s;
+		modal_[6] = modal_[6] * c - modal_[2] * s;
+		modal_[7] = modal_[7] * c - modal_[3] * s;
 	}
 
 	static scaleSystem(modal_, axis_, scale_) {
