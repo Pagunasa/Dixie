@@ -575,6 +575,59 @@ function animation( time ) {
     renderer.render( scene, camera );   
 }
 
+
+function updateRotation( id_, modal_, rotation_ ) {
+    let childrens = scene.childrens, children;
+
+    for(let i = 0; i < childrens.length; ++i)
+    {
+        children = childrens[i];
+
+        if(children.id == id_)
+        {
+            children.rotation.x = rotation_[0];
+            children.rotation.y = rotation_[1]; 
+            children.rotation.z = rotation_[2];  
+        }
+    }
+}
+
+function updateScale( id_, modal_, scale_ ) {
+    let childrens = scene.childrens, children;
+
+    for(let i = 0; i < childrens.length; ++i)
+    {
+        children = childrens[i];
+
+        if(children.id == id_)
+        {
+            children.scale.x = scale_[0];
+            children.scale.y = scale_[1]; 
+            children.scale.z = scale_[2];  
+        }
+    }
+}
+
+function updateRotationScale( id_, modal_, rotation_, scale_ ) {
+    let childrens = scene.childrens, children;
+
+    for(let i = 0; i < childrens.length; ++i)
+    {
+        children = childrens[i];
+
+        if(children.id == id_)
+        {
+            children.rotation.x = rotation_[0];
+            children.rotation.y = rotation_[1]; 
+            children.rotation.z = rotation_[2];  
+
+            children.scale.x = scale_[0];
+            children.scale.y = scale_[1]; 
+            children.scale.z = scale_[2];  
+        }
+    }
+}
+
 function getBufferData( mesh ) {
     let attributes = mesh.geometry.attributes;
 
@@ -703,58 +756,6 @@ function orderSystems( new_order_ ) {
         {
             if(new_order_[i].id == to_order[j].uuid)
                 scene.children.push(to_order[j]);
-        }
-    }
-}
-
-function updateRotation( id_, modal_, rotation_ ) {
-    let childrens = scene.childrens, children;
-
-    for(let i = 0; i < childrens.length; ++i)
-    {
-        children = childrens[i];
-
-        if(children.id == id_)
-        {
-            children.rotation.x = rotation_[0];
-            children.rotation.y = rotation_[1]; 
-            children.rotation.z = rotation_[2];  
-        }
-    }
-}
-
-function updateScale( id_, modal_, scale_ ) {
-    let childrens = scene.childrens, children;
-
-    for(let i = 0; i < childrens.length; ++i)
-    {
-        children = childrens[i];
-
-        if(children.id == id_)
-        {
-            children.scale.x = scale_[0];
-            children.scale.y = scale_[1]; 
-            children.scale.z = scale_[2];  
-        }
-    }
-}
-
-function updateRotationScale( id_, modal_, rotation_, scale_ ) {
-    let childrens = scene.childrens, children;
-
-    for(let i = 0; i < childrens.length; ++i)
-    {
-        children = childrens[i];
-
-        if(children.id == id_)
-        {
-            children.rotation.x = rotation_[0];
-            children.rotation.y = rotation_[1]; 
-            children.rotation.z = rotation_[2];  
-
-            children.scale.x = scale_[0];
-            children.scale.y = scale_[1]; 
-            children.scale.z = scale_[2];  
         }
     }
 }
