@@ -1201,7 +1201,7 @@ class DixieParticleSystem {
 		this.scale[2] += scale_[2];
 		Dixie.scaleSystem(this.transformModal, scale_);
 
-//		update_cbk_(this.id this.transformModal, this.scale);
+		update_cbk_(this.id, this.transformModal, this.scale);
 	}
 
 	resetTransforms(update_cbk_) {
