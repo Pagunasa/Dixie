@@ -758,7 +758,6 @@ class DixieParticleSystem {
 		this.id = id_;
 	}
 
-
 	changeUpdateRate(new_rate_) {
 		if(Dixie.validPosInteger(new_rate_))
 			this.update_frame = new_rate_;
@@ -1173,7 +1172,21 @@ class DixieParticleSystem {
 		upload_function_(this.particle_mesh, buffers_data_);
 	}
 
+	rotateX(rad_) {
+		Dixie.rotateSystemX(this.transformModal, rad_);
+	}
 
+	rotateY(rad_) {
+		Dixie.rotateSystemY(this.transformModal, rad_);
+	}
+
+	rotateZ(rad_) {
+		Dixie.rotateSystemZ(this.transformModal, rad_);
+	}
+
+	scale(scale_) {
+		Dixie.scaleSystem(this.transformModal, scale_);
+	}
 
 	resetTransforms() {
 		this.transformModal = DixieGlobals.identity.slice(0);
@@ -1257,11 +1270,102 @@ class Dixie {
 		return ordered;
 	}
 
-	move(new_pos_) {
-		let graphs = this.graphs;
+	move(new_pos_, graph_name_ = undefined) {
+		let graphs = this.graphs, graph;
 
-		for(let i = 0; graphs.length; ++i)
-			graphs[i].graph.move(new_pos_);	
+		for(let i = 0; i < graphs.length; ++i)
+		{
+			graph = graphs[i];
+			
+			if(graph_name_ == undefined)
+				graph.graph.move(new_pos_);
+			else(graph_name_ == graph.name)	
+				graph.graph.move(new_pos_);
+		}	
+	}
+
+	resetMove(graph_name_ = undefined) {
+		let graphs = this.graphs, graph;
+
+		for(let i = 0; i < graphs.length; ++i)
+		{
+			graph = graphs[i];
+			
+			if(graph_name_ == undefined)
+				graph.graph.resetMove();
+			else(graph_name_ == graph.name)	
+				graph.graph.resetMove();
+		}
+	}
+
+	rotateX(rad_, graph_name_ = undefined) {
+		let graphs = this.graphs, graph;
+
+		for(let i = 0; i < graphs.length; ++i)
+		{
+			graph = graphs[i];
+			
+			if(graph_name_ == undefined)
+				graph.graph.rotateX(rad_);
+			else(graph_name_ == graph.name)	
+				graph.graph.rotateX(rad_);
+		}
+	}
+
+	rotateY(rad_, graph_name_ = undefined) {
+		let graphs = this.graphs, graph;
+
+		for(let i = 0; i < graphs.length; ++i)
+		{
+			graph = graphs[i];
+			
+			if(graph_name_ == undefined)
+				graph.graph.rotateY(rad_);
+			else(graph_name_ == graph.name)	
+				graph.graph.rotateY(rad_);
+		}
+	}
+
+	rotateZ(rad_, graph_name = undefined) {
+		let graphs = this.graphs, graph;
+
+		for(let i = 0; i < graphs.length; ++i)
+		{
+			graph = graphs[i];
+			
+			if(graph_name_ == undefined)
+				graph.graph.rotateZ(rad_);
+			else(graph_name_ == graph.name)	
+				graph.graph.rotateZ(rad_);
+		}			
+	}
+
+	scale(scale_) {
+		let graphs = this.graphs, graph;
+
+		for(let i = 0; i < graphs.length; ++i)
+		{
+			graph = graphs[i];
+			
+			if(graph_name_ == undefined)
+				graph.graph.scale(scale_);
+			else(graph_name_ == graph.name)	
+				graph.graph.scale(scale_);
+		}	
+	}
+
+	resetTransforms(graph_name_ = undefined) {
+		let graphs = this.graphs, graph;
+
+		for(let i = 0; i < graphs.length; ++i)
+		{
+			graph = graphs[i];
+			
+			if(graph_name_ == undefined)
+				graph.graph.resetTransforms();
+			else(graph_name_ == graph.name)	
+				graph.graph.resetTransforms();
+		}	
 	}
 
 	static validInteger(int_) {
@@ -1378,7 +1482,7 @@ class Dixie {
 		modal_[7] = modal_[7] * c - modal_[3] * s;
 	}
 
-	static scaleSystem(modal_, axis_, scale_) {
+	static scaleSystem(modal_, scale_) {
 		let x = scale_[0], 
 		y = scale_[1],
 		z = scale_[2];
@@ -1461,6 +1565,34 @@ class DixieGraph {
 
 		for(let i = 0; i < graphs.length; ++i)
 			graphs[i].displace(new_pos_);
+	}
+
+	rotateX(rad_) {
+		let graphs = this.systems;
+
+		for(let i = 0; i < graphs.length; ++i)
+			graphs[i].rotateX(rad_);
+	}
+	
+	rotateY(rad_) {
+		let graphs = this.systems;
+
+		for(let i = 0; i < graphs.length; ++i)
+			graphs[i].rotateY(rad_);
+	}
+
+	rotateZ(rad_) {
+		let graphs = this.systems;
+
+		for(let i = 0; i < graphs.length; ++i)
+			graphs[i].rotateZ(rad_);
+	}
+
+	scale(scale_) {
+		let graphs = this.systems;
+
+		for(let i = 0; i < graphs.length; ++i)
+			graphs[i].scale(scale_);
 	}
 
 	resetMove() {
