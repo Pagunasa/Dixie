@@ -576,8 +576,8 @@ function animation( time ) {
 }
 
 
-function updateRotation( id_, modal_, rotation_ ) {
-    let childrens = scene.childrens, children;
+function setRotation( id_, modal_, rotation_ ) {
+   /* let childrens = scene.childrens, children;
 
     for(let i = 0; i < childrens.length; ++i)
     {
@@ -589,11 +589,11 @@ function updateRotation( id_, modal_, rotation_ ) {
             children.rotation.y = rotation_[1]; 
             children.rotation.z = rotation_[2];  
         }
-    }
+    }*/
 }
 
-function updateScale( id_, modal_, scale_ ) {
-    let childrens = scene.childrens, children;
+function setScale( id_, modal_, scale_ ) {
+/*    let childrens = scene.childrens, children;
 
     for(let i = 0; i < childrens.length; ++i)
     {
@@ -605,11 +605,11 @@ function updateScale( id_, modal_, scale_ ) {
             children.scale.y = scale_[1]; 
             children.scale.z = scale_[2];  
         }
-    }
+    }*/
 }
 
-function updateRotationScale( id_, modal_, rotation_, scale_ ) {
-    let childrens = scene.childrens, children;
+function setRotationScale( id_, modal_, rotation_, scale_ ) {
+    /*let childrens = scene.childrens, children;
 
     for(let i = 0; i < childrens.length; ++i)
     {
@@ -625,7 +625,7 @@ function updateRotationScale( id_, modal_, rotation_, scale_ ) {
             children.scale.y = scale_[1]; 
             children.scale.z = scale_[2];  
         }
-    }
+    }*/
 }
 
 function getBufferData( mesh ) {
