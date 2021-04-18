@@ -1261,7 +1261,7 @@ class Dixie {
 		let graphs = this.graphs;
 
 		for(let i = 0; graphs.length; ++i)
-			graphs[i].move(new_pos_);	
+			graphs[i].graph.move(new_pos_);	
 	}
 
 	static validInteger(int_) {
