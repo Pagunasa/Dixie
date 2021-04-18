@@ -707,7 +707,7 @@ function orderSystems( new_order_ ) {
     }
 }
 
-function updateRotation( id_, modal_, rotation_ ) {
+function changeRotation( id_, modal_, rotation_ ) {
     let childrens = scene.childrens, children;
 
     for(let i = 0; i < childrens.length; ++i)
@@ -723,7 +723,7 @@ function updateRotation( id_, modal_, rotation_ ) {
     }
 }
 
-function updateScale( id_, modal_, scale_ ) {
+function changeScale( id_, modal_, scale_ ) {
     let childrens = scene.childrens, children;
 
     for(let i = 0; i < childrens.length; ++i)
@@ -739,7 +739,7 @@ function updateScale( id_, modal_, scale_ ) {
     }
 }
 
-function updateRotationScale( id_, modal_, rotation_, scale_ ) {
+function changeRotationScale( id_, modal_, rotation_, scale_ ) {
     let childrens = scene.childrens, children;
 
     for(let i = 0; i < childrens.length; ++i)
