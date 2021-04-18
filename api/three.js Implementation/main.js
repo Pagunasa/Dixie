@@ -758,3 +758,7 @@ function updateRotationScale( id_, modal_, rotation_, scale_ ) {
         }
     }
 }
+
+function test(){
+    console.log("HI");
+}
