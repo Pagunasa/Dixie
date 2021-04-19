@@ -1360,7 +1360,7 @@ class Dixie {
 		}			
 	}
 
-	scale(scale_, graph_name_ = undefined, update_cbk_ = undefined) {
+	scaleXYZ(scale_, graph_name_ = undefined, update_cbk_ = undefined) {
 		let graphs = this.graphs, graph;
 
 		for(let i = 0; i < graphs.length; ++i)
@@ -1612,7 +1612,7 @@ class DixieGraph {
 		let graphs = this.systems;
 
 		for(let i = 0; i < graphs.length; ++i)
-			graphs[i].scale(scale_, update_cbk_);
+			graphs[i].scaleXYZ(scale_, update_cbk_);
 	}
 
 	resetTransforms(update_cbk_) {
