@@ -524,7 +524,10 @@ function init() {
             children = childrens[i];
 
             if(children.uuid == id_)
-                children.setRotationFromMatrix(children.modelViewMatrix); 
+            {
+                children.setRotationFromMatrix( modal_ ); 
+                children.updateMatrix();
+            }
         }
     }
 
