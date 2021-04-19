@@ -517,7 +517,7 @@ function init() {
 
     //Set the rotacion and scale functions
     setRotation = function ( id_, modal_, rotation_ ) {
-        let childrens = scene.children, children;
+        /*let childrens = scene.children, children;
 
         for(let i = 0; i < childrens.length; ++i)
         {
@@ -528,7 +528,7 @@ function init() {
                 children.setRotationFromMatrix( modal_ ); 
                 children.updateMatrix();
             }
-        }
+        }*/
     }
 
     setScale = function ( id_, modal_, scale_ ) {
@@ -675,7 +675,7 @@ function loadMesh( meshURL, toSaveMesh, toSaveVertices, meshInGraph ) {
     loader.load( meshURL,
         function ( object ) {
             //Update the modal
-            object.modelViewMatrix.elements = meshInGraph.modal;
+            object.matrix.elements = meshInGraph.modal;
             //Save the mesh in the graph
             meshInGraph[toSaveMesh] = object;
             //Save the vertices
@@ -730,7 +730,7 @@ function createParticleMesh( buffers, src_bfact_, dst_bfact_, set_id_, t_modal_ 
     geometry.computeBoundingBox();
 
     let p_mesh = new THREE.Mesh( geometry, s_material );
-    p_mesh.modelViewMatrix.elements = t_modal_;
+    p_mesh.matrix.elements = t_modal_;
     scene.add( p_mesh );
 
     //Add the id of the system
