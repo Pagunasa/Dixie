@@ -529,8 +529,7 @@ function init() {
                 //children.updateMatrix();
 
                 children.matrix.elements = modal_;
-                children.updateMatrix();
-
+                chidlren. matrixWorldNeedsUpdate = true;
             }
         }
     }
@@ -741,6 +740,7 @@ function createParticleMesh( buffers, src_bfact_, dst_bfact_, set_id_, t_modal_ 
 
     let p_mesh = new THREE.Mesh( geometry, s_material );
     p_mesh.matrix.elements = t_modal_;
+    p_mesh.matrixAutoUpdate = false;
     scene.add( p_mesh );
 
     //Add the id of the system
