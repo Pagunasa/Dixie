@@ -7,7 +7,7 @@ var DixieGlobals =
 	possible_origins : ["Point", "Mesh"],
 	spawn_modes      : ["Linear", "Waves"],
 	
-	deg2Rad :  Math.pi / 180,
+	deg2Rad :  Math.PI / 180,
 
 	force_types : ["gravity", "vortex", "magnet"],
 
