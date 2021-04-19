@@ -472,6 +472,11 @@ let fire_system = {
 //Shaders
 let vertexShader, flatFragment, textFragment;
 
+
+let test = function() {
+    console.log("Test");
+}
+
 //Function definition
 function getBufferData( mesh ) {
     let attributes = mesh.geometry.attributes;
