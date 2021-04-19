@@ -1370,7 +1370,7 @@ class Dixie {
 		}
 	}
 
-	rotateZ(rad_, graph_name = undefined, update_cbk_ = undefined) {
+	rotateZ(rad_, graph_name_ = undefined, update_cbk_ = undefined) {
 		let graphs = this.graphs, graph;
 
 		for(let i = 0; i < graphs.length; ++i)
