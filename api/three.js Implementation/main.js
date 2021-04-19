@@ -473,7 +473,7 @@ let fire_system = {
 let vertexShader, flatFragment, textFragment;
 
 
-let test = function() {
+const test = function() {
     console.log("Test");
 }
 
