@@ -523,11 +523,47 @@ function init() {
         {
             children = childrens[i];
 
-            if(children.id == id_)
+            if(children.uuid == id_)
             {
                 children.rotation.x = rotation_[0];
                 children.rotation.y = rotation_[1]; 
                 children.rotation.z = rotation_[2];  
+            }
+        }
+    }
+
+    setScale = function ( id_, modal_, scale_ ) {
+        let childrens = scene.children, children;
+
+        for(let i = 0; i < childrens.length; ++i)
+        {
+            children = childrens[i];
+
+            if(children.uuid == id_)
+            {
+                children.scale.x = scale_[0];
+                children.scale.y = scale_[1]; 
+                children.scale.z = scale_[2];  
+            }
+        }
+    }
+
+    setRotationScale = function ( id_, modal_, rotation_, scale_ ) {
+        let childrens = scene.children, children;
+
+        for(let i = 0; i < childrens.length; ++i)
+        {
+            children = childrens[i];
+
+            if(children.uuid == id_)
+            {
+                children.rotation.x = rotation_[0];
+                children.rotation.y = rotation_[1]; 
+                children.rotation.z = rotation_[2];  
+
+                children.scale.x = scale_[0];
+                children.scale.y = scale_[1]; 
+                children.scale.z = scale_[2];  
             }
         }
     }
