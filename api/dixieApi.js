@@ -1195,7 +1195,7 @@ class DixieParticleSystem {
 		update_cbk_(this.id, this.transformModal, this.rotation);
 	}
 
-	scale(scale_, update_cbk_) {
+	scaleXYZ(scale_, update_cbk_) {
 		this.scale[0] += scale_[0];
 		this.scale[1] += scale_[1];
 		this.scale[2] += scale_[2];
@@ -1360,7 +1360,7 @@ class Dixie {
 		}			
 	}
 
-	scaleXYZ(scale_, graph_name_ = undefined, update_cbk_ = undefined) {
+	scale(scale_, graph_name_ = undefined, update_cbk_ = undefined) {
 		let graphs = this.graphs, graph;
 
 		for(let i = 0; i < graphs.length; ++i)
