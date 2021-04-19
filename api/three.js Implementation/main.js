@@ -473,7 +473,7 @@ let fire_system = {
 let vertexShader, flatFragment, textFragment;
 
 //Some functions
-const setRotation, setScale, setRotationScale;
+let setRotation, setScale, setRotationScale;
 
 init();
 
