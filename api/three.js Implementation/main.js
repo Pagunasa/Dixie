@@ -528,9 +528,8 @@ function init() {
                 //children.setRotationFromMatrix( {elements: modal_} ); 
                 //children.updateMatrix();
 
-                children.rotation.x = rotation_[0];
-                children.rotation.y = rotation_[1];
-                children.rotation.z = rotation_[2];
+                children.matrix.elements = modal_;
+                children.updateMatrix();
 
             }
         }
