@@ -1360,7 +1360,7 @@ class Dixie {
 		}			
 	}
 
-	scale(scale_, update_cbk_ = undefined) {
+	scale(scale_, graph_name = undefined, update_cbk_ = undefined) {
 		let graphs = this.graphs, graph;
 
 		for(let i = 0; i < graphs.length; ++i)
