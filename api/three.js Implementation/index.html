@@ -25,8 +25,8 @@
 		v_visible = visible;
 		v_coord = coords;
 		v_color = colors;
-		v_pos = vertices + u_right * icoord.x * size.x + u_up * icoord.y * size.y;
-		gl_Position = projectionMatrix * modelViewMatrix * ( modelMatrix * vec4( v_pos, 1.0 ) );
+		v_pos = ( modelMatrix * vec4( v_pos, 1.0 ) ).xyz + u_right * icoord.x * size.x + u_up * icoord.y * size.y;
+		gl_Position = projectionMatrix * modelViewMatrix * ( vec4( v_pos, 1.0 ) );
 	}
 </script>
 
