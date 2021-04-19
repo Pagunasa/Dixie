@@ -1206,7 +1206,7 @@ class DixieParticleSystem {
 
 	resetTransforms(update_cbk_) {
 		this.rotation = [0,0,0];
-		this.scale = [0,0,0];
+		this.scale = [1,1,1];
 		this.transformModal = DixieGlobals.identity.slice(0);
 
 		update_cbk_(this.id, this.transformModal, this.rotation, this.scale);
