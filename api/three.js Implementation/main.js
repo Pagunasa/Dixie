@@ -605,7 +605,21 @@ function orderSystems( new_order_ ) {
     }
 }
 
-let setRotation = function ( id_, modal_, rotation_ ) {
+function orderSystems20( new_order_ ) {
+    //Get the emitters
+    let to_order = scene.children.splice(1, 3);
+
+    for(let i = 0; i < new_order_.length; ++i)
+    {
+        for(let j = 0; j < to_order.length; ++j)
+        {
+            if(new_order_[i].id == to_order[j].uuid)
+                scene.children.push(to_order[j]);
+        }
+    }
+}
+
+/*function setRotation( id_, modal_, rotation_ ) {
     let childrens = scene.childrens, children;
 
     for(let i = 0; i < childrens.length; ++i)
@@ -655,7 +669,7 @@ function setRotationScale( id_, modal_, rotation_, scale_ ) {
             children.scale.z = scale_[2];  
         }
     }
-}
+}*/
 
 init();
 
