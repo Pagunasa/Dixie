@@ -27,9 +27,9 @@
 		v_visible = visible;
 		v_coord = coords;
 		v_color = colors;
-		test =  ( modelMatrix * vec4( vertices, 1.0 ) ).xyz;
+		test = (projectionMatrix * modelViewMatrix * ( modelMatrix * vec4( vertices, 1.0 ) )).xyz;
 		v_pos = test + u_right * icoord.x * size.x + u_up * icoord.y * size.y;
-		gl_Position = projectionMatrix * modelViewMatrix * ( modelMatrix * vec4( v_pos, 1.0 ) );
+		gl_Position = vec4( v_pos, 1.0 );
 	}
 </script>
 
