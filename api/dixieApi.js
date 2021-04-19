@@ -157,6 +157,17 @@ var DixieGlobals =
 			return value;
 		},
 
+	vec3MultMatrix4 :
+		function(modal_, vector3_)
+		{
+			//Multiply by the model the random point
+			let x = vector3_[0], y = vector3_[1], z = vector3_[2];
+
+			vector3_[0] = modal_[0] * x + modal_[4] * y + modal_[8]  * z + modal_[12];
+			vector3_[1] = modal_[1] * x + modal_[5] * y + modal_[9]  * z + modal_[13];
+			vector3_[2] = modal_[2] * x + modal_[6] * y + modal_[10] * z + modal_[14];
+		},
+
 	//For doing the billboard I follow the next tutorial
 	//http://www.opengl-tutorial.org/intermediate-tutorials/billboards-particles/billboards/
 	vs_particles : '\
@@ -715,10 +726,11 @@ class DixieParticleSystem {
 		this.id;
 		this.transformModal = DixieGlobals.identity.slice(0);
 		this.rotation = [0, 0, 0];
-		this.scale = [0, 0, 0];
+		this.scale = [1, 1, 1];
 
 		//Original position
 		this.o_position = this.position.slice(0);
+		this.trans_position = this.position.slice(0);
 
 		this.update_frame = 5;
 		this.frames_until_update = 0;
@@ -817,7 +829,7 @@ class DixieParticleSystem {
 		}
 		else if(this.origin == "Point")
 		{
-			return {id: this.id, position: this.position};
+			return {id: this.id, position: this.trans_position};
 		}
 	}
 
@@ -981,12 +993,13 @@ class DixieParticleSystem {
 			let model = o_mesh.modal;
 
 			//Multiply by the model the random point
-			let x = random_point[0], y = random_point[1], z = random_point[2];
+			/*let x = random_point[0], y = random_point[1], z = random_point[2];
 
 			random_point[0] = model[0] * x + model[4] * y + model[8]  * z + model[12];
 			random_point[1] = model[1] * x + model[5] * y + model[9]  * z + model[13];
 			random_point[2] = model[2] * x + model[6] * y + model[10] * z + model[14];
-
+			*/
+			DixieGlobals.vec3MultMatrix4(model, random_point);
 			return random_point;
 		}
 	}
@@ -1181,6 +1194,8 @@ class DixieParticleSystem {
 		Dixie.rotateSystemX(this.transformModal, rad_);
 
 		update_cbk_(this.id, this.transformModal, this.rotation);
+
+		DixieGlobals.vec3MultMatrix4(this.transformModal, this.trans_position);
 	}
 
 	rotateY(rad_, update_cbk_) {
@@ -1188,6 +1203,8 @@ class DixieParticleSystem {
 		Dixie.rotateSystemY(this.transformModal, rad_);
 
 		update_cbk_(this.id, this.transformModal, this.rotation);
+
+		DixieGlobals.vec3MultMatrix4(this.transformModal, this.trans_position);
 	}
 
 	rotateZ(rad_, update_cbk_) {
@@ -1195,6 +1212,8 @@ class DixieParticleSystem {
 		Dixie.rotateSystemZ(this.transformModal, rad_);
 
 		update_cbk_(this.id, this.transformModal, this.rotation);
+
+		DixieGlobals.vec3MultMatrix4(this.transformModal, this.trans_position);
 	}
 
 	scaleXYZ(scale_, update_cbk_) {
@@ -1204,12 +1223,15 @@ class DixieParticleSystem {
 		Dixie.scaleSystem(this.transformModal, scale_);
 
 		update_cbk_(this.id, this.transformModal, this.scale);
+
+		DixieGlobals.vec3MultMatrix4(this.transformModal, this.trans_position);
 	}
 
 	resetTransforms(update_cbk_) {
 		this.rotation = [0,0,0];
 		this.scale = [1,1,1];
 		this.transformModal = DixieGlobals.identity.slice(0);
+		this.trans_position = this.o_position.slice(0);
 
 		update_cbk_(this.id, this.transformModal, this.rotation, this.scale);
 	}
