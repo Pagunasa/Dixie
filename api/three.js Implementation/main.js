@@ -517,7 +517,7 @@ function init() {
 
     //Set the rotacion and scale functions
     setRotation = function ( id_, modal_, rotation_ ) {
-        /*let childrens = scene.children, children;
+        let childrens = scene.children, children;
 
         for(let i = 0; i < childrens.length; ++i)
         {
@@ -528,7 +528,7 @@ function init() {
                 children.setRotationFromMatrix( modal_ ); 
                 children.updateMatrix();
             }
-        }*/
+        }
     }
 
     setScale = function ( id_, modal_, scale_ ) {
@@ -556,7 +556,8 @@ function init() {
 
             if(children.uuid == id_)
             {
-                children.setRotationFromMatrix(children.modelViewMatrix); 
+                children.setRotationFromMatrix( modal_ ); 
+                children.updateMatrix();
 
                 children.scale.x = scale_[0];
                 children.scale.y = scale_[1]; 
