@@ -605,7 +605,7 @@ function orderSystems( new_order_ ) {
     }
 }
 
-function setRotation( id_, modal_, rotation_ ) {
+let setRotation = function ( id_, modal_, rotation_ ) {
     let childrens = scene.childrens, children;
 
     for(let i = 0; i < childrens.length; ++i)
