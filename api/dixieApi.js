@@ -1174,7 +1174,7 @@ class DixieParticleSystem {
 		upload_function_(this.particle_mesh, buffers_data_);
 	}
 
-	/*rotateX(rad_, update_cbk_) {
+	rotateX(rad_, update_cbk_) {
 		this.rotation[0] += rad_;
 		Dixie.rotateSystemX(this.transformModal, rad_);
 
@@ -1210,7 +1210,7 @@ class DixieParticleSystem {
 		this.transformModal = DixieGlobals.identity.slice(0);
 
 		update_cbk_(this.id, this.transformModal, this.rotation, this.scale);
-	}*/
+	}
 } 
 
 class Dixie {
@@ -1318,7 +1318,7 @@ class Dixie {
 		}
 	}
 
-	/*rotateX(rad_, graph_name_ = undefined, update_cbk_ = undefined) {
+	rotateX(rad_, graph_name_ = undefined, update_cbk_ = undefined) {
 		let graphs = this.graphs, graph;
 
 		for(let i = 0; i < graphs.length; ++i)
@@ -1386,7 +1386,7 @@ class Dixie {
 			else(graph_name_ == graph.name)	
 				graph.graph.resetTransforms(update_cbk_);
 		}	
-	}*/
+	}
 
 	static validInteger(int_) {
 		return (int_ != undefined && Number.isInteger(int_))
@@ -1587,7 +1587,7 @@ class DixieGraph {
 			graphs[i].displace(new_pos_);
 	}
 
-	/*rotateX(rad_, update_cbk_) {
+	rotateX(rad_, update_cbk_) {
 		let graphs = this.systems;
 
 		for(let i = 0; i < graphs.length; ++i)
@@ -1620,7 +1620,7 @@ class DixieGraph {
 
 		for(let i = 0; i < graphs.length; ++i)
 			graphs[i].resetTransforms(update_cbk_);
-	}*/
+	}
 
 	resetMove() {
 		let graphs = this.systems;
