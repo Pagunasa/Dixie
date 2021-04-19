@@ -2,6 +2,8 @@ import * as THREE from 'https://threejs.org/build/three.module.js';
 import { OBJLoader } from 'https://threejs.org/examples/jsm/loaders/OBJLoader.js';
 import { OrbitControls } from 'https://threejs.org/examples/jsm/controls/OrbitControls.js';
 
+export { OBJLoader, OrbitControls };
+
 let camera, controls, scene, renderer;
 let geometry, material, mesh;
 let clock;
