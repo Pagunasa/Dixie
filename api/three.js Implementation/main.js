@@ -525,9 +525,10 @@ function init() {
 
             if(children.uuid == id_)
             {
-                children.rotation.x = rotation_[0];
-                children.rotation.y = rotation_[1]; 
-                children.rotation.z = rotation_[2];  
+                children.setRotationFromMatrix(children.modelViewMatrix);
+                //children.rotation.x = rotation_[0];
+                //children.rotation.y = rotation_[1]; 
+                //children.rotation.z = rotation_[2];  
             }
         }
     }
