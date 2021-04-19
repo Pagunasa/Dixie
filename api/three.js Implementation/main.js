@@ -472,6 +472,121 @@ let fire_system = {
 //Shaders
 let vertexShader, flatFragment, textFragment;
 
+//Some functions
+const setRotation, setScale, setRotationScale;
+
+init();
+
+function init() {
+    //Inicialize the up and right vectors
+    right = new THREE.Vector3();
+    up = new THREE.Vector3();
+
+    clock = new THREE.Clock();
+    clock.start();
+
+    camera = new THREE.PerspectiveCamera( 70, window.innerWidth / window.innerHeight, 0.01, 1000 );
+    camera.position.z = 30;
+
+    scene = new THREE.Scene();
+
+    geometry = new THREE.BoxGeometry( 1, 1, 1 );
+    material = new THREE.MeshNormalMaterial();
+
+    mesh = new THREE.Mesh( geometry, material );
+    mesh.position.z = 5;
+    mesh.position.x = -2;
+    scene.add( mesh );
+
+    //Load the shaders
+    vertexShader = document.getElementById( 'vertexShader' ).textContent;
+    flatFragment = document.getElementById( 'flatFragmentShader' ).textContent;
+    textFragment = document.getElementById( 'texturedFragmentShader' ).textContent;
+
+    systems = new Dixie();
+    systems.add("Fire", fire_system, createParticleMesh, loadTexture, loadMesh, "Graph1");
+
+    renderer = new THREE.WebGLRenderer( { antialias: true } );
+    renderer.setSize( window.innerWidth, window.innerHeight );
+    renderer.setAnimationLoop( animation );
+    renderer.sortObjects = false;
+    document.body.appendChild( renderer.domElement );
+
+    //Set the camera controls
+    controls = new OrbitControls( camera, renderer.domElement );
+
+    //Set the rotacion and scale functions
+    setRotation = function ( id_, modal_, rotation_ ) {
+        let childrens = scene.children, children;
+
+        for(let i = 0; i < childrens.length; ++i)
+        {
+            children = childrens[i];
+
+            if(children.id == id_)
+            {
+                children.rotation.x = rotation_[0];
+                children.rotation.y = rotation_[1]; 
+                children.rotation.z = rotation_[2];  
+            }
+        }
+    }
+}
+
+function animation( time ) {
+
+    mesh.rotation.x = time / 2000;
+    mesh.rotation.y = time / 1000;
+
+    let c_pos = camera.position;
+    
+    let eye = [0,0,0];
+    eye[0] = c_pos.x;
+    eye[1] = c_pos.y;
+    eye[2] = c_pos.z;
+
+    systems.update( clock.getDelta(), eye, getBufferData, uploadBuffers, orderSystems );
+
+    //Get the right and up vectors of the camera
+    let mv = camera.matrixWorldInverse.elements;
+
+    right.x = mv[0];
+    right.y = mv[4];
+    right.z = mv[8];
+    right.normalize();
+
+    up.x = mv[1];
+    up.y = mv[5];
+    up.z = mv[9];
+    up.normalize();
+
+
+    //Update the uniforms for the particles
+    let graphs = systems.graphs;
+    let render_info, uniforms;
+    let sy, system;
+
+
+    for (let i = 0; i < graphs.length; ++i) 
+    {
+        sy = graphs[i].graph.systems;
+
+        for(let j = 0; j < sy.length; ++j)
+        {
+            system = sy[j];
+            render_info = system.renderInfo;
+
+            //Update the uniforms
+            uniforms = system.particle_mesh.material.uniforms; 
+            uniforms.u_right.value = right;
+            uniforms.u_up.value = up; 
+        }
+    }
+
+    controls.update();
+    renderer.render( scene, camera );   
+}
+
 //Function definition
 function getBufferData( mesh ) {
     let attributes = mesh.geometry.attributes;
@@ -605,7 +720,7 @@ function orderSystems( new_order_ ) {
     }
 }
 
-function setRotation( id_, modal_, rotation_ ) {
+/*function setRotation( id_, modal_, rotation_ ) {
     let childrens = scene.children, children;
 
     for(let i = 0; i < childrens.length; ++i)
@@ -655,99 +770,4 @@ function setRotationScale( id_, modal_, rotation_, scale_ ) {
             children.scale.z = scale_[2];  
         }
     }
-}
-
-init();
-
-function init() {
-    //Inicialize the up and right vectors
-    right = new THREE.Vector3();
-    up = new THREE.Vector3();
-
-    clock = new THREE.Clock();
-    clock.start();
-
-    camera = new THREE.PerspectiveCamera( 70, window.innerWidth / window.innerHeight, 0.01, 1000 );
-    camera.position.z = 30;
-
-    scene = new THREE.Scene();
-
-    geometry = new THREE.BoxGeometry( 1, 1, 1 );
-    material = new THREE.MeshNormalMaterial();
-
-    mesh = new THREE.Mesh( geometry, material );
-    mesh.position.z = 5;
-    mesh.position.x = -2;
-    scene.add( mesh );
-
-    //Load the shaders
-    vertexShader = document.getElementById( 'vertexShader' ).textContent;
-    flatFragment = document.getElementById( 'flatFragmentShader' ).textContent;
-    textFragment = document.getElementById( 'texturedFragmentShader' ).textContent;
-
-    systems = new Dixie();
-    systems.add("Fire", fire_system, createParticleMesh, loadTexture, loadMesh, "Graph1");
-
-    renderer = new THREE.WebGLRenderer( { antialias: true } );
-    renderer.setSize( window.innerWidth, window.innerHeight );
-    renderer.setAnimationLoop( animation );
-    renderer.sortObjects = false;
-    document.body.appendChild( renderer.domElement );
-
-    //Set the camera controls
-    controls = new OrbitControls( camera, renderer.domElement );
-}
-
-function animation( time ) {
-
-    mesh.rotation.x = time / 2000;
-    mesh.rotation.y = time / 1000;
-
-    let c_pos = camera.position;
-    
-    let eye = [0,0,0];
-    eye[0] = c_pos.x;
-    eye[1] = c_pos.y;
-    eye[2] = c_pos.z;
-
-    systems.update( clock.getDelta(), eye, getBufferData, uploadBuffers, orderSystems );
-
-    //Get the right and up vectors of the camera
-    let mv = camera.matrixWorldInverse.elements;
-
-    right.x = mv[0];
-    right.y = mv[4];
-    right.z = mv[8];
-    right.normalize();
-
-    up.x = mv[1];
-    up.y = mv[5];
-    up.z = mv[9];
-    up.normalize();
-
-
-    //Update the uniforms for the particles
-    let graphs = systems.graphs;
-    let render_info, uniforms;
-    let sy, system;
-
-
-    for (let i = 0; i < graphs.length; ++i) 
-    {
-        sy = graphs[i].graph.systems;
-
-        for(let j = 0; j < sy.length; ++j)
-        {
-            system = sy[j];
-            render_info = system.renderInfo;
-
-            //Update the uniforms
-            uniforms = system.particle_mesh.material.uniforms; 
-            uniforms.u_right.value = right;
-            uniforms.u_up.value = up; 
-        }
-    }
-
-    controls.update();
-    renderer.render( scene, camera );   
-}
+}*/
