@@ -606,7 +606,7 @@ function orderSystems( new_order_ ) {
 }
 
 function setRotation( id_, modal_, rotation_ ) {
-    let childrens = scene.childrens, children;
+    let childrens = scene.children, children;
 
     for(let i = 0; i < childrens.length; ++i)
     {
@@ -622,7 +622,7 @@ function setRotation( id_, modal_, rotation_ ) {
 }
 
 function setScale( id_, modal_, scale_ ) {
-    let childrens = scene.childrens, children;
+    let childrens = scene.children, children;
 
     for(let i = 0; i < childrens.length; ++i)
     {
@@ -638,7 +638,7 @@ function setScale( id_, modal_, scale_ ) {
 }
 
 function setRotationScale( id_, modal_, rotation_, scale_ ) {
-    let childrens = scene.childrens, children;
+    let childrens = scene.children, children;
 
     for(let i = 0; i < childrens.length; ++i)
     {
@@ -696,8 +696,6 @@ function init() {
 
     //Set the camera controls
     controls = new OrbitControls( camera, renderer.domElement );
-
-    setRotation(1, 1, [1,1,1]);
 }
 
 function animation( time ) {
