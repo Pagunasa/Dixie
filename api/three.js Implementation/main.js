@@ -525,8 +525,13 @@ function init() {
 
             if(children.uuid == id_)
             {
-                children.setRotationFromMatrix( {elements: modal_} ); 
-                children.updateMatrix();
+                //children.setRotationFromMatrix( {elements: modal_} ); 
+                //children.updateMatrix();
+
+                children.rotation.x = rotation_[0];
+                children.rotation.y = rotation_[1];
+                children.rotation.z = rotation_[2];
+
             }
         }
     }
@@ -556,8 +561,13 @@ function init() {
 
             if(children.uuid == id_)
             {
-                children.setRotationFromMatrix( {elements: modal_} ); 
-                children.updateMatrix();
+               
+                //children.setRotationFromMatrix( {elements: modal_} ); 
+                //children.updateMatrix();
+
+                children.rotation.x = rotation_[0];
+                children.rotation.y = rotation_[1];
+                children.rotation.z = rotation_[2];
 
                 children.scale.x = scale_[0];
                 children.scale.y = scale_[1]; 
