@@ -585,11 +585,11 @@ function animation( time ) {
     mesh.rotation.y = time / 1000;
 
     let c_pos = camera.position;
-    
+
     let eye = [0,0,0];
-    eye[0] = c_pos.x;
-    eye[1] = c_pos.y;
-    eye[2] = c_pos.z;
+    eye[0] = c_pos.x * -1;
+    eye[1] = c_pos.y * -1;
+    eye[2] = c_pos.z * -1;
 
     systems.update( clock.getDelta(), eye, getBufferData, uploadBuffers, orderSystems );
 
