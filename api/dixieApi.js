@@ -1485,42 +1485,69 @@ class Dixie {
 		let s = Math.sin( angle_ );
 		let c = Math.cos( angle_ );
 
-		modal_[4] = modal_[4] * c + modal_[8] * s;
-		modal_[5] = modal_[5] * c + modal_[9] * s;
-		modal_[6] = modal_[6] * c + modal_[10] * s;
-		modal_[7] = modal_[7] * c + modal_[11] * s;
-		modal_[8] = modal_[8] * c - modal_[4] * s;
-		modal_[9] = modal_[9] * c - modal_[5] * s;
-		modal_[10] = modal_[10] * c - modal_[6] * s;
-		modal_[11] = modal_[11] * c - modal_[7] * s;
+		let m10 = modal_[4];
+		let m11 = modal_[5];
+		let m12 = modal_[6];
+		let m13 = modal_[7];
+		let m20 = modal_[8];
+		let m21 = modal_[9];
+		let m22 = modal_[10];
+		let m23 = modal_[11];
+
+		modal_[4] = m10 * c + m20 * s;
+		modal_[5] = m11 * c + m21 * s;
+		modal_[6] = m12 * c + m22 * s;
+		modal_[7] = m13 * c + m23 * s;
+		modal_[8] = m20 * c - m10 * s;
+		modal_[9] = m21 * c - m11 * s;
+		modal_[10] = m22 * c - m12 * s;
+		modal_[11] = m23 * c - m13 * s;
 	}
 
 	static rotateSystemY( modal_, angle_ ) {
 		let s = Math.sin( angle_ );
 		let c = Math.cos( angle_ );
 
-		modal_[0] = modal_[0] * c - modal_[8] * s;
-		modal_[1] = modal_[1] * c - modal_[9] * s;
-		modal_[2] = modal_[2] * c - modal_[10] * s;
-		modal_[3] = modal_[3] * c - modal_[11] * s;
-		modal_[8] = modal_[0] * s + modal_[8] * c;
-		modal_[9] = modal_[1] * s + modal_[9] * c;
-		modal_[10] = modal_[2] * s + modal_[10] * c;
-		modal_[11] = modal_[3] * s + modal_[11] * c;
+		let m00 = modal_[0];
+		let m01 = modal_[1];
+		let m02 = modal_[2];
+		let m03 = modal_[3];
+		let m20 = modal_[8];
+		let m21 = modal_[9];
+		let m22 = modal_[10];
+		let m23 = modal_[11];
+
+		modal_[0] = m00 * c - m20 * s;
+		modal_[1] = m01 * c - m21 * s;
+		modal_[2] = m02 * c - m22 * s;
+		modal_[3] = m03 * c - m23 * s;
+		modal_[8] = m00 * s + m20 * c;
+		modal_[9] = m01 * s + m21 * c;
+		modal_[10] = m02 * s + m22 * c;
+		modal_[11] = m03 * s + m23 * c;
 	}
 
 	static rotateSystemZ( modal_, angle_ ) {
 		let s = Math.sin( angle_ );
 		let c = Math.cos( angle_ );
 
-		modal_[0] = modal_[0] * c + modal_[4] * s;
-		modal_[1] = modal_[1] * c + modal_[5] * s;
-		modal_[2] = modal_[2] * c + modal_[6] * s;
-		modal_[3] = modal_[3] * c + modal_[7] * s;
-		modal_[4] = modal_[4] * c - modal_[0] * s;
-		modal_[5] = modal_[5] * c - modal_[1] * s;
-		modal_[6] = modal_[6] * c - modal_[2] * s;
-		modal_[7] = modal_[7] * c - modal_[3] * s;
+		let m00 = modal_[0];
+		let m01 = modal_[1];
+		let m02 = modal_[2];
+		let m03 = modal_[3];
+		let m10 = modal_[4];
+		let m11 = modal_[5];
+		let m12 = modal_[6];
+		let m13 = modal_[7];
+
+		modal_[0] = m00 * c + m10 * s;
+		modal_[1] = m01 * c + m11 * s;
+		modal_[2] = m02 * c + m12 * s;
+		modal_[3] = m03 * c + m13 * s;
+		modal_[4] = m10 * c - m00 * s;
+		modal_[5] = m11 * c - m01 * s;
+		modal_[6] = m12 * c - m02 * s;
+		modal_[7] = m13 * c - m03 * s;
 	}
 
 	static scaleSystem(modal_, scale_) {
