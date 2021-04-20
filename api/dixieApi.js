@@ -1192,28 +1192,25 @@ class DixieParticleSystem {
 	rotateX(rad_, update_cbk_) {
 		this.rotation[0] += rad_;
 		Dixie.rotateSystemX(this.transformModal, rad_);
+		DixieGlobals.vec3MultMatrix4(this.transformModal, this.trans_position);
 
 		update_cbk_(this.id, this.transformModal, this.rotation);
-
-		DixieGlobals.vec3MultMatrix4(this.transformModal, this.trans_position);
 	}
 
 	rotateY(rad_, update_cbk_) {
 		this.rotation[1] += rad_;
 		Dixie.rotateSystemY(this.transformModal, rad_);
+		DixieGlobals.vec3MultMatrix4(this.transformModal, this.trans_position);
 
 		update_cbk_(this.id, this.transformModal, this.rotation);
-
-		DixieGlobals.vec3MultMatrix4(this.transformModal, this.trans_position);
 	}
 
 	rotateZ(rad_, update_cbk_) {
 		this.rotation[2] += rad_;
 		Dixie.rotateSystemZ(this.transformModal, rad_);
+		DixieGlobals.vec3MultMatrix4(this.transformModal, this.trans_position);
 
 		update_cbk_(this.id, this.transformModal, this.rotation);
-
-		DixieGlobals.vec3MultMatrix4(this.transformModal, this.trans_position);
 	}
 
 	scaleXYZ(scale_, update_cbk_) {
