@@ -742,8 +742,10 @@ function createParticleMesh( buffers, src_bfact_, dst_bfact_, set_id_, t_modal_ 
     //Compute the bounding box (OPTIONAL)
     geometry.computeBoundingBox();
 
+    let m = t_modal_;
+
     let p_mesh = new THREE.Mesh( geometry, s_material );
-    p_mesh.matrix.elements = t_modal_;
+    p_mesh.matrix.set(m[0], m[1], m[2], m[3], m[4], m[5], m[6], m[7], m[8], m[9], m[10], m[11], m[12], m[13], m[14], m[15]);
     p_mesh.matrixAutoUpdate = false;
     scene.add( p_mesh );
 
