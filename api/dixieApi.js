@@ -1348,7 +1348,7 @@ class Dixie {
 			
 			if(graph_name_ == undefined)
 				graph.graph.rotateX(rad_, update_cbk_);
-			else(graph_name_ == graph.name)	
+			else if(graph_name_ == graph.name)	
 				graph.graph.rotateX(rad_, update_cbk_);
 		}
 	}
@@ -1362,7 +1362,7 @@ class Dixie {
 			
 			if(graph_name_ == undefined)
 				graph.graph.rotateY(rad_, update_cbk_);
-			else(graph_name_ == graph.name)	
+			else if(graph_name_ == graph.name)	
 				graph.graph.rotateY(rad_, update_cbk_);
 		}
 	}
@@ -1376,7 +1376,7 @@ class Dixie {
 			
 			if(graph_name_ == undefined)
 				graph.graph.rotateZ(rad_, update_cbk_);
-			else(graph_name_ == graph.name)	
+			else if(graph_name_ == graph.name)	
 				graph.graph.rotateZ(rad_, update_cbk_);
 		}			
 	}
@@ -1390,7 +1390,7 @@ class Dixie {
 			
 			if(graph_name_ == undefined)
 				graph.graph.scale(scale_, update_cbk_);
-			else(graph_name_ == graph.name)	
+			else if(graph_name_ == graph.name)	
 				graph.graph.scale(scale_, update_cbk_);
 		}	
 	}
@@ -1404,7 +1404,7 @@ class Dixie {
 			
 			if(graph_name_ == undefined)
 				graph.graph.resetTransforms(update_cbk_);
-			else(graph_name_ == graph.name)	
+			else if(graph_name_ == graph.name)	
 				graph.graph.resetTransforms(update_cbk_);
 		}	
 	}
