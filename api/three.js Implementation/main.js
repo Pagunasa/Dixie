@@ -528,7 +528,7 @@ function init() {
                 //children.setRotationFromMatrix( {elements: modal_} ); 
                 //children.updateMatrix();
 
-                children.matrix.elements = modal_;
+                children.matrix.elements = modal_.slice(0);
                 //children.matrixWorldNeedsUpdate = true;
             }
         }
