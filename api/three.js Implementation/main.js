@@ -529,7 +529,7 @@ function init() {
                 //children.updateMatrix();
 
                 children.matrix.elements = modal_;
-                children.matrixWorldNeedsUpdate = true;
+                //children.matrixWorldNeedsUpdate = true;
             }
         }
     }
