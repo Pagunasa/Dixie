@@ -529,7 +529,7 @@ function init() {
                 //children.updateMatrix();
 
                 children.matrix.elements = modal_;
-                children. matrixWorldNeedsUpdate = true;
+                children.matrixWorldNeedsUpdate = true;
             }
         }
     }
@@ -568,7 +568,7 @@ function init() {
                 children.rotation.z = rotation_[2];*/
 
                 children.matrix.elements = modal_;
-                children. matrixWorldNeedsUpdate = true;
+                children.matrixWorldNeedsUpdate = true;
 
                 children.scale.x = scale_[0];
                 children.scale.y = scale_[1]; 
