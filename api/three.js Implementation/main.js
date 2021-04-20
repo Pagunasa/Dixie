@@ -518,6 +518,7 @@ function init() {
     //Set the rotacion and scale functions
     setRotation = function ( id_, modal_, rotation_ ) {
         let childrens = scene.children, children;
+        let m = modal_;
 
         for(let i = 0; i < childrens.length; ++i)
         {
@@ -528,8 +529,8 @@ function init() {
                 //children.setRotationFromMatrix( {elements: modal_} ); 
                 //children.updateMatrix();
 
-                children.matrix.elements = modal_.slice(0);
-                //children.matrixWorldNeedsUpdate = true;
+                children.matrix.set(m[0], m[1], m[2], m[3], m[4], m[5], m[6], m[7], m[8], m[9], m[10], m[11], m[12], m[13], m[14], m[15]);
+                children.matrixWorldNeedsUpdate = true;
             }
         }
     }
