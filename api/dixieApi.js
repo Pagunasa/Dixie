@@ -994,13 +994,12 @@ class DixieParticleSystem {
 			let model = o_mesh.modal;
 
 			//Multiply by the model the random point
-			/*let x = random_point[0], y = random_point[1], z = random_point[2];
+			let x = random_point[0], y = random_point[1], z = random_point[2];
 
 			random_point[0] = model[0] * x + model[4] * y + model[8]  * z + model[12];
 			random_point[1] = model[1] * x + model[5] * y + model[9]  * z + model[13];
 			random_point[2] = model[2] * x + model[6] * y + model[10] * z + model[14];
-			*/
-			DixieGlobals.vec3MultMatrix4(model, random_point);
+			
 			return random_point;
 		}
 	}
