@@ -504,7 +504,7 @@ function init() {
     textFragment = document.getElementById( 'texturedFragmentShader' ).textContent;
 
     systems = new Dixie();
-    systems.add("Fire", particle_system, createParticleMesh, loadTexture, loadMesh, "Graph1");
+    systems.add("Fire", particle_system, createParticleMesh, loadTexture, loadMesh, "Graph");
 
     renderer = new THREE.WebGLRenderer( { antialias: true } );
     renderer.setSize( window.innerWidth, window.innerHeight );
