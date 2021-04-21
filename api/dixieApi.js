@@ -1192,6 +1192,8 @@ class DixieParticleSystem {
 	rotateX(rad_, update_cbk_) {
 		this.rotation[0] += rad_;
 		Dixie.rotateSystemX(this.transformModal, rad_);
+
+		this.trans_position = this.o_position.slice(0);
 		DixieGlobals.vec3MultMatrix4(this.transformModal, this.trans_position);
 
 		update_cbk_(this.id, this.transformModal, this.rotation);
@@ -1200,6 +1202,8 @@ class DixieParticleSystem {
 	rotateY(rad_, update_cbk_) {
 		this.rotation[1] += rad_;
 		Dixie.rotateSystemY(this.transformModal, rad_);
+
+		this.trans_position = this.o_position.slice(0);
 		DixieGlobals.vec3MultMatrix4(this.transformModal, this.trans_position);
 
 		update_cbk_(this.id, this.transformModal, this.rotation);
@@ -1208,6 +1212,8 @@ class DixieParticleSystem {
 	rotateZ(rad_, update_cbk_) {
 		this.rotation[2] += rad_;
 		Dixie.rotateSystemZ(this.transformModal, rad_);
+
+		this.trans_position = this.o_position.slice(0);
 		DixieGlobals.vec3MultMatrix4(this.transformModal, this.trans_position);
 
 		update_cbk_(this.id, this.transformModal, this.rotation);
@@ -1219,9 +1225,10 @@ class DixieParticleSystem {
 		this.scale[2] += scale_[2];
 		Dixie.scaleSystem(this.transformModal, scale_);
 
-		update_cbk_(this.id, this.transformModal, this.scale);
-
+		this.trans_position = this.o_position.slice(0);
 		DixieGlobals.vec3MultMatrix4(this.transformModal, this.trans_position);
+
+		update_cbk_(this.id, this.transformModal, this.scale);
 	}
 
 	resetTransforms(update_cbk_) {
