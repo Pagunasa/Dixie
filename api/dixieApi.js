@@ -728,6 +728,15 @@ class DixieParticleSystem {
 		this.rotation = [0, 0, 0];
 		this.scale = [1, 1, 1];
 
+		if(this.origin == "Mesh")
+		{
+			let m = this.origin_mesh.modal;
+
+			this.position[0] = m[12];
+			this.position[0] = m[13];
+			this.position[0] = m[14];
+		}
+
 		//Original position
 		this.o_position = this.position.slice(0);
 		this.trans_position = this.position.slice(0);
@@ -822,15 +831,7 @@ class DixieParticleSystem {
 	}
 
 	getIdPosition() {
-		if(this.origin == "Mesh")
-		{
-			let modal = this.renderInfo.modal;
-			return {id: this.id, position: [modal[12], modal[13], modal[14]]};
-		}
-		else if(this.origin == "Point")
-		{
-			return {id: this.id, position: this.trans_position};
-		}
+		return {id: this.id, position: this.trans_position};
 	}
 
 	resetDisplacement() {

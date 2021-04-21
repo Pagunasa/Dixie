@@ -504,7 +504,7 @@ function init() {
     textFragment = document.getElementById( 'texturedFragmentShader' ).textContent;
 
     systems = new Dixie();
-    systems.add("Fire", fire_system, createParticleMesh, loadTexture, loadMesh, "Graph1");
+    systems.add("Fire", particle_system, createParticleMesh, loadTexture, loadMesh, "Graph1");
 
     renderer = new THREE.WebGLRenderer( { antialias: true } );
     renderer.setSize( window.innerWidth, window.innerHeight );
@@ -587,9 +587,9 @@ function animation( time ) {
     let c_pos = camera.position;
 
     let eye = [0,0,0];
-    eye[0] = c_pos.x * 1;
-    eye[1] = c_pos.y * 1;
-    eye[2] = c_pos.z * 1;
+    eye[0] = c_pos.x;
+    eye[1] = c_pos.y;
+    eye[2] = c_pos.z;
 
     systems.update( clock.getDelta(), eye, getBufferData, uploadBuffers, orderSystems );
 
