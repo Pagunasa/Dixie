@@ -163,9 +163,9 @@ var DixieGlobals =
 			//Multiply by the model the random point
 			let x = vector3_[0], y = vector3_[1], z = vector3_[2];
 
-			vector3_[0] = modal_[0] * x + modal_[4] * y + modal_[8]  * z + modal_[12];
-			vector3_[1] = modal_[1] * x + modal_[5] * y + modal_[9]  * z + modal_[13];
-			vector3_[2] = modal_[2] * x + modal_[6] * y + modal_[10] * z + modal_[14];
+			vector3_[0] = modal_[0] * x + modal_[1] * y + modal_[2]  * z + modal_[3];
+			vector3_[1] = modal_[4] * x + modal_[5] * y + modal_[6]  * z + modal_[7];
+			vector3_[2] = modal_[8] * x + modal_[9] * y + modal_[10] * z + modal_[11];
 		},
 
 	//For doing the billboard I follow the next tutorial
