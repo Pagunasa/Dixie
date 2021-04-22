@@ -6,7 +6,7 @@ let camera, controls, scene, renderer;
 let geometry, material, mesh;
 let clock;
 
-//Particles
+//Particles variables
 let systems, bufferData;
 let right, up;
 let secToMs = 1/1000;
@@ -472,7 +472,7 @@ let fire_system = {
 //Shaders
 let vertexShader, flatFragment, textFragment;
 
-//Some functions
+//Rotation an scale functions
 let setRotation, setScale, setRotationScale;
 
 init();
@@ -482,14 +482,18 @@ function init() {
     right = new THREE.Vector3();
     up = new THREE.Vector3();
 
+    //Inicialize and start the clock
     clock = new THREE.Clock();
     clock.start();
 
+    //Init the camera
     camera = new THREE.PerspectiveCamera( 70, window.innerWidth / window.innerHeight, 0.01, 1000 );
     camera.position.z = 30;
 
+    //Create the scene
     scene = new THREE.Scene();
 
+    //Add the cube geometry to the scene
     geometry = new THREE.BoxGeometry( 1, 1, 1 );
     material = new THREE.MeshNormalMaterial();
 
@@ -503,9 +507,11 @@ function init() {
     flatFragment = document.getElementById( 'flatFragmentShader' ).textContent;
     textFragment = document.getElementById( 'texturedFragmentShader' ).textContent;
 
+    //Add the particle system to the scene
     systems = new Dixie();
     systems.add("Fire", particle_system, createParticleMesh, loadTexture, loadMesh, "Graph");
 
+    //Set the renderer
     renderer = new THREE.WebGLRenderer( { antialias: true } );
     renderer.setSize( window.innerWidth, window.innerHeight );
     renderer.setAnimationLoop( animation );
@@ -526,9 +532,6 @@ function init() {
 
             if(children.uuid == id_)
             {
-                //children.setRotationFromMatrix( {elements: modal_} ); 
-                //children.updateMatrix();
-
                 children.matrix.set(m[0], m[1], m[2], m[3], m[4], m[5], m[6], m[7], m[8], m[9], m[10], m[11], m[12], m[13], m[14], m[15]);
                 children.matrixWorldNeedsUpdate = true;
             }
@@ -560,14 +563,6 @@ function init() {
 
             if(children.uuid == id_)
             {
-               
-                //children.setRotationFromMatrix( {elements: modal_} ); 
-                //children.updateMatrix();
-
-                /*children.rotation.x = rotation_[0];
-                children.rotation.y = rotation_[1];
-                children.rotation.z = rotation_[2];*/
-
                 children.matrix.elements = modal_;
                 children.matrixWorldNeedsUpdate = true;
 
@@ -768,55 +763,3 @@ function orderSystems( new_order_ ) {
         }
     }
 }
-
-/*function setRotation( id_, modal_, rotation_ ) {
-    let childrens = scene.children, children;
-
-    for(let i = 0; i < childrens.length; ++i)
-    {
-        children = childrens[i];
-
-        if(children.id == id_)
-        {
-            children.rotation.x = rotation_[0];
-            children.rotation.y = rotation_[1]; 
-            children.rotation.z = rotation_[2];  
-        }
-    }
-}
-
-function setScale( id_, modal_, scale_ ) {
-    let childrens = scene.children, children;
-
-    for(let i = 0; i < childrens.length; ++i)
-    {
-        children = childrens[i];
-
-        if(children.id == id_)
-        {
-            children.scale.x = scale_[0];
-            children.scale.y = scale_[1]; 
-            children.scale.z = scale_[2];  
-        }
-    }
-}
-
-function setRotationScale( id_, modal_, rotation_, scale_ ) {
-    let childrens = scene.children, children;
-
-    for(let i = 0; i < childrens.length; ++i)
-    {
-        children = childrens[i];
-
-        if(children.id == id_)
-        {
-            children.rotation.x = rotation_[0];
-            children.rotation.y = rotation_[1]; 
-            children.rotation.z = rotation_[2];  
-
-            children.scale.x = scale_[0];
-            children.scale.y = scale_[1]; 
-            children.scale.z = scale_[2];  
-        }
-    }
-}*/

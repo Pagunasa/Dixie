@@ -474,7 +474,7 @@ class SubEmitterInfo {
 
 /*
 * 	This class is for save information about every particle
-*	@class SystemInfo
+*	@class Particle
 */
 class Particle {
 	/*

@@ -1,13 +1,15 @@
 /*	Guillem Martínez Jiménez		
-*   In this file you can find the Api for the web
+*   In this file you can find the Api for JS
+*   It's possible that you have to rewrite the shaders depending on how your framework works
 */
-var DixieGlobals =
-{
+
+//The globals for the API
+var DixieGlobals = {
 	blending_factors : ["Zero", "One", "Source Color", "One minus source color", "Destination color", "One minus destination color", "Source alpha", "One minus source alpha", "Destination alpha", "One minus destination alpha"],
 	possible_origins : ["Point", "Mesh"],
 	spawn_modes      : ["Linear", "Waves"],
 	
-	deg2Rad : Math.PI / 180,
+	DEG2RAD : Math.PI / 180,
 
 	force_types : ["gravity", "vortex", "magnet"],
 
@@ -157,15 +159,20 @@ var DixieGlobals =
 			return value;
 		},
 
+	/*
+	* 	Given a matrix4x4 and a vector3 this function multiplies both
+	*	@method vec3MultMatrix4 
+	*   @params {List} The matrix4x4
+	*   @params {List} The vector3
+	*/
 	vec3MultMatrix4 :
-		function(modal_, vector3_)
+		function(m_, vector3_)
 		{
-			//Multiply by the model the random point
 			let x = vector3_[0], y = vector3_[1], z = vector3_[2];
 
-			vector3_[0] = modal_[0] * x + modal_[1] * y + modal_[2]  * z + modal_[3];
-			vector3_[1] = modal_[4] * x + modal_[5] * y + modal_[6]  * z + modal_[7];
-			vector3_[2] = modal_[8] * x + modal_[9] * y + modal_[10] * z + modal_[11];
+			vector3_[0] = m_[0] * x + m_[1] * y + m_[2]  * z + m_[3];
+			vector3_[1] = m_[4] * x + m_[5] * y + m_[6]  * z + m_[7];
+			vector3_[2] = m_[8] * x + m_[9] * y + m_[10] * z + m_[11];
 		},
 
 	//For doing the billboard I follow the next tutorial
@@ -204,60 +211,75 @@ var DixieGlobals =
 						\
 					}',
 
+	//The fragment shader for plain particles
 	fs_flat_p : '\
-					precision highp float;\
-					in vec4 v_color;\
-					in float v_visible;\
-					\
-					void main() {\
-						if (v_visible == 0.0) discard;\
-						pc_fragColor = v_color;\
-					}',
+				precision highp float;\
+				in vec4 v_color;\
+				in float v_visible;\
+				\
+				void main() {\
+					if (v_visible == 0.0) discard;\
+					pc_fragColor = v_color;\
+				}',
 
+	//The fragment shader for textured particles
 	fs_texture : '\
-						\
-						precision highp float;\
-						in vec4 v_color;\
-						in vec2 v_coord;\
-						in float v_visible;\
-						uniform sampler2D u_texture;\
-						\
-						void main() {\
-							if (v_visible == 0.0) discard;\
-							vec4 color = v_color * texture(u_texture, v_coord);\
-							if (color.a < 0.1)\
-								discard;\
-							pc_fragColor = color;\
-						}'
+				\
+				precision highp float;\
+				in vec4 v_color;\
+				in vec2 v_coord;\
+				in float v_visible;\
+				uniform sampler2D u_texture;\
+				\
+				void main() {\
+					if (v_visible == 0.0) discard;\
+					vec4 color = v_color * texture(u_texture, v_coord);\
+					if (color.a < 0.1)\
+						discard;\
+					pc_fragColor = color;\
+				}'
 }
 
+/*
+* 	This class is for save information about every particle and control his properties along his lifetime
+*	@class DixieParticle
+*/
 class DixieParticle {
 	/*
-	*	The constructor of the ParticleSystem
+	*	The constructor for the particle
 	*	@method constructor
-	*   @params {Object} The data of the particle
 	*/
 	constructor() {}
 
+	/*
+	*	The inicializer of the particle, given all the data the particle information is filled
+	*	@method fill
+	*	@params {Object} The data of the particle (Speed, lifetime...)
+	*	@params {Object} The inforation about the texture 
+	*   @params {List} The uvs of the atlas
+	*	@params {String} The origin of the particle (subemitter or emitter)
+	*	@params {Number} The id of the particle
+	*/
 	fill(data_, texture_, uvs_, origin_ = undefined, id_ = undefined) {
-		//Radom definition of the lifetime
-		let lifetime = DixieGlobals.randomNumber(data_.min_life_time, data_.max_life_time);
-
+		//If the origin and the id are diferents to undefined then a new particle is created
 		if(origin_ != undefined)
 			this.origin = origin_;
 
 		if(id_ != undefined)
 			this.id = id_;
 		
+		//Set the position and the color
 		this.position = data_.position.slice(0);
 
 		this.iColor = data_.color.slice(0);
 		this.color  = data_.color.slice(0);
 	
+		//Get a random size for the particle
 		let s = DixieGlobals.randomNumber(data_.min_size, data_.max_size);
 		this.size  = s;
 		this.iSize = s;
 		
+		//Define a random speed for the particle
 		let speed = new Float32Array(3);
 		speed[0]  = DixieGlobals.randomNumber(data_.min_speed[0], data_.max_speed[0]);
 		speed[1]  = DixieGlobals.randomNumber(data_.min_speed[1], data_.max_speed[1]);
@@ -267,65 +289,81 @@ class DixieParticle {
 		this.aSpeed = [0,0,0];
 		this.iSpeed = speed.slice(0);
 
+		//Radom definition of the lifetime
+		let lifetime = DixieGlobals.randomNumber(data_.min_life_time, data_.max_life_time);
+
 		this.lifetime   = lifetime;
 		this.iLifetime  = lifetime;
 		this.c_lifetime = 0.0; //How many life time the particle lived
 		this.visibility = 1;
 
-		/************************/
-		/********CONDITION*******/
-		/************************/
+		//Definition of the meeted conditions for the particle
 		this.conditions_meet = [];
 
-		this.texture_id  = texture_.id;
-		this.subtextures = false;
-		this.textures_x  = 0;
-		this.textures_y  = 0;
-		this.animated    = false;
-		this.frameRate   = 0;
-		this.c_frame     = 0;
-		this.frameX      = 0;  
+		//Set the texture information 
+		this.texture_id  = texture_.id; 
+		this.subtextures = false; //If the texture is an atlas
+		this.textures_x  = 0; //Number of textures in the component X
+		this.textures_y  = 0; //Number of textures in the component Y
+		this.animated    = false; //If is an animated texture
+		this.frameRate   = 0; //The frameRate 
+		this.c_frame     = 0; //The curent frame (in ms)
+		this.frameX      = 0; //In which frame is the particle 
 		this.frameY      = 0;  
-			
+		
+		//If there is a texture then the data will be updated
 		if(texture_.id != -1) 
 		{
 			let t_prop = texture_.prop;
 
-			this.uvs = uvs_[texture_.id];
-			this.subtextures = t_prop.subtextures;
+			//Get the uvs of the textured assigned to the particles (this can be not final depending if the texture is an atlas or animated)
+			this.uvs = uvs_[texture_.id]; 
+			this.subtextures = t_prop.subtextures; //Set if the texture is an atlas
 
+			//If is an atlas then the number of textures in x and y will be saved
 			if(t_prop.subtextures)
 			{
 				this.textures_x = t_prop.textures_x;
 				this.textures_y = t_prop.textures_y;
 			}
 
+			//If is a animated texture then all the data that depends on the animations
+			//will be inicialized
 			if(t_prop.animated)
 			{
-				this.animated   = true;
+				this.animated = true;
 
 				let t = lifetime;
 
+				//The animation can be a loop or just "one time"
 				if(t_prop.anim_loop)
-				{
-					let anim_d = t_prop.anim_duration;
-					t = anim_d <= 0 ? lifetime : anim_d;
-				}
-
-				this.frameY      = t_prop.textures_y - 1;  
+					t = t_prop.anim_duration;
+				
+				//Update the current frame in Y (The first one is on the last line)
+				this.frameY = t_prop.textures_y - 1;  
+				//Calculate the frame rate of the particles
 				let frame_number = t_prop.textures_x * t_prop.textures_y; 
 				this.frameRate = (t / frame_number);
 			}
 		}
 
+		//Calculate the texture coordinates of the particle
 		this.getCoords(true);
 	}
 
+	/*
+	*	The lifetime, current frame and the visibility of the particles is updated
+	*	@method updateLifetime
+	*	@params {Number} The passed time (in ms) since the last frame
+	*   @params {List} The list of particles to reset
+	*/
 	updateLifetime(dt_, to_reset_) {
-		//Update lifetime
+		//Update lifetime and frame
 		this.c_lifetime += dt_;
 		this.c_frame += dt_;
 
+		//If the current lifetime is bigger than the lifetime and is visible then the 
+		//particle will be setted to a reset mode
 		if(this.c_lifetime >= this.lifetime && this.visibility == 1)
 		{
 			this.visibility = 0;
@@ -333,6 +371,11 @@ class DixieParticle {
 		}
 	}
 
+	/*
+	*	Apply a basic movement (uniform rectilinear motion) to the particle depending on its speed
+	*	@method move
+	*	@params {Number} The passed time (in ms) since the last frame
+	*/
 	move(dt_) {
 
 		if(this.visibility == 1)
@@ -347,6 +390,12 @@ class DixieParticle {
 		}
 	}
 
+	/*
+	*	Apply a serie of forces to the particle 
+	*	@method applyForces
+	*	@params {Number} The passed time (in ms) since the last frame
+	*   @params {List} The list of the forces that affects to the particle
+	*/
 	applyForces(dt_, forces_) {
 		let force, distance = [0,0,0], distance_factor;
 		let v_vortex;
@@ -394,12 +443,19 @@ class DixieParticle {
 		}
 	}
 
+	/*
+	*	Given a condition test if the particle meets it
+	*	@method testCondition
+	*   @params {Object} The condition
+	*	@params {Number} The passed time (in ms) since the last frame
+	*/
 	testCondition(condition_, dt_ = 0.0) {
-		
+		//If the condition is true always will be meeted (default conditon)
 		if(condition_ == true)
 			return true;
-		else if (condition_ == "On particle die")
+		else if (condition_ == "On particle die") //The condition can be when a particle dies (default for subemitters)
 		{
+			//Test if the particle is recently "dead"
 			let diff = this.lifetime - this.c_lifetime;
 			if(diff <= dt_ && this.visibility != 0)
 				return true;
@@ -410,16 +466,21 @@ class DixieParticle {
 		let meet = false;
 		let c;
 
+		//See if the condition is a merging of several conditions
 		switch (condition_.type) {
+			//If is a confition make the comprobation
 			case "condition":
 				let tested_value;
 				let value_to_test = condition_.value;
 
+				//If the condition only can be meted one time and is already 
+				//meted then return false 
 				if(condition_.one_time)
 					for(let i = 0; i < this.conditions_meet.length; ++i)
 						if(this.conditions_meet[i].id == condition_.id)
 							return false;
 
+				//See the condition to be tested
 				switch (condition_.property) {
 					case "Life time":
 						tested_value = this.lifetime;
@@ -434,6 +495,7 @@ class DixieParticle {
 					break;
 				}
 
+				//See the operator for the condition
 				switch (condition_.operator) {
 					case "Equals":
 						if (tested_value == value_to_test)
@@ -468,8 +530,10 @@ class DixieParticle {
 
 				if(meet)
 				{
+					//See if the condition is meteed
 					c = this.getCondition(condition_.id)
 					
+					//If is not meted then push it, instead just update when is meted
 					if(c == undefined)
 						this.conditions_meet.push({id: condition_.id, meet_at: this.c_lifetime})
 					else
@@ -477,6 +541,7 @@ class DixieParticle {
 				}
 			break;
 
+			//If is merged test both conditions
 			case "merged condition":
 				let conditions = condition_.conditions;
 				switch (condition_.mode) {
@@ -491,9 +556,15 @@ class DixieParticle {
 			break;
 		}
 
+		//return if the condition is meted
 		return meet;
 	}
 
+	/*
+	*	See if a condition is already meted
+	*	@method getCondition
+	*	@params {Number} The id of the condition
+	*/
 	getCondition(id_) {
 		let conditions = this.conditions_meet;
 		let c;
@@ -508,6 +579,12 @@ class DixieParticle {
 		return undefined;
 	}
 
+	/*
+	*	Apply a serie of modifications to the particle 
+	*	@method applyModifications
+	*	@params {Number} The passed time (in ms) since the last frame
+	*   @params {List} The list of the modifications that affects to the particle
+	*/
 	applyModifications(dt_, modifications_) {
 		let modification, changed_value;
 		let final_value, new_value;
@@ -520,6 +597,7 @@ class DixieParticle {
 		{
 			modification = modifications_[i];
 
+			//See if the condition for the modification is meted
 			if(!this.testCondition(modification.condition))
 				continue;
 
@@ -551,6 +629,7 @@ class DixieParticle {
 			if(modification.equation.length > 0)
 				factor = DixieGlobals.computeEquation(modification.equation, factor)
 
+			//Modify the property
 			switch (modification.changed_property) {
 				case "Color":
 					changed_value = this.color;
@@ -618,7 +697,12 @@ class DixieParticle {
 		}
 	}
 
+	/*
+	*	Get the next texture frame of the particle 
+	*	@method getNextFrame
+	*/
 	getNextFrame() {
+		//If it isn't animated just return
 		if(!this.animated || this.c_frame < this.frameRate)
 			return;
 
@@ -634,15 +718,22 @@ class DixieParticle {
 				this.frameY = this.textures_y - 1;
 		}
 
+		//With the updated frame get the coordinates
 		this.getCoords();
 	}
 
+	/*
+	*	See if a condition is already meted
+	*	@method getCondition
+	*	@params {Boolean} If the particle is recently filled
+	*/
 	getCoords(fill = false) {
-		//If is not filled and is not animated just skyp this...
+		//If is not filled and is not animated just skip this...
 		if(!fill)
 			if(!this.animated)
 				return;
 
+		//In case there are no texture return the default coordinates
 		if(this.texture_id == -1)
 		{
 			this.coords = DixieGlobals.default_coords;
@@ -655,6 +746,7 @@ class DixieParticle {
 
 		if(sizeX == 0 && sizeY == 0 || !this.subtextures)
 		{
+			//In case there aren't subtexture of the user define both sizes as 0
 			minX = uvs[0];
 			minY = uvs[1];
 			maxX = uvs[2];
@@ -698,26 +790,44 @@ class DixieParticle {
 		this.coords = [maxX,maxY, minX,maxY, maxX,minY, minX,minY, maxX,minY, minX,maxY]; 
 	}
 
+	/*
+	*	The update logic of the particle
+	*	@method update
+	*	@params {Number} The passed time (in ms) since the last frame
+	*   @params {List} The list of particles to reset
+	*   @params {List} The list of forces
+	*   @params {List} The list of modifications
+	*/
 	update(dt_, to_reset_, forces_, modifications_) {
+		//First to all the lifetime and frame of the particle is updated
 		this.updateLifetime(dt_, to_reset_);
 		
+		//If the particle is not visible not do anything
 		if(this.visibility == 0)
 			return;
 
+		//Get the next frame
 		this.getNextFrame();
 
-		//Apply the movement
-		this.move(dt_);
-		this.applyForces(dt_, forces_);
-		this.applyModifications(dt_, modifications_);
+		this.move(dt_); //Apply the movement
+		this.applyForces(dt_, forces_); //Apply the forces
+		this.applyModifications(dt_, modifications_); //Apply the modifications
 	}
 }
 
+/*
+* 	This class is for save information about the particle systems and control the emission and position of the particles
+*	@class DixieParticleSystem
+*/
 class DixieParticleSystem {
 	/*
 	*	The constructor of the ParticleSystem
 	*	@method constructor
 	*   @params {Object} The data of the particle system
+	*   @params {String} The directory where the system is saved (where are the folders atlas and meshes)
+	*   @params {Function} The function for create the particle mesh
+	*   @params {Function} The function to load the meshes
+	*   @params {Function} The function to load the textures
 	*/
 	constructor(data_, directory_, create_pmesh_f_, load_mesh_f = undefined, load_texture_f = undefined) {
 		Object.assign(this, data_);
@@ -733,14 +843,16 @@ class DixieParticleSystem {
 			let m = this.origin_mesh.modal;
 
 			this.position[0] = m[12];
-			this.position[0] = m[13];
-			this.position[0] = m[14];
+			this.position[1] = m[13];
+			this.position[2] = m[14];
 		}
 
 		//Original position
 		this.o_position = this.position.slice(0);
+		//The transformed position
 		this.trans_position = this.position.slice(0);
 
+		//Every how many frames the particles are ordered
 		this.update_frame = 5;
 		this.frames_until_update = 0;
 
@@ -774,15 +886,25 @@ class DixieParticleSystem {
 		else
 			this.fragment_shader = DixieGlobals.fs_flat_p;
 
-		//Creation
+		//Creation of the render info and the particle mesh
 		this.createRenderInfo(directory_, load_mesh_f, load_texture_f);
 		this.createParticleMesh(create_pmesh_f_);
 	}
 
+	/*
+	*	Set the id for the particle system (for ordening porpuses)
+	*	@method setId
+	*   @params {Number} The id of the particle system
+	*/
 	setId(id_) {
 		this.id = id_;
 	}
 
+	/*
+	*	Change the update rate of the particle system
+	*	@method changeUpdateRate
+	*   @params {Number} The new update rate
+	*/
 	changeUpdateRate(new_rate_) {
 		if(Dixie.validPosInteger(new_rate_))
 			this.update_frame = new_rate_;
@@ -790,6 +912,11 @@ class DixieParticleSystem {
 			console.error("Dixie Error!! \n\n\t The new update rate must be a positive integer!! \n\n");
 	}
 
+	/*
+	*	Displace all the particle system
+	*	@method displace
+	*   @params {List} A list of three elements, representing the displacement
+	*/
 	displace(pos_) {
 		if(pos_ != undefined)
 		{
@@ -810,6 +937,11 @@ class DixieParticleSystem {
 		}
 	}
 
+	/*
+	*	Change the position of the particle system
+	*	@method setDisplacement
+	*   @params {List} A list of three elements, representing the new position
+	*/
 	setDisplacement(pos_) {
 		if(pos_ != undefined)
 		{
@@ -830,10 +962,18 @@ class DixieParticleSystem {
 		}
 	}
 
+	/*
+	*	Get the id an position of the particle system
+	*	@method getIdPosition
+	*/
 	getIdPosition() {
 		return {id: this.id, position: this.trans_position};
 	}
 
+	/*
+	*	Reset the position of the particle system
+	*	@method resetDisplacement
+	*/
 	resetDisplacement() {
 		if(this.origin == "Mesh")
 		{
@@ -850,6 +990,10 @@ class DixieParticleSystem {
 		}
 	}
 
+	/*
+	*	Get the total number of the particles of the particle system
+	*	@method getTotalParticles
+	*/
 	getTotalParticles() {
 		let subParticles = 0;
 		let max_particles = this.max_particles;
@@ -860,6 +1004,11 @@ class DixieParticleSystem {
 		this.total_particles = max_particles  + subParticles * max_particles;
 	}
 
+	/*
+	*	Creation of the buffer for the particle mesh
+	*	@method createParticleMesh
+	*   @params {Function} A function that given the buffers and his information then create a mesh and fill the buffers 
+	*/
 	createParticleMesh(create_pmesh_f_ = undefined) {
 		if(create_pmesh_f_ == undefined)
 		{
@@ -902,6 +1051,13 @@ class DixieParticleSystem {
 		this.particle_mesh = create_pmesh_f_(buffers, this.src_bfact, this.dst_bfact, this.setId.bind(this), this.transformModal);
 	}
 
+	/*
+	*	Creation of the render info
+	*	@method createParticleMesh
+	*   @params {String} The directory of the atlas and meshes folders 
+	*   @params {Function} A function for load a mesh
+	*   @params {Function} A function for load a texture
+	*/
 	createRenderInfo(directory_, c_mesh_loader_f_ = undefined, c_texture_loader_f_ = undefined) {
 		let modal, mesh = undefined, atlas = undefined;
 
@@ -914,17 +1070,12 @@ class DixieParticleSystem {
 			}
 
 			modal = this.origin_mesh.modal;
+			//Load the mesh
 			c_mesh_loader_f_(directory_+"/meshes/"+this.origin_mesh.name, "object", "object_vertices", this.origin_mesh);
-
 		}
 		else if(this.origin == "Point")
-		{
 			modal = [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1];
-			//Apply the translation
-			/*modal[12] = this.position[0];
-			modal[13] = this.position[1];
-			modal[14] = this.position[2];*/
-		}	
+		
 
 		if(this.atlasName != DixieGlobals.defaultAtlasName)
 		{
@@ -934,7 +1085,7 @@ class DixieParticleSystem {
 				return;
 			}
 
-			//LOAD TEXTURE ATLAS
+			//Load the texture atlas
 			c_texture_loader_f_(directory_+"/atlas/"+this.atlasName, "atlas", this);
 		}
 
@@ -948,6 +1099,10 @@ class DixieParticleSystem {
 		this.renderInfo.dst_bfact = this.dst_bfact;
 	}
 
+	/*
+	*	Set the position of the particle
+	*	@method setParticlePosition
+	*/
 	setParticlePosition() {
 		if(this.origin == "Point")
 		{
@@ -1004,6 +1159,16 @@ class DixieParticleSystem {
 		}
 	}
 
+	/*
+	*	Add a new particle to the system, if there are dead particles will be reused 
+	*	@method addParticle
+	*   @params {String} The origin of the particle
+	*   @params {Number} The maximum number of particles
+	*   @params {List} The list of the particles ids
+	*   @params {List} The list of particles to reset
+	*   @params {Object} The properties of the particle
+	*   @params {Object} The texture of the particle
+	*/
 	addParticle(origin_, max_particles_, ids_, to_reset_, prop_, texture_) {
 		if(max_particles_ > ids_.length)
 		{
@@ -1036,6 +1201,11 @@ class DixieParticleSystem {
 		}
 	}
 
+	/*
+	*	The logic for spawn particles 
+	*	@method createParticleMesh
+	*   @params {Number} The passed time (in ms) since the last frame
+	*/
 	spawnParticles(dt_) {
 		//First to all spawn the particles for the emitters
 		if(this.spawn_mode == "Linear" && this.time_pased >= this.spawn_period)
@@ -1075,7 +1245,13 @@ class DixieParticleSystem {
 		}
 	}
 
+	/*
+	*	Ordering of the particles of the system (the order depends on the camera_eye and the most far from it are the first ones)
+	*	@method orderParticles
+	*   @params {List} A list of three elements that represents the eye of the camera
+	*/
 	orderParticles(camera_eye_) {
+		//If there isn't the frame not order anything
 		if(this.frames_until_update >= this.update_frame)
 		{
 			this.frames_until_update = 0;
@@ -1106,6 +1282,13 @@ class DixieParticleSystem {
 		return false;
 	}
 
+	/*
+	*	Ordering of the buffers of the system (the order depends on the camera_eye and the most far from it are the first ones)
+	*	@method orderBuffers
+	*   @params {List} A list of three elements that represents the eye of the camera
+	*   @params {Object} The data of the buffers 
+	*   @params {Function} A function for update the buffers of the particle system
+	*/
 	orderBuffers(camera_eye_, buffers_data_, upload_function_) {
 		if(camera_eye_ == undefined)
 		{
@@ -1189,6 +1372,12 @@ class DixieParticleSystem {
 		upload_function_(this.particle_mesh, buffers_data_);
 	}
 
+	/*
+	*	Rotate the system in the X axis the defined radians
+	*	@method rotateX
+	*   @params {Number} The radians that will be used to rotate the system 
+	*   @params {Function} A function for update the rotation 
+	*/
 	rotateX(rad_, update_cbk_) {
 		this.rotation[0] += rad_;
 		Dixie.rotateSystemX(this.transformModal, rad_);
@@ -1196,9 +1385,16 @@ class DixieParticleSystem {
 		this.trans_position = this.o_position.slice(0);
 		DixieGlobals.vec3MultMatrix4(this.transformModal, this.trans_position);
 
-		update_cbk_(this.id, this.transformModal, this.rotation);
+		if (update_cbk_ != undefined)
+			update_cbk_(this.id, this.transformModal, this.rotation);
 	}
 
+	/*
+	*	Rotate the system in the Y axis the defined radians
+	*	@method rotateY
+	*   @params {Number} The radians that will be used to rotate the system 
+	*   @params {Function} A function for update the rotation 
+	*/
 	rotateY(rad_, update_cbk_) {
 		this.rotation[1] += rad_;
 		Dixie.rotateSystemY(this.transformModal, rad_);
@@ -1206,9 +1402,16 @@ class DixieParticleSystem {
 		this.trans_position = this.o_position.slice(0);
 		DixieGlobals.vec3MultMatrix4(this.transformModal, this.trans_position);
 
-		update_cbk_(this.id, this.transformModal, this.rotation);
+		if (update_cbk_ != undefined)
+			update_cbk_(this.id, this.transformModal, this.rotation);
 	}
 
+	/*
+	*	Rotate the system in the Z axis the defined radians
+	*	@method rotateZ
+	*   @params {Number} The radians that will be used to rotate the system 
+	*   @params {Function} A function for update the rotation 
+	*/
 	rotateZ(rad_, update_cbk_) {
 		this.rotation[2] += rad_;
 		Dixie.rotateSystemZ(this.transformModal, rad_);
@@ -1216,9 +1419,16 @@ class DixieParticleSystem {
 		this.trans_position = this.o_position.slice(0);
 		DixieGlobals.vec3MultMatrix4(this.transformModal, this.trans_position);
 
-		update_cbk_(this.id, this.transformModal, this.rotation);
+		if (update_cbk_ != undefined)
+			update_cbk_(this.id, this.transformModal, this.rotation);
 	}
 
+	/*
+	*	Scale the system 
+	*	@method scaleXYZ
+	*   @params {List} A list of three elements for scale the system in XYZ 
+	*   @params {Function} A function for update the scale 
+	*/
 	scaleXYZ(scale_, update_cbk_) {
 		this.scale[0] += scale_[0];
 		this.scale[1] += scale_[1];
@@ -1228,26 +1438,50 @@ class DixieParticleSystem {
 		this.trans_position = this.o_position.slice(0);
 		DixieGlobals.vec3MultMatrix4(this.transformModal, this.trans_position);
 
-		update_cbk_(this.id, this.transformModal, this.scale);
+		if (update_cbk_ != undefined)
+			update_cbk_(this.id, this.transformModal, this.scale);
 	}
 
+	/*
+	*	Reset all the rotations and scales applied to the system 
+	*	@method resetTransforms
+	*   @params {Function} A function for reset the scale and the rotation 
+	*/
 	resetTransforms(update_cbk_) {
 		this.rotation = [0,0,0];
 		this.scale = [1,1,1];
 		this.transformModal = DixieGlobals.identity.slice(0);
 		this.trans_position = this.o_position.slice(0);
 
-		update_cbk_(this.id, this.transformModal, this.rotation, this.scale);
+		if (update_cbk_ != undefined)
+			update_cbk_(this.id, this.transformModal, this.rotation, this.scale);
 	}
 } 
 
+/*
+* 	This class is for organize all the set of particle systems added
+*	@class Dixie
+*/
 class Dixie {
-
+	/*
+	*	The constructor of Dixie
+	*	@method constructor
+	*/
 	constructor() {
 		this.version = 0.21;
 		this.graphs = [];
 	}
 
+	/*
+	*	Add a new graph 
+	*	@method add
+	*   @params {String} The name of the graph
+	*   @params {Object} The JSON that have all the information of the graph
+	*   @params {Function} The function for create the particle mesh
+	*   @params {Function} The function to load the textures
+	*   @params {Function} The function to load the meshes
+	*   @params {String} The directory of the meshes and atlas folders
+	*/
 	add(name_, graph_, create_pmesh_f_, load_texture_f_ = undefined, load_mesh_f_ = undefined, files_directory_ = "") {
 		if(name_ == undefined) 
 		{
@@ -1259,6 +1493,15 @@ class Dixie {
 		this.graphs.push({name: name_, graph});
 	}
 
+	/*
+	*	Dixie update logic
+	*	@method update
+	*   @params {Number} The passed time (in ms) since the last frame
+	*   @params {List} A three element list that represents the eye of the camera
+	*   @params {Function} The function for get the mesh buffers 
+	*   @params {Function} The function for upload the buffers 
+	*   @params {Function} The function for ordening the meshes of every graph inside a Dixie
+	*/
 	update(dt_,camera_eye_, get_buffers_f_, upload_f_, order_meshs_f_) {
 		let graphs = this.graphs;
 
@@ -1286,6 +1529,11 @@ class Dixie {
 		order_meshs_f_(this.getOrderedGraphs(camera_eye_));
 	}
 
+	/*
+	*	Get the order of the graphs
+	*	@method getOrderedGraphs
+	*   @params {List} A three element list that represents the eye of the camera
+	*/
 	getOrderedGraphs(camera_eye_) {
 		let graphs = this.graphs, graph, idPos;
 		let systems;
@@ -1318,6 +1566,12 @@ class Dixie {
 		return ordered;
 	}
 
+	/*
+	*	Move a graph or all of them
+	*	@method move
+	*   @params {List} A three element list that represents the displacement of the graph
+	*   @params {String} The name of the graph that will be displaced (if empty all will be displaced)
+	*/
 	move(new_pos_, graph_name_ = undefined) {
 		let graphs = this.graphs, graph;
 
@@ -1332,6 +1586,11 @@ class Dixie {
 		}	
 	}
 
+	/*
+	*	Reset the position a graph or all of them
+	*	@method resetMove
+	*   @params {String} The name of the graph that will be reseted (if empty all will be reseted)
+	*/
 	resetMove(graph_name_ = undefined) {
 		let graphs = this.graphs, graph;
 
@@ -1346,6 +1605,13 @@ class Dixie {
 		}
 	}
 
+	/*
+	*	Rotate a graph, or all of them, in the X axis the defined radians
+	*	@method rotateX
+	*   @params {Number} The radians that will be used to rotate the system 
+	*   @params {String} The name of the graph that will be rotated (if empty all will be rotated)
+	*   @params {Function} A function for update the rotation 
+	*/
 	rotateX(rad_, graph_name_ = undefined, update_cbk_ = undefined) {
 		let graphs = this.graphs, graph;
 
@@ -1360,6 +1626,13 @@ class Dixie {
 		}
 	}
 
+	/*
+	*	Rotate a graph, or all of them, in the Y axis the defined radians
+	*	@method rotateY
+	*   @params {Number} The radians that will be used to rotate the system 
+	*   @params {String} The name of the graph that will be rotated (if empty all will be rotated)
+	*   @params {Function} A function for update the rotation 
+	*/
 	rotateY(rad_, graph_name_ = undefined, update_cbk_ = undefined) {
 		let graphs = this.graphs, graph;
 
@@ -1374,6 +1647,13 @@ class Dixie {
 		}
 	}
 
+	/*
+	*	Rotate a graph, or all of them, in the Z axis the defined radians
+	*	@method rotateZ
+	*   @params {Number} The radians that will be used to rotate the system 
+	*   @params {String} The name of the graph that will be rotated (if empty all will be rotated)
+	*   @params {Function} A function for update the rotation 
+	*/
 	rotateZ(rad_, graph_name_ = undefined, update_cbk_ = undefined) {
 		let graphs = this.graphs, graph;
 
@@ -1388,6 +1668,13 @@ class Dixie {
 		}			
 	}
 
+	/*
+	*	Scale a graph, or all of them 
+	*	@method scale
+	*   @params {List} A list of three elements for scale the graph/s in XYZ 
+	*   @params {String} The name of the graph that will be scaled (if empty all will be scaled)
+	*   @params {Function} A function for update the scale 
+	*/
 	scale(scale_, graph_name_ = undefined, update_cbk_ = undefined) {
 		let graphs = this.graphs, graph;
 
@@ -1402,6 +1689,12 @@ class Dixie {
 		}	
 	}
 
+	/*
+	*	Reset the scale and rotation of a graph, or all of them 
+	*	@method resetTransforms
+	*   @params {String} The name of the graph that will be reseted (if empty all will be reseted)
+	*   @params {Function} A function for reset the transforms
+	*/
 	resetTransforms(graph_name_ = undefined, update_cbk_ = undefined) {
 		let graphs = this.graphs, graph;
 
@@ -1416,10 +1709,21 @@ class Dixie {
 		}	
 	}
 
+	/*
+	*	Validates if the given attribute is an integer
+	*	@method validInteger
+	*   @params {Number} The attribute to be tested
+	*/
 	static validInteger(int_) {
 		return (int_ != undefined && Number.isInteger(int_))
 	}
 
+	/*
+	*	Validates if the given attribute is an numerical value with decimals
+	*	@method validateDecimal
+	*   @params {Number} The attribute to be tested
+	*	@params {Boolean} If has to be positive
+	*/
 	static validateDecimal(double_ , pos = false) {
 		if(pos)
 			return (!isNaN(double_) && double_ >= 0);
@@ -1427,14 +1731,34 @@ class Dixie {
 			return !isNaN(double_);
 	}
 
+	/*
+	*	Validates if the given attribute is a positive integer
+	*	@method validPosInteger
+	*   @params {Number} The attribute to be tested
+	*/
 	static validPosInteger(int_) {
 		return (int_ != undefined && int_ >= 0 && Number.isInteger(int_));
 	}
 
+	/*
+	*	Validates if the given attribute is a string between the given values
+	*	@method validString
+	*   @params {String} The attribute to be tested
+	*	@params {List} The values that can have the string
+	*/
 	static validString(string_, values_) {
 		return (string_ != undefined && values_.includes(string_));
 	}
 
+	/*
+	*	Validates if the given attribute is a array of a defined size and type
+	*	@method validArray
+	*   @params {List} The attribute to be tested
+	*	@params {Number} The size of the array, if is -1 it dosen't make this comprobation
+	*   @params {Boolean} If the array only contains numbers
+	*	@params {Number} The maximun value of the array (in case to be numeric)
+	*	@params {Number} The minumun value of the array (in case to be numeric)
+	*/
 	static validArray(array_, size_ = -1, numeric_ = false, max_ = undefined, min_ = undefined) {
 		if (array_ == undefined)
 			return false;
@@ -1484,10 +1808,21 @@ class Dixie {
 		return isValid;
 	}
 
+	/*
+	*	Validates if the given attribute is a boolean
+	*	@method validBoolean
+	*   @params {Number} The attribute to be tested
+	*/
 	static validBoolean(bool_) {
 		return (typeof bool_ == "boolean" ? true : false);
 	}
 
+	/*
+	*	Rotate a matrix in the X axis
+	*	@method rotateSystemX
+	*   @params {List} The matrix 4x4 
+	*	@params {Number} The angle, in radians 
+	*/
 	static rotateSystemX( modal_, angle_ ) {
 		let s = Math.sin( angle_ );
 		let c = Math.cos( angle_ );
@@ -1510,7 +1845,13 @@ class Dixie {
 		modal_[10] = m22 * c - m12 * s;
 		modal_[11] = m23 * c - m13 * s;
 	}
-
+	
+	/*
+	*	Rotate a matrix in the Y axis
+	*	@method rotateSystemY
+	*   @params {List} The matrix 4x4 
+	*	@params {Number} The angle, in radians 
+	*/
 	static rotateSystemY( modal_, angle_ ) {
 		let s = Math.sin( angle_ );
 		let c = Math.cos( angle_ );
@@ -1533,7 +1874,13 @@ class Dixie {
 		modal_[10] = m02 * s + m22 * c;
 		modal_[11] = m03 * s + m23 * c;
 	}
-
+	
+	/*
+	*	Rotate a matrix in the Z axis
+	*	@method rotateSystemZ
+	*   @params {List} The matrix 4x4 
+	*	@params {Number} The angle, in radians 
+	*/
 	static rotateSystemZ( modal_, angle_ ) {
 		let s = Math.sin( angle_ );
 		let c = Math.cos( angle_ );
@@ -1557,6 +1904,12 @@ class Dixie {
 		modal_[7] = m13 * c - m03 * s;
 	}
 
+	/*
+	*	Scales a matrix in the XYZ axis
+	*	@method scaleSystem
+	*   @params {List} The matrix 4x4 
+	*   @params {List} A list of three elements for make the scale 
+	*/
 	static scaleSystem(modal_, scale_) {
 		let x = scale_[0], 
 		y = scale_[1],
@@ -1577,11 +1930,19 @@ class Dixie {
 	}
 }
 
+/*
+* 	This class contains all the graph emitters and subemitters
+*	@class DixieGraph
+*/
 class DixieGraph {
 	/*
-	*	The constructor of the API
+	*	The constructor of the dixiegraph
 	*	@method constructor
-	*   @params {List/Json} The list of the particles systems or just one
+	*   @params {Object} The JSON that have all the information of the graph
+	*   @params {Function} The function for create the particle mesh
+	*   @params {Function} The function to load the textures
+	*   @params {Function} The function to load the meshes
+	*   @params {String} The directory of the meshes and atlas folders
 	*/
 	constructor(graphs_, create_pmesh_f_, load_texture_f_ = undefined, load_mesh_f_ = undefined, files_directory_ = "") {
 		this.systems = [];
@@ -1595,20 +1956,19 @@ class DixieGraph {
 			this.directory = files_directory_;
 			
 		if(graphs_ != undefined)
-		{
-			/*if(Array.isArray(graphs_))
-			{
-				for(let i = 0; i < graphs_.length; ++i)
-					this.loadGraph(graphs_[i], create_pmesh_f_, load_texture_f_, load_mesh_f_);
-				
-			}
-			else*/
 			this.loadGraph(graphs_, create_pmesh_f_, load_texture_f_, load_mesh_f_)
-		}
 		else
 			console.error("Dixie Error!! \n\n\t No data provided. \n\n");
 	}
 
+	/*
+	*	Validates evert system inside the graph
+	*	@method loadGraph
+	*   @params {Object} The JSON that have all the information of the graph
+	*   @params {Function} The function for create the particle mesh
+	*   @params {Function} The function to load the textures
+	*   @params {Function} The function to load the meshes
+	*/
 	loadGraph(graph_, create_pmesh_f_, load_texture_f, load_mesh_f_) {
 		let num_systems = graph_.num_systems;
 		let graph;
@@ -1635,6 +1995,11 @@ class DixieGraph {
 		}
 	}
 
+	/*
+	*	Move all the systems of a graph
+	*	@method move
+	*   @params {List} A three element list that represents the displacement
+	*/
 	move(new_pos_) {
 		let graphs = this.systems;
 
@@ -1642,6 +2007,12 @@ class DixieGraph {
 			graphs[i].displace(new_pos_);
 	}
 
+	/*
+	*	Rotate all of the emitters of a graph in the X axis the defined radians
+	*	@method rotateX
+	*   @params {Number} The radians that will be used to rotate the system 
+	*   @params {Function} A function for update the rotation 
+	*/
 	rotateX(rad_, update_cbk_) {
 		let graphs = this.systems;
 
@@ -1649,6 +2020,12 @@ class DixieGraph {
 			graphs[i].rotateX(rad_, update_cbk_);
 	}
 	
+	/*
+	*	Rotate all of the emitters of a graph in the Y axis the defined radians
+	*	@method rotateY
+	*   @params {Number} The radians that will be used to rotate the system 
+	*   @params {Function} A function for update the rotation 
+	*/
 	rotateY(rad_, update_cbk_) {
 		let graphs = this.systems;
 
@@ -1656,6 +2033,12 @@ class DixieGraph {
 			graphs[i].rotateY(rad_, update_cbk_);
 	}
 
+	/*
+	*	Rotate all of the emitters of a graph in the Z axis the defined radians
+	*	@method rotateZ
+	*   @params {Number} The radians that will be used to rotate the system 
+	*   @params {Function} A function for update the rotation 
+	*/
 	rotateZ(rad_, update_cbk_) {
 		let graphs = this.systems;
 
@@ -1663,6 +2046,12 @@ class DixieGraph {
 			graphs[i].rotateZ(rad_, update_cbk_);
 	}
 
+	/*
+	*	Scale all of the emitters of a graph in the XYZ axis
+	*	@method scale
+	*   @params {List} A three element list for scale the emitters in the XYZ => [X,Y,Z]
+	*   @params {Function} A function for update the scale 
+	*/
 	scale(scale_, update_cbk_) {
 		let graphs = this.systems;
 
@@ -1670,6 +2059,11 @@ class DixieGraph {
 			graphs[i].scaleXYZ(scale_, update_cbk_);
 	}
 
+	/*
+	*	Reset the scale and rotation of all the emitters of a graph 
+	*	@method resetTransforms
+	*   @params {Function} A function for reset the transforms
+	*/
 	resetTransforms(update_cbk_) {
 		let graphs = this.systems;
 
@@ -1677,6 +2071,11 @@ class DixieGraph {
 			graphs[i].resetTransforms(update_cbk_);
 	}
 
+	/*
+	*	Reset the position of all emitter of a graph
+	*	@method resetMove
+	*   @params {String} The name of the graph that will be reseted (if empty all will be reseted)
+	*/
 	resetMove() {
 		let graphs = this.systems;
 
@@ -1684,6 +2083,14 @@ class DixieGraph {
 			graphs[i].resetDisplacement();	
 	}
 
+	/*
+	*	DixieGraph update logic
+	*	@method update
+	*   @params {Number} The passed time (in ms) since the last frame
+	*   @params {List} A three element list that represents the eye of the camera
+	*   @params {Function} The function for get the mesh buffers 
+	*   @params {Function} The function for upload the buffers 
+	*/
 	update(dt_,camera_eye_, get_buffers_f_, upload_f_) {
 		let graph, particles, particles_ids, forces, particle;
 		let sub_emittors, sub_emitter;
@@ -1741,6 +2148,13 @@ class DixieGraph {
 		}
 	}
 
+	/*
+	*	Validate the particle data
+	*	@method validateParticleData
+	*   @params {Object} The particle data
+	*   @params {List} The list of error messages
+	*   @params {List} The list of warning messages 
+	*/
 	validateParticleData(p_data_, error_on_, warnMsg) {
 		if (p_data_ == undefined)
 		{
@@ -1811,6 +2225,14 @@ class DixieGraph {
 		return p_data_;
 	}
 
+	/*
+	*	Validate the atlas
+	*	@method validateTexture
+	*   @params {String} The atlas name
+	*   @params {Object} The texture information
+	*   @params {List} The list of error messages
+	*   @params {List} The list of warning messages 
+	*/
 	validateTexture(atlasName_, texture_, error_on_, warnMsg) {
 		if (texture_ == undefined)
 		{
@@ -1903,7 +2325,14 @@ class DixieGraph {
 
 		return texture_;
 	}
-	
+
+	/*
+	*	Validate the mesh
+	*	@method validateMesh
+	*   @params {Object} The mesh information
+	*   @params {Origin} The origin of the graph
+	*   @params {List} The list of warning messages 
+	*/
 	validateMesh(mesh_, origin_, warnMsg) {
 		if (mesh_ == undefined)
 		{
@@ -1947,6 +2376,13 @@ class DixieGraph {
 		return mesh_;
 	}
 
+	/*
+	*	Validate the conditions
+	*	@method validateConditions
+	*   @params {Object} The condition information
+	*   @params {String} The name of the system (Display warnings/errors)
+	*   @params {List} The list of warning messages 
+	*/
 	validateConditions(condition_, systemName_, warnMsg) {
 		if(condition_ == undefined)
 		{
@@ -2082,6 +2518,13 @@ class DixieGraph {
 		}
 	}
 
+	/*
+	*	Validate the modifications
+	*	@method validateModifications
+	*   @params {Object} The modification information
+	*   @params {String} The name of the system (Display warnings/errors)
+	*   @params {List} The list of warning messages 
+	*/
 	validateModifications(modifications_, systemName_, warnMsg) {
 		if (modifications_ == undefined)
 		{
@@ -2213,6 +2656,13 @@ class DixieGraph {
 		}
 	}
 
+	/*
+	*	Validate the forces
+	*	@method validateModifications
+	*   @params {Object} The forces information
+	*   @params {String} The name of the system (Display warnings/errors)
+	*   @params {List} The list of warning messages 
+	*/
 	validateForces(forces_, systemName_, warnMsg) {
 		if(forces_ == undefined || !Dixie.validArray(forces_))
 		{
@@ -2333,6 +2783,15 @@ class DixieGraph {
 		}
 	}
 
+	/*
+	*	Validate the subemittors
+	*	@method validateSubEmittors
+	*   @params {Object} The subemittors information
+	*   @params {String} The name of the atlas
+	*   @params {String} The name of the system (Display warnings/errors)
+	*   @params {List} The list of warning messages 
+	*   @params {List} The list of error messages 
+	*/
 	validateSubEmittors(sub_emittors_, atlasName_, systemName_, warnMsg, errorMsg) {
 		let se;
 
@@ -2382,7 +2841,13 @@ class DixieGraph {
 			this.validateModifications(se.modifications, error_on, warnMsg);
 		}
 	}
-
+	
+	/*
+	*	Validate the system
+	*	@method validateSystem
+	*   @params {Object} The system information 
+	*   @params {Number} The number of the system to be validated
+	*/
 	validateSystem(system_, index_ = -1) {
 		let s = system_;
 		let errorMsg = [], warnMsg = [];
