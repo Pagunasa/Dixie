@@ -121,9 +121,9 @@ export class ThreeDixie {
 	    systemFile.open("GET", url_, true);
 	    systemFile.onreadystatechange = function() {
 	        if (systemFile.readyState === 4 && systemFile.status == "200") 
-	            this.systems.add( name_, systemFile.responseText, this.createParticleMesh, this.loadTexture, this.loadMesh, file_directory_ );
+	            this.systems.add( name_, JSON.parse(systemFile.responseText), this.createParticleMesh, this.loadTexture, this.loadMesh, file_directory_ );
 	    }.bind(this);
-	    
+
 	    systemFile.send(null);
 	}
 
@@ -150,7 +150,7 @@ export class ThreeDixie {
 	    {
 	        systems = graphs[i].graph.systems;
 
-	        for(let j = 0; j < sy.length; ++j)
+	        for(let j = 0; j < systems.length; ++j)
 	        {
 	            uniforms = systems[j].particle_mesh.material.uniforms; 
 	            uniforms.u_right.value = right;
