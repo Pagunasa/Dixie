@@ -752,15 +752,27 @@ function createParticleMesh( buffers, src_bfact_, dst_bfact_, set_id_, t_modal_ 
 }
 
 function orderSystems( new_order_ ) {
-    //Get the emitters
-    let to_order = scene.children.splice(1, 3);
+    let childrens = scene.children, children;
+    let to_order = [];
+
+    for(let i = 0; i < childrens.length; ++i)
+    {
+        children = childrens[i];
+
+        if(new_order_.some(el => el.id === children.uuid))
+        {
+            to_order.push(children);
+            scene.remove(children);
+            i--;
+        }
+    }
 
     for(let i = 0; i < new_order_.length; ++i)
     {
         for(let j = 0; j < to_order.length; ++j)
         {
             if(new_order_[i].id == to_order[j].uuid)
-                scene.children.push(to_order[j]);
+                scene.add(to_order[j]);
         }
     }
 }

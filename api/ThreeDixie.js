@@ -6,6 +6,8 @@ class ThreeDixie {
 
 	#json_loader, #obj_loader, #text_loader;
 	#systems, #scene;
+	#vertexShader, #flatFragment, #textFragment;
+	#blending_factors;
 
 	constructor ( scene_ ) {
 		if(scene_ == undefined)
@@ -19,6 +21,68 @@ class ThreeDixie {
  		this.#text_loader = new THREE.TextureLoader();
 		this.#systems = new Dixie();
 		this.#scene = scene_;
+
+		this.#vertexShader = 
+			'attribute vec3 vertices;\
+			attribute vec2 coords;\
+			attribute vec2 icoord;\
+			attribute vec4 colors;\
+			attribute vec2 size;\
+			attribute float visible;\
+			\
+			varying vec4 v_color;\
+			varying vec3 v_pos;\
+			varying vec2 v_coord;\
+			varying float v_visible;\
+			varying vec4 v_center;\
+			\
+			uniform vec3 u_up;\
+			uniform vec3 u_right;\
+			\
+			void main() {\
+				v_visible = visible;\
+				v_coord = coords;\
+				v_color = colors;\
+				v_center = (modelMatrix * vec4( vertices, 1.0));\
+				v_pos = v_center.xyz + u_right * icoord.x * size.x + u_up * icoord.y * size.y;\
+				gl_Position = projectionMatrix * viewMatrix * vec4( v_pos, v_center.w );\
+			}';
+
+		this.#flatFragment = 
+			'varying vec4 v_color;\
+			varying float v_visible;\
+			\
+			void main() {\
+				if (v_visible == 0.0) discard;\
+				pc_fragColor = v_color;\
+			}';
+
+		this.#textFragment =
+			'uniform sampler2D u_texture;\
+			\
+			varying vec4 v_color;\
+			varying vec2 v_coord;\
+			varying float v_visible;\
+			\
+			void main() {\
+				if (v_visible == 0.0) discard;\
+				vec4 color = v_color * texture(u_texture, v_coord);\
+				if(color.a < 0.1) discard;\
+				pc_fragColor = color;\
+			}';
+
+		this.#blending_factors = {
+		    "Zero" : THREE.ZeroFactor,
+		    "One"  : THREE.OneFactor,
+		    "Source Color" : THREE.SrcColorFactor,
+		    "One minus source color" : THREE.OneMinusSrcColorFactor,
+		    "Destination color" : THREE.DstColorFactor,
+		    "One minus destination color" : THREE.OneMinusDstColorFactor,
+		    "Source alpha" : THREE.SrcAlphaFactor,
+		    "One minus source alpha" : THREE.OneMinusSrcAlphaFactor,
+		    "Destination alpha" : THREE.DstAlphaFactor,
+		    "One minus destination alpha" : THREE.OneMinusDstAlphaFactor
+		}
 	}
 
 	load ( url_, file_directory_, name_ = "None" ) {
@@ -276,7 +340,7 @@ class ThreeDixie {
 
 	            let material = graph.particle_mesh.material; 
 	            material.uniforms.u_texture = {value : texture};
-	            material.fragmentShader = textFragment;
+	            material.fragmentShader = this.#textFragment;
 	            material.needsUpdate = true;
 	        }
 	    );
@@ -307,8 +371,8 @@ class ThreeDixie {
 	            u_up : { value : camera.up}
 	        },
 
-	        vertexShader: vertexShader,
-	        fragmentShader:flatFragment
+	        vertexShader: this.#vertexShader,
+	        fragmentShader: this.#flatFragment
 	    } );
 
 	    //Disable cull face
@@ -317,8 +381,8 @@ class ThreeDixie {
 	    //Set the blending
 	    s_material.blending = THREE.CustomBlending;
 	    s_material.blendEquation = THREE.AddEquation;
-	    s_material.blendSrc = blending_factors[src_bfact_];
-	    s_material.blendDst = blending_factors[dst_bfact_];
+	    s_material.blendSrc = this.#blending_factors[src_bfact_];
+	    s_material.blendDst = this.#blending_factors[dst_bfact_];
 
 	    //Disable the depth test and depth mask
 	    s_material.depthTest  = true;
