@@ -2,7 +2,7 @@
 import { OBJLoader } from 'https://threejs.org/examples/jsm/loaders/OBJLoader.js';
 
 //Dixie oficial support for Threejs
-class ThreeDixie {
+export class ThreeDixie {
 
 	constructor ( scene_ ) {
 		if(scene_ == undefined)
