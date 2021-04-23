@@ -9,7 +9,17 @@ import { ObjectLoader,
 		 DoubleSide,
 		 CustomBlending,
 		 AddEquation,
-		 Mesh
+		 Mesh,
+		 ZeroFactor,
+		 OneFactor,
+		 SrcColorFactor,
+		 OneMinusSrcColorFactor,
+		 DstColorFactor,
+		 OneMinusDstColorFactor,
+		 SrcAlphaFactor,
+		 OneMinusSrcAlphaFactor,
+		 DstAlphaFactor,
+		 OneMinusDstAlphaFactor,
 		} from 'https://threejs.org/build/three.module.js';
 
 //Dixie oficial support for Threejs
@@ -78,16 +88,16 @@ export class ThreeDixie {
 			}';
 
 		this.blending_factors = {
-		    "Zero" : THREE.ZeroFactor,
-		    "One"  : THREE.OneFactor,
-		    "Source Color" : THREE.SrcColorFactor,
-		    "One minus source color" : THREE.OneMinusSrcColorFactor,
-		    "Destination color" : THREE.DstColorFactor,
-		    "One minus destination color" : THREE.OneMinusDstColorFactor,
-		    "Source alpha" : THREE.SrcAlphaFactor,
-		    "One minus source alpha" : THREE.OneMinusSrcAlphaFactor,
-		    "Destination alpha" : THREE.DstAlphaFactor,
-		    "One minus destination alpha" : THREE.OneMinusDstAlphaFactor
+		    "Zero" : ZeroFactor,
+		    "One"  : OneFactor,
+		    "Source Color" : SrcColorFactor,
+		    "One minus source color" : OneMinusSrcColorFactor,
+		    "Destination color" : DstColorFactor,
+		    "One minus destination color" : OneMinusDstColorFactor,
+		    "Source alpha" : SrcAlphaFactor,
+		    "One minus source alpha" : OneMinusSrcAlphaFactor,
+		    "Destination alpha" : DstAlphaFactor,
+		    "One minus destination alpha" : OneMinusDstAlphaFactor
 		}
 
 		this.eye = [0,0,0];
