@@ -509,13 +509,14 @@ function init() {
 
     //Add the particle system to the scene
     systems = new Dixie();
-    systems.add("Fire", particle_system, createParticleMesh, loadTexture, loadMesh, "Graph");
+    systems.add("Fire", fire_system, createParticleMesh, loadTexture, loadMesh, "Graph1");
+    systems.add("explos", particle_system, createParticleMesh, loadTexture, loadMesh, "Graph");
 
     //Set the renderer
     renderer = new THREE.WebGLRenderer( { antialias: true } );
     renderer.setSize( window.innerWidth, window.innerHeight );
     renderer.setAnimationLoop( animation );
-    renderer.sortObjects = false;
+    //renderer.sortObjects = false;
     document.body.appendChild( renderer.domElement );
 
     //Set the camera controls
