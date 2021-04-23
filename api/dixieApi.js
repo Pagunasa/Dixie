@@ -1581,7 +1581,7 @@ class Dixie {
 			
 			if(graph_name_ == undefined)
 				graph.graph.move(new_pos_);
-			else(graph_name_ == graph.name)	
+			else if(graph_name_ == graph.name)	
 				graph.graph.move(new_pos_);
 		}	
 	}
@@ -1600,7 +1600,7 @@ class Dixie {
 			
 			if(graph_name_ == undefined)
 				graph.graph.resetMove();
-			else(graph_name_ == graph.name)	
+			else if(graph_name_ == graph.name)	
 				graph.graph.resetMove();
 		}
 	}
