@@ -129,7 +129,7 @@ export class ThreeDixie {
 		let c_pos = camera_.position;
 		this.eye = [c_pos.x, c_pos.y, c_pos.z];
 
-		this.systems.update( dt_, this.eye, this.getBufferData, this.uploadBuffers, this.orderSystems );
+		this.systems.update( dt_, this.eye, this.getBufferData.bind(this), this.uploadBuffers.bind(this), this.orderSystems.bind(this) );
 
 		let mv = camera_.matrixWorldInverse.elements;
 
