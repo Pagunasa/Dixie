@@ -1,5 +1,16 @@
 //OBJLoader is required to work
 import { OBJLoader } from 'https://threejs.org/examples/jsm/loaders/OBJLoader.js';
+import { ObjectLoader, 
+		 TextureLoader, 
+		 Vector3, 
+		 BufferGeometry, 
+		 BufferAttribute,
+		 ShaderMaterial,
+		 DoubleSide,
+		 CustomBlending,
+		 AddEquation,
+		 Mesh
+		} from 'https://threejs.org/build/three.module.js';
 
 //Dixie oficial support for Threejs
 export class ThreeDixie {
@@ -11,9 +22,9 @@ export class ThreeDixie {
 			return;
 		}
 
- 		this.json_loader = new THREE.ObjectLoader()
+ 		this.json_loader = new ObjectLoader()
  		this.obj_loader = new OBJLoader();
- 		this.text_loader = new THREE.TextureLoader();
+ 		this.text_loader = new TextureLoader();
 		this.systems = new Dixie();
 		this.scene = scene_;
 
@@ -80,8 +91,8 @@ export class ThreeDixie {
 		}
 
 		this.eye = [0,0,0];
-		this.right = new THREE.Vector3();
-    	this.up = new THREE.Vector3();
+		this.right = new Vector3();
+    	this.up = new Vector3();
 	}
 
 	load ( url_, file_directory_, name_ = "None" ) {
@@ -376,7 +387,7 @@ export class ThreeDixie {
 
 	createParticleMesh ( buffers, src_bfact_, dst_bfact_, set_id_, t_modal_ ) {
 	    //Geometry creation
-	    let geometry = new THREE.BufferGeometry();
+	    let geometry = new BufferGeometry();
 
 	    //Attributes of the geometry
 	    let data, buffer;
@@ -385,14 +396,14 @@ export class ThreeDixie {
 	    {
 	        buffer = buffers[i];
 	        data   = Float32Array.from(buffer.data);
-	        geometry.setAttribute( buffer.name, new THREE.BufferAttribute( data, buffer.elems ));
+	        geometry.setAttribute( buffer.name, new BufferAttribute( data, buffer.elems ));
 	        
 	        if(buffer.name == "vertices")
-	            geometry.setAttribute( 'position', new THREE.BufferAttribute( data, buffer.elems ) );
+	            geometry.setAttribute( 'position', new BufferAttribute( data, buffer.elems ) );
 	    }
 
 	    //Shader material
-	    let s_material = new THREE.ShaderMaterial( {
+	    let s_material = new ShaderMaterial( {
 
 	        uniforms: {
 	            u_right : { value : camera.up},
@@ -404,11 +415,11 @@ export class ThreeDixie {
 	    } );
 
 	    //Disable cull face
-	    s_material.side = THREE.DoubleSide;
+	    s_material.side = DoubleSide;
 
 	    //Set the blending
-	    s_material.blending = THREE.CustomBlending;
-	    s_material.blendEquation = THREE.AddEquation;
+	    s_material.blending = CustomBlending;
+	    s_material.blendEquation = AddEquation;
 	    s_material.blendSrc = this.blending_factors[src_bfact_];
 	    s_material.blendDst = this.blending_factors[dst_bfact_];
 
@@ -421,7 +432,7 @@ export class ThreeDixie {
 
 	    let m = t_modal_;
 
-	    let p_mesh = new THREE.Mesh( geometry, s_material );
+	    let p_mesh = new Mesh( geometry, s_material );
 	    p_mesh.matrix.set(m[0], m[1], m[2], m[3], m[4], m[5], m[6], m[7], m[8], m[9], m[10], m[11], m[12], m[13], m[14], m[15]);
 	    p_mesh.matrixAutoUpdate = false;
 
