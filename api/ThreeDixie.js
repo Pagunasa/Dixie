@@ -120,8 +120,13 @@ export class ThreeDixie {
 	    systemFile.overrideMimeType("application/json");
 	    systemFile.open("GET", url_, true);
 	    systemFile.onreadystatechange = function() {
+	        
 	        if (systemFile.readyState === 4 && systemFile.status == "200") 
-	            this.systems.add( name_, JSON.parse(systemFile.responseText), this.createParticleMesh.bind(this), this.loadTexture.bind(this), this.loadMesh.bind(this), file_directory_ );
+	        {
+				this.systems.add( name_, JSON.parse(systemFile.responseText), this.createParticleMesh.bind(this), this.loadTexture.bind(this), this.loadMesh.bind(this), file_directory_ );
+	        	this.addToScene();
+	        }   
+
 	    }.bind(this);
 
 	    systemFile.send(null);

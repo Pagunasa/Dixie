@@ -42,7 +42,6 @@ function init() {
     systems = new ThreeDixie( scene );
     systems.load("/tfg-gmj/api/ThreeDixie%20Implementation/Graph1/Graph.json", "Graph1", "Fire");
     systems.load("/tfg-gmj/api/ThreeDixie%20Implementation/Graph/Graph.json", "Graph", "Explosions");
-    systems.addToScene();
 
     //Set the renderer
     renderer = new THREE.WebGLRenderer( { antialias: true } );
