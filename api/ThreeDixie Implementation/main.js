@@ -35,7 +35,7 @@ function init() {
     scene.add( mesh );
 
     //Add the particle system to the scene
-    systems = new ThreeDixie(scene);
+    systems = new ThreeDixie( scene );
     systems.load("/tfg-gmj/api/ThreeDixie%20Implementation/Graph1/Graph.json", "Graph1", "Fire");
     systems.load("/tfg-gmj/api/ThreeDixie%20Implementation/Graph/Graph.json", "Graph", "Explosions");
 
