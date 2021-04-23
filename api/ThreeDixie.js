@@ -167,7 +167,7 @@ export class ThreeDixie {
 
 	addToScene () {
 		let childrens = this.scene.children, children;
-		let systems = this.systems;
+		let systems = this.systems.graphs;
 		let emitters, id;
 		let inScene = false;
 
