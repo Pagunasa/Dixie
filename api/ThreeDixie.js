@@ -78,6 +78,10 @@ class ThreeDixie {
 		    "Destination alpha" : THREE.DstAlphaFactor,
 		    "One minus destination alpha" : THREE.OneMinusDstAlphaFactor
 		}
+
+		this.eye = [0,0,0];
+		this.right = new THREE.Vector3();
+    	this.up = new THREE.Vector3();
 	}
 
 	load ( url_, file_directory_, name_ = "None" ) {
@@ -100,8 +104,37 @@ class ThreeDixie {
 		);
 	}
 
-	update ( dt_, eye_ ) {
-		this.systems.update( dt_, eye_, this.getBufferData, this.uploadBuffers, this.orderSystems );
+	update ( dt_, camera_ ) {
+		let c_pos = camera_.position;
+		this.eye = [c_pos.x, c_pos.y, c_pos.z];
+
+		this.systems.update( dt_, this.eye, this.getBufferData, this.uploadBuffers, this.orderSystems );
+
+		let mv = camera_.matrixWorldInverse.elements;
+
+		right.set(mv[0], mv[4], mv[8]);
+	    right.normalize();
+
+	    up.set(mv[1], mv[5], mv[9]);
+	    up.normalize();
+
+		//Update the uniforms for the particles
+	    let graphs = this.systems.graphs;
+	    let render_info, uniforms;
+	    let systems;
+
+	    for (let i = 0; i < graphs.length; ++i) 
+	    {
+	        systems = graphs[i].graph.systems;
+
+	        for(let j = 0; j < sy.length; ++j)
+	        {
+	            uniforms = systems[j].particle_mesh.material.uniforms; 
+	            uniforms.u_right.value = right;
+	            uniforms.u_up.value = up; 
+	        }
+	    }
+
 	}
 
 	addToScene () {
