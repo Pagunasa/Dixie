@@ -122,7 +122,8 @@ export class ThreeDixie {
 	    systemFile.onreadystatechange = function() {
 	        if (systemFile.readyState === 4 && systemFile.status == "200") 
 	            this.systems.add( name_, systemFile.responseText, this.createParticleMesh, this.loadTexture, this.loadMesh, file_directory_ );
-	    }
+	    }.bind(this);
+	    
 	    systemFile.send(null);
 	}
 
