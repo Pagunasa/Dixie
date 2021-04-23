@@ -418,8 +418,8 @@ export class ThreeDixie {
 	    let s_material = new ShaderMaterial( {
 
 	        uniforms: {
-	            u_right : { value : camera.up},
-	            u_up : { value : camera.up}
+	            u_right : { value : this.right},
+	            u_up : { value : this.up}
 	        },
 
 	        vertexShader: this.vertexShader,
