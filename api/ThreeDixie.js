@@ -385,15 +385,17 @@ export class ThreeDixie {
 	}
 
 	loadTexture ( atlasURL, toSave, graph) {
+		let textFragment = this.textFragment;
+
 	    this.text_loader.load( atlasURL,
 	        function ( texture ) {
 	            graph[toSave] = texture;
 
 	            let material = graph.particle_mesh.material; 
 	            material.uniforms.u_texture = {value : texture};
-	            material.fragmentShader = this.textFragment;
+	            material.fragmentShader = textFragment;
 	            material.needsUpdate = true;
-	        }.bind(this)
+	        }
 	    );
 	}
 
