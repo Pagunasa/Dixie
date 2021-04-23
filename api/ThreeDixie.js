@@ -153,8 +153,8 @@ export class ThreeDixie {
 	        for(let j = 0; j < systems.length; ++j)
 	        {
 	            uniforms = systems[j].particle_mesh.material.uniforms; 
-	            uniforms.u_right.value = right;
-	            uniforms.u_up.value = up; 
+	            uniforms.u_right.value = this.right;
+	            uniforms.u_up.value = this.up; 
 	        }
 	    }
 
