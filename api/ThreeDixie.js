@@ -133,11 +133,11 @@ export class ThreeDixie {
 
 		let mv = camera_.matrixWorldInverse.elements;
 
-		right.set(mv[0], mv[4], mv[8]);
-	    right.normalize();
+		this.right.set(mv[0], mv[4], mv[8]);
+	    this.right.normalize();
 
-	    up.set(mv[1], mv[5], mv[9]);
-	    up.normalize();
+	    this.up.set(mv[1], mv[5], mv[9]);
+	    this.up.normalize();
 
 		//Update the uniforms for the particles
 	    let graphs = this.systems.graphs;
