@@ -11,13 +11,13 @@ class ThreeDixie {
 			return;
 		}
 
- 		this.#json_loader = new THREE.ObjectLoader()
- 		this.#obj_loader = new OBJLoader();
- 		this.#text_loader = new THREE.TextureLoader();
-		this.#systems = new Dixie();
-		this.#scene = scene_;
+ 		this.json_loader = new THREE.ObjectLoader()
+ 		this.obj_loader = new OBJLoader();
+ 		this.text_loader = new THREE.TextureLoader();
+		this.systems = new Dixie();
+		this.scene = scene_;
 
-		this.#vertexShader = 
+		this.vertexShader = 
 			'attribute vec3 vertices;\
 			attribute vec2 coords;\
 			attribute vec2 icoord;\
@@ -43,7 +43,7 @@ class ThreeDixie {
 				gl_Position = projectionMatrix * viewMatrix * vec4( v_pos, v_center.w );\
 			}';
 
-		this.#flatFragment = 
+		this.flatFragment = 
 			'varying vec4 v_color;\
 			varying float v_visible;\
 			\
@@ -52,7 +52,7 @@ class ThreeDixie {
 				pc_fragColor = v_color;\
 			}';
 
-		this.#textFragment =
+		this.textFragment =
 			'uniform sampler2D u_texture;\
 			\
 			varying vec4 v_color;\
@@ -66,7 +66,7 @@ class ThreeDixie {
 				pc_fragColor = color;\
 			}';
 
-		this.#blending_factors = {
+		this.blending_factors = {
 		    "Zero" : THREE.ZeroFactor,
 		    "One"  : THREE.OneFactor,
 		    "Source Color" : THREE.SrcColorFactor,
@@ -93,20 +93,20 @@ class ThreeDixie {
 			return;	
 		}
 
-		this.#json_loader.load( url_, 
+		this.json_loader.load( url_, 
 			function ( system ) {
-				this.#systems.add( name_, system, this.#createParticleMesh, this.#loadTexture, this.#loadMesh, file_directory_ );
+				this.systems.add( name_, system, this.createParticleMesh, this.loadTexture, this.loadMesh, file_directory_ );
 			}
 		);
 	}
 
 	update ( dt_, eye_ ) {
-		this.#systems.update( dt_, eye_, this.#getBufferData, this.#uploadBuffers, this.#orderSystems );
+		this.systems.update( dt_, eye_, this.getBufferData, this.uploadBuffers, this.orderSystems );
 	}
 
 	addToScene () {
-		let childrens = this.#scene.children, children;
-		let systems = this.#systems;
+		let childrens = this.scene.children, children;
+		let systems = this.systems;
 		let emitters, id;
 		let inScene = false;
 
@@ -130,7 +130,7 @@ class ThreeDixie {
         		}
 
         		if(!inScene)
-        			this.#scene.add(emitters.particle_mesh)
+        			this.scene.add(emitters.particle_mesh)
         	}
         }
 	}
@@ -142,7 +142,7 @@ class ThreeDixie {
 			return;
 		}
 
-		this.#systems.rotateX(rad_, name_, this.#updateRotation);
+		this.systems.rotateX(rad_, name_, this.updateRotation);
 	}
 
 	rotateY ( rad_, name_ = undefined ) {
@@ -152,7 +152,7 @@ class ThreeDixie {
 			return;
 		}
 
-		this.#systems.rotateY(rad_, name_, this.#updateRotation);
+		this.systems.rotateY(rad_, name_, this.updateRotation);
 	}
 
 	rotateZ ( rad_, name_ = undefined ) {
@@ -162,7 +162,7 @@ class ThreeDixie {
 			return;
 		}
 
-		this.#systems.rotateZ(rad_, name_, this.#updateRotation);
+		this.systems.rotateZ(rad_, name_, this.updateRotation);
 	}
 
 	scaleXYZ ( scale_, name_ = undefined ) {
@@ -178,15 +178,15 @@ class ThreeDixie {
 			return;
 		}
 
-		this.#systems.scale(scale_, name_, this.#updateScale);
+		this.systems.scale(scale_, name_, this.updateScale);
 	}
 
 	resetTransforms ( name_ = undefined ) {
-		this.#systems.resetTransforms(name_, this.#updateRotationScale);
+		this.systems.resetTransforms(name_, this.updateRotationScale);
 	}
 
 	resetMove ( name_ ) {
-		this.#systems.resetMove(name_);
+		this.systems.resetMove(name_);
 	}
 
 	move ( pos_, name_ = undefined ) {
@@ -202,10 +202,10 @@ class ThreeDixie {
 			return;
 		}
 
-		this.#systems.move(pos_, name_);
+		this.systems.move(pos_, name_);
 	}
 
-	#getBufferData ( mesh ) {
+	getBufferData ( mesh ) {
 	    let attributes = mesh.geometry.attributes;
 
 	    let buffers = {};
@@ -223,7 +223,7 @@ class ThreeDixie {
 	    return buffers;
 	}
 
-	#uploadBuffers ( mesh, buffers ) {
+	uploadBuffers ( mesh, buffers ) {
 	    let attributes = mesh.geometry.attributes;
 	    let keys = Object.keys(attributes), key;
 
@@ -238,8 +238,8 @@ class ThreeDixie {
 	    }
 	}
 
-	#orderSystems ( new_order_ ) {
-	    let childrens = this.#scene.children, children;
+	orderSystems ( new_order_ ) {
+	    let childrens = this.scene.children, children;
 	    let to_order = [];
 
 	    for(let i = 0; i < childrens.length; ++i)
@@ -259,13 +259,13 @@ class ThreeDixie {
 	        for(let j = 0; j < to_order.length; ++j)
 	        {
 	            if(new_order_[i].id == to_order[j].uuid)
-	                this.#scene.add(to_order[j]);
+	                this.scene.add(to_order[j]);
 	        }
 	    }
 	}
 
-    #updateRotation ( id_, modal_, rotation_ ) {
-        let childrens = this.#scene.children, children;
+    updateRotation ( id_, modal_, rotation_ ) {
+        let childrens = this.scene.children, children;
         let m = modal_;
 
         for(let i = 0; i < childrens.length; ++i)
@@ -280,8 +280,8 @@ class ThreeDixie {
         }
     }
 
-    #updateScale ( id_, modal_, scale_ ) {
-        let childrens = this.#scene.children, children;
+    updateScale ( id_, modal_, scale_ ) {
+        let childrens = this.scene.children, children;
 
         for(let i = 0; i < childrens.length; ++i)
         {
@@ -296,8 +296,8 @@ class ThreeDixie {
         }
     }
 
-    #updateRotationScale ( id_, modal_, rotation_, scale_ ) {
-        let childrens = this.#scene.children, children;
+    updateRotationScale ( id_, modal_, rotation_, scale_ ) {
+        let childrens = this.scene.children, children;
 
         for(let i = 0; i < childrens.length; ++i)
         {
@@ -315,8 +315,8 @@ class ThreeDixie {
         }
     }
 
-	#loadMesh ( meshURL, toSaveMesh, toSaveVertices, meshInGraph ) {
-	    this.#obj_loader.load( meshURL,
+	loadMesh ( meshURL, toSaveMesh, toSaveVertices, meshInGraph ) {
+	    this.obj_loader.load( meshURL,
 	        function ( object ) {
 	            //Update the modal
 	            object.matrix.elements = meshInGraph.modal;
@@ -328,20 +328,20 @@ class ThreeDixie {
 	    );
 	}
 
-	#loadTexture ( atlasURL, toSave, graph) {
-	    this.#text_loader.load( atlasURL,
+	loadTexture ( atlasURL, toSave, graph) {
+	    this.text_loader.load( atlasURL,
 	        function ( texture ) {
 	            graph[toSave] = texture;
 
 	            let material = graph.particle_mesh.material; 
 	            material.uniforms.u_texture = {value : texture};
-	            material.fragmentShader = this.#textFragment;
+	            material.fragmentShader = this.textFragment;
 	            material.needsUpdate = true;
 	        }
 	    );
 	}
 
-	#createParticleMesh ( buffers, src_bfact_, dst_bfact_, set_id_, t_modal_ ) {
+	createParticleMesh ( buffers, src_bfact_, dst_bfact_, set_id_, t_modal_ ) {
 	    //Geometry creation
 	    let geometry = new THREE.BufferGeometry();
 
@@ -366,8 +366,8 @@ class ThreeDixie {
 	            u_up : { value : camera.up}
 	        },
 
-	        vertexShader: this.#vertexShader,
-	        fragmentShader: this.#flatFragment
+	        vertexShader: this.vertexShader,
+	        fragmentShader: this.flatFragment
 	    } );
 
 	    //Disable cull face
@@ -376,8 +376,8 @@ class ThreeDixie {
 	    //Set the blending
 	    s_material.blending = THREE.CustomBlending;
 	    s_material.blendEquation = THREE.AddEquation;
-	    s_material.blendSrc = this.#blending_factors[src_bfact_];
-	    s_material.blendDst = this.#blending_factors[dst_bfact_];
+	    s_material.blendSrc = this.blending_factors[src_bfact_];
+	    s_material.blendDst = this.blending_factors[dst_bfact_];
 
 	    //Disable the depth test and depth mask
 	    s_material.depthTest  = true;
