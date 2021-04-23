@@ -119,7 +119,7 @@ export class ThreeDixie {
 	    let systemFile = new XMLHttpRequest();
 	    systemFile.overrideMimeType("application/json");
 	    systemFile.open("GET", url_, true);
-	    rawFile.onreadystatechange = function() {
+	    systemFile.onreadystatechange = function() {
 	        if (systemFile.readyState === 4 && systemFile.status == "200") 
 	            this.systems.add( name_, systemFile.responseText, this.createParticleMesh, this.loadTexture, this.loadMesh, file_directory_ );
 	    }
