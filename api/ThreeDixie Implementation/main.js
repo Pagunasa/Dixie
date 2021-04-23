@@ -40,8 +40,8 @@ function init() {
 
     //Add the particle system to the scene
     systems = new ThreeDixie( scene );
-    systems.load("/tfg-gmj/api/ThreeDixie%20Implementation/Graph1/Graph.json", "Graph1", "Fire");
-    systems.load("/tfg-gmj/api/ThreeDixie%20Implementation/Graph/Graph.json", "Graph", "Explosions");
+    systems.load("/Graph1/Graph.json", "Graph1", "Fire");
+    systems.load("/Graph/Graph.json", "Graph", "Explosions");
     systems.addToScene();
 
     //Set the renderer
