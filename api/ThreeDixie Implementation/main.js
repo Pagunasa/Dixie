@@ -1,3 +1,6 @@
+import * as THREE from 'https://threejs.org/build/three.module.js';
+import { OrbitControls } from 'https://threejs.org/examples/jsm/controls/OrbitControls.js';
+
 let camera, controls, scene, renderer;
 let geometry, material, mesh;
 let clock;
