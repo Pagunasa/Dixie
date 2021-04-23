@@ -123,7 +123,7 @@ export class ThreeDixie {
 	        if (systemFile.readyState === 4 && systemFile.status == "200") 
 	            this.systems.add( name_, systemFile.responseText, this.createParticleMesh, this.loadTexture, this.loadMesh, file_directory_ );
 	    }
-	    rawFile.send(null);
+	    systemFile.send(null);
 	}
 
 	update ( dt_, camera_ ) {
