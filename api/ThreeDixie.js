@@ -1,7 +1,6 @@
 //OBJLoader is required to work
 import { OBJLoader } from 'https://threejs.org/examples/jsm/loaders/OBJLoader.js';
-import { ObjectLoader, 
-		 TextureLoader, 
+import { TextureLoader, 
 		 Vector3, 
 		 BufferGeometry, 
 		 BufferAttribute,
@@ -32,7 +31,6 @@ export class ThreeDixie {
 			return;
 		}
 
- 		this.json_loader = new ObjectLoader()
  		this.obj_loader = new OBJLoader();
  		this.text_loader = new TextureLoader();
 		this.systems = new Dixie();
@@ -118,11 +116,14 @@ export class ThreeDixie {
 			return;	
 		}
 
-		this.json_loader.load( url_, 
-			function ( system ) {
-				this.systems.add( name_, system, this.createParticleMesh, this.loadTexture, this.loadMesh, file_directory_ );
-			}
-		);
+	    let systemFile = new XMLHttpRequest();
+	    systemFile.overrideMimeType("application/json");
+	    systemFile.open("GET", url_, true);
+	    rawFile.onreadystatechange = function() {
+	        if (systemFile.readyState === 4 && systemFile.status == "200") 
+	            this.systems.add( name_, systemFile.responseText, this.createParticleMesh, this.loadTexture, this.loadMesh, file_directory_ );
+	    }
+	    rawFile.send(null);
 	}
 
 	update ( dt_, camera_ ) {
