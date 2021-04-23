@@ -393,7 +393,7 @@ export class ThreeDixie {
 	            material.uniforms.u_texture = {value : texture};
 	            material.fragmentShader = this.textFragment;
 	            material.needsUpdate = true;
-	        }
+	        }.bind(this)
 	    );
 	}
 
