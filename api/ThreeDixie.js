@@ -4,11 +4,6 @@ import { OBJLoader } from 'https://threejs.org/examples/jsm/loaders/OBJLoader.js
 //Dixie oficial support for Threejs
 class ThreeDixie {
 
-	#json_loader, #obj_loader, #text_loader;
-	#systems, #scene;
-	#vertexShader, #flatFragment, #textFragment;
-	#blending_factors;
-
 	constructor ( scene_ ) {
 		if(scene_ == undefined)
 		{
