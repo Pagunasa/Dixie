@@ -1,5 +1,6 @@
 import * as THREE from 'https://threejs.org/build/three.module.js';
 import { OrbitControls } from 'https://threejs.org/examples/jsm/controls/OrbitControls.js';
+import "/tfg-gmj/api/ThreeDixie.js"
 
 let camera, controls, scene, renderer;
 let geometry, material, mesh;
