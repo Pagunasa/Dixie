@@ -124,7 +124,7 @@ export class ThreeDixie {
 	        if (systemFile.readyState === 4 && systemFile.status == "200") 
 	        {
 				this.systems.add( name_, JSON.parse(systemFile.responseText), this.createParticleMesh.bind(this), this.loadTexture.bind(this), this.loadMesh.bind(this), file_directory_ );
-	        	this.addToScene();
+	        	this.addToScene().bind(this);
 	        }   
 
 	    }.bind(this);
