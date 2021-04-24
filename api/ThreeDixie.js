@@ -301,7 +301,8 @@ export class ThreeDixie {
 	}
 
 	orderSystems ( new_order_ ) {
-	    let childrens = this.scene.children, children;
+		let scene = this.scene;
+	    let childrens = scene.children, children;
 	    let to_order = [];
 
 	    for(let i = 0; i < childrens.length; ++i)
@@ -321,7 +322,7 @@ export class ThreeDixie {
 	        for(let j = 0; j < to_order.length; ++j)
 	        {
 	            if(new_order_[i].id == to_order[j].uuid)
-	                this.scene.add(to_order[j]);
+	                scene.add(to_order[j]);
 	        }
 	    }
 	}
