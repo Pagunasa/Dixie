@@ -168,7 +168,7 @@ export class ThreeDixie {
 	addToScene () {
 		let childrens = this.scene.children, children;
 		let systems = this.systems.graphs;
-		let emitters, id;
+		let emitters, id, emitter;
 		let inScene = false;
 
 		for(let i = 0; i < systems.length; ++i)
@@ -177,7 +177,8 @@ export class ThreeDixie {
 
         	for(let j = 0; j < emitters.length; ++j)
         	{
-        		id = emitters[j].id;
+        		emitter = emitters[j];
+        		id = emitter.id;
 
         		for(let k = 0; k < childrens.length; ++k)
         		{
@@ -191,7 +192,7 @@ export class ThreeDixie {
         		}
 
         		if(!inScene)
-        			this.scene.add(emitters.particle_mesh)
+        			this.scene.add(emitter.particle_mesh)
         	}
         }
 	}
