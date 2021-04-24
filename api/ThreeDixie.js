@@ -169,11 +169,12 @@ export class ThreeDixie {
 		let childrens = this.scene.children, children;
 		let systems = this.systems.graphs;
 		let emitters, id, emitter;
-		let inScene = false;
+		let inScene;
 
 		for(let i = 0; i < systems.length; ++i)
         {
         	emitters = systems[i].graph.systems;
+        	inScene = false;
 
         	for(let j = 0; j < emitters.length; ++j)
         	{
