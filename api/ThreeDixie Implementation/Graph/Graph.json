@@ -1,158 +1,158 @@
 {
-	"num_systems": 1,
-	"system_0": {
-		"id": 1,
-		"src_bfact": "Source alpha",
-		"dst_bfact": "One",
-		"origin": "Mesh",
-		"position": [
-			0,
-			0,
-			0
-		],
-		"spawn_mode": "Linear",
-		"max_particles": 100,
-		"spawn_rate": 10,
-		"particles_per_wave": 10,
-		"particle_data": {
-			"max_speed": [
-				0,
-				2,
-				0
-			],
-			"min_speed": [
-				0,
-				0.5,
-				0
-			],
-			"max_size": 0.5,
-			"min_size": 0.25,
-			"max_life_time": 10,
-			"min_life_time": 5,
-			"color": [
-				1,
-				1,
-				1,
-				1
-			]
-		},
-		"atlasName": "Atlas0.png",
-		"uvs": [
-			[
-				0,
-				0,
-				0.0625,
-				0.06035889070146819
-			],
-			[
-				0,
-				0.06035889070146819,
-				1,
-				0.8955954323001631
-			],
-			[
-				0,
-				0.9037520391517129,
-				1,
-				1.0081566068515497
-			]
-		],
-		"texture": {
-			"id": 1,
-			"prop": {
-				"subtextures": false,
-				"textures_x": 1,
-				"textures_y": 1,
-				"animated": false,
-				"anim_loop": false,
-				"anim_duration": 0
-			}
-		},
-		"origin_mesh": {
-			"name": "15_plane.obj",
-			"modal": [
-				10,
-				0,
-				0,
-				0,
-				0,
-				6.123233998228043e-16,
-				10,
-				0,
-				0,
-				-1,
-				6.123234262925839e-17,
-				0,
-				0,
-				0,
-				0,
-				1
-			],
-			"triangle_num": 2,
-			"div_value": 6
-		},
-		"sub_emittors": [
-			{
-				"id": 16,
-				"origin": "Point",
-				"spawn_mode": "Waves",
-				"max_particles": 10,
-				"particles_per_wave": 10,
-				"particle_data": {
-					"max_speed": [
-						0.15,
-						0.15,
-						0.15
-					],
-					"min_speed": [
-						-0.15,
-						-0.15,
-						-0.15
-					],
-					"max_size": 1,
-					"min_size": 0.5,
-					"max_life_time": 2,
-					"min_life_time": 1,
-					"color": [
-						1,
-						1,
-						1,
-						1
-					],
-					"position": [
-						-0.5599990909009867,
-						9.511611019512486,
-						-0.5274700346948391
-					]
-				},
-				"texture": {
-					"id": 2,
-					"prop": {
-						"subtextures": true,
-						"textures_x": 6,
-						"textures_y": 1,
-						"animated": true,
-						"anim_loop": false,
-						"anim_duration": 0
-					}
-				},
-				"forces": [
-					{
-						"type": "gravity",
-						"direction": [
-							0,
-							0,
-							0
-						],
-						"strength": 1,
-						"condition": true
-					}
-				],
-				"modifications": [],
-				"condition": true
-			}
-		],
-		"forces": [],
-		"modifications": []
-	}
+ "num_systems": 1,
+    "system_0": {
+        "id": 1,
+        "src_bfact": "Source alpha",
+        "dst_bfact": "One",
+        "origin": "Mesh",
+        "position": [
+            0,
+            0,
+            0
+        ],
+        "spawn_mode": "Linear",
+        "max_particles": 100,
+        "spawn_rate": 10,
+        "particles_per_wave": 10,
+        "particle_data": {
+            "max_speed": [
+                0,
+                2,
+                0
+            ],
+            "min_speed": [
+                0,
+                0.5,
+                0
+            ],
+            "max_size": 0.5,
+            "min_size": 0.25,
+            "max_life_time": 10,
+            "min_life_time": 5,
+            "color": [
+                1,
+                1,
+                1,
+                1
+            ]
+        },
+        "atlasName": "Atlas0.png",
+        "uvs": [
+            [
+                0,
+                0,
+                0.0625,
+                0.06035889070146819
+            ],
+            [
+                0,
+                0.06035889070146819,
+                1,
+                0.8955954323001631
+            ],
+            [
+                0,
+                0.9037520391517129,
+                1,
+                1.0081566068515497
+            ]
+        ],
+        "texture": {
+            "id": 1,
+            "prop": {
+                "subtextures": false,
+                "textures_x": 1,
+                "textures_y": 1,
+                "animated": false,
+                "anim_loop": false,
+                "anim_duration": 0
+            }
+        },
+        "origin_mesh": {
+            "name": "15_plane.obj",
+            "modal": [
+                10,
+                0,
+                0,
+                0,
+                0,
+                6.123233998228043e-16,
+                10,
+                0,
+                0,
+                -1,
+                6.123234262925839e-17,
+                0,
+                0,
+                0,
+                0,
+                1
+            ],
+            "triangle_num": 2,
+            "div_value": 6
+        },
+        "sub_emittors": [
+            {
+                "id": 16,
+                "origin": "Point",
+                "spawn_mode": "Waves",
+                "max_particles": 10,
+                "particles_per_wave": 10,
+                "particle_data": {
+                    "max_speed": [
+                        0.15,
+                        0.15,
+                        0.15
+                    ],
+                    "min_speed": [
+                        -0.15,
+                        -0.15,
+                        -0.15
+                    ],
+                    "max_size": 1,
+                    "min_size": 0.5,
+                    "max_life_time": 2,
+                    "min_life_time": 1,
+                    "color": [
+                        1,
+                        1,
+                        1,
+                        1
+                    ],
+                    "position": [
+                        -0.5599990909009867,
+                        9.511611019512486,
+                        -0.5274700346948391
+                    ]
+                },
+                "texture": {
+                    "id": 2,
+                    "prop": {
+                        "subtextures": true,
+                        "textures_x": 6,
+                        "textures_y": 1,
+                        "animated": true,
+                        "anim_loop": false,
+                        "anim_duration": 0
+                    }
+                },
+                "forces": [
+                    {
+                        "type": "gravity",
+                        "direction": [
+                            0,
+                            -1,
+                            0
+                        ],
+                        "strength": 2,
+                        "condition": true
+                    }
+                ],
+                "modifications": [],
+                "condition": "On particle die"
+            }
+        ],
+        "forces": [],
+        "modifications": []
+    }
 }
