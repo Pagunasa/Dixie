@@ -927,12 +927,18 @@ class DixieParticleSystem {
 				//Apply the translation
 				modal[12] += pos_[0];
 				modal[13] += pos_[1];
-				modal[14] += pos_[2];	
+				modal[14] += pos_[2];
+				
+				for(let i = 0; i < 3; ++i)
+					this.trans_position += pos[i];	
 			}
 			else if (this.origin == "Point")
 			{
 				for(let i = 0; i < 3; ++i)
+				{
+					this.trans_position += pos[i];
 					this.position[i] += pos_[i];
+				}
 			}
 		}
 	}
