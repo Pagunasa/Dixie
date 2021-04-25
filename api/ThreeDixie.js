@@ -103,7 +103,7 @@ export class ThreeDixie {
     	this.up = new Vector3();
 	}
 
-	load ( url_, file_directory_, name_ = "None" ) {
+	load ( url_, file_directory_, name_ = "None", position = undefined ) {
 		if(url_ == undefined)
 		{
 			console.error("Dixie error!! \n\n\t No url provided \n\n");
@@ -123,8 +123,14 @@ export class ThreeDixie {
 	        
 	        if (systemFile.readyState === 4 && systemFile.status == "200") 
 	        {
+	        	if( name_ == "None" )
+	        		name_ += this.systems.graphs.length;
+
 				this.systems.add( name_, JSON.parse(systemFile.responseText), this.createParticleMesh.bind(this), this.loadTexture.bind(this), this.loadMesh.bind(this), file_directory_ );
 	        	this.addToScene();
+
+	        	if(position != undefined)
+	        		this.move( name_, position );
 	        }   
 
 	    }.bind(this);
