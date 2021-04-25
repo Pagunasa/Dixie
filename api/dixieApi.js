@@ -930,13 +930,13 @@ class DixieParticleSystem {
 				modal[14] += pos_[2];
 				
 				for(let i = 0; i < 3; ++i)
-					this.trans_position += pos_[i];	
+					this.trans_position[i] += pos_[i];	
 			}
 			else if (this.origin == "Point")
 			{
 				for(let i = 0; i < 3; ++i)
 				{
-					this.trans_position += pos_[i];
+					this.trans_position[i] += pos_[i];
 					this.position[i] += pos_[i];
 				}
 			}
@@ -961,13 +961,13 @@ class DixieParticleSystem {
 				modal[14] = pos_[2];	
 
 				for(let i = 0; i < 3; ++i)
-					this.trans_position = pos_[i];	
+					this.trans_position[i] = pos_[i];	
 			}
 			else if(this.origin == "Point")
 			{
 				for(let i = 0; i < 3; ++i)
 				{
-					this.trans_position += pos_[i];
+					this.trans_position[i] = pos_[i];
 					this.position[i] = pos_[i];
 				}
 			}
