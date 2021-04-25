@@ -930,13 +930,13 @@ class DixieParticleSystem {
 				modal[14] += pos_[2];
 				
 				for(let i = 0; i < 3; ++i)
-					this.trans_position += pos[i];	
+					this.trans_position += pos_[i];	
 			}
 			else if (this.origin == "Point")
 			{
 				for(let i = 0; i < 3; ++i)
 				{
-					this.trans_position += pos[i];
+					this.trans_position += pos_[i];
 					this.position[i] += pos_[i];
 				}
 			}
@@ -959,11 +959,17 @@ class DixieParticleSystem {
 				modal[12] = pos_[0];
 				modal[13] = pos_[1];
 				modal[14] = pos_[2];	
+
+				for(let i = 0; i < 3; ++i)
+					this.trans_position = pos_[i];	
 			}
 			else if(this.origin == "Point")
 			{
 				for(let i = 0; i < 3; ++i)
+				{
+					this.trans_position += pos_[i];
 					this.position[i] = pos_[i];
+				}
 			}
 		}
 	}
@@ -1458,6 +1464,7 @@ class DixieParticleSystem {
 		this.scale = [1,1,1];
 		this.transformModal = DixieGlobals.identity.slice(0);
 		this.trans_position = this.o_position.slice(0);
+		this.resetDisplacement();
 
 		if (update_cbk_ != undefined)
 			update_cbk_(this.id, this.transformModal, this.rotation, this.scale);
