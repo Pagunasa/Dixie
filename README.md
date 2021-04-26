@@ -32,6 +32,19 @@ With Dixie you're able to:
 
 If you want to know more about how the nodes work, click [here :books:]() 
 
+## Other libraries used
+* [JsColor.js]()
+* [JQuery.js]()
+* [JSZip]()
+* [Gl-Matrix]()
+* [WBin.js]()
+* [Popper.js]()
+* [Boostrap.js]()
+
+**Special mentions**
+* [Alerts](https://codepen.io/codysechelski/pen/dYVwjb)
+* [Matrix invert](http://blog.acipo.com/matrix-inversion-in-javascript/)
+
 ## Examples 
 | A Fire | Sub emitters explosions |
 |--|--|
