@@ -194,7 +194,7 @@ gravityNode.prototype.onExecute = function()
 		this.force.condition   = -1;
 	}
 
-	this.setOutputData(0, system);
+	this.setOutputData(0, system_input);
 }
 
 
@@ -436,7 +436,7 @@ vortexNode.prototype.onExecute = function()
 		this.force.condition   = -1;
 	}
 
-	this.setOutputData(0, system);
+	this.setOutputData(0, system_input);
 }
 
 
@@ -668,7 +668,7 @@ magnetNode.prototype.onExecute = function()
 	}
 
 	//The porperties of the node are the output
-	this.setOutputData(0, system);
+	this.setOutputData(0, system_input);
 }
 
 
