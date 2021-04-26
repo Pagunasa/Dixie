@@ -6,7 +6,7 @@ Dixie is the result of my final degree project, an online graph-oriented particl
 
 [Learn more about the online editor here :books:]()
 
-**Fell the interoperability!** &rarr; Use the API to import the work done to your environment. [Learn more here :books:]() 
+**Fell the interoperability!** &rarr; Use the API to import the work done to your environment. [Learn more here :books:]()  
 **ThreeDixie** &rarr; The official support for Three.js allows a cleanly and easily way to import your particles. [Learn more here :books:]() 
 
 ## Why you should use Dixie?
