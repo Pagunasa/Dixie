@@ -33,13 +33,13 @@ With Dixie you're able to:
 If you want to know more about how the nodes work, click [here :books:]() 
 
 ## Other libraries used
-* [JsColor.js]()
-* [JQuery.js]()
-* [JSZip]()
-* [Gl-Matrix]()
-* [WBin.js]()
-* [Popper.js]()
-* [Boostrap.js]()
+* [JsColor.js](https://jscolor.com/)
+* [JQuery.js](https://jquery.com/)
+* [JSZip](https://stuk.github.io/jszip/)
+* [Gl-Matrix](https://glmatrix.net/)
+* [WBin.js](https://github.com/jagenjo/litescene.js/blob/master/guides/wbin.md)
+* [Popper.js](https://popper.js.org/)
+* [Boostrap](https://getbootstrap.com/)
 
 **Special mentions**
 * [Alerts](https://codepen.io/codysechelski/pen/dYVwjb)
