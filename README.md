@@ -22,7 +22,7 @@ With Dixie you're able to:
  * Define particle subemitters
  * Modify the particle properties directly or using equations
  * Set your own textures as:
-	 * Just one texture
+	 * One texture
 	 * An atlas of textures
 	 * Animated textures
  * Apply external forces to the particles like:
