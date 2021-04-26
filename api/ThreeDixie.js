@@ -211,7 +211,7 @@ export class ThreeDixie {
 			return;
 		}
 
-		this.systems.rotateX(rad_, name_, this.updateRotation);
+		this.systems.rotateX(rad_, name_, this.updateRotation.bind(this));
 	}
 
 	rotateY ( rad_, name_ = undefined ) {
@@ -221,7 +221,7 @@ export class ThreeDixie {
 			return;
 		}
 
-		this.systems.rotateY(rad_, name_, this.updateRotation);
+		this.systems.rotateY(rad_, name_, this.updateRotation.bind(this));
 	}
 
 	rotateZ ( rad_, name_ = undefined ) {
@@ -231,7 +231,7 @@ export class ThreeDixie {
 			return;
 		}
 
-		this.systems.rotateZ(rad_, name_, this.updateRotation);
+		this.systems.rotateZ(rad_, name_, this.updateRotation.bind(this));
 	}
 
 	scaleXYZ ( scale_, name_ = undefined ) {
@@ -247,11 +247,11 @@ export class ThreeDixie {
 			return;
 		}
 
-		this.systems.scale(scale_, name_, this.updateScale);
+		this.systems.scale(scale_, name_, this.updateScale.bind(this));
 	}
 
 	resetTransforms ( name_ = undefined ) {
-		this.systems.resetTransforms(name_, this.updateRotationScale);
+		this.systems.resetTransforms(name_, this.updateRotationScale.bind(this));
 	}
 
 	resetMove ( name_ ) {
