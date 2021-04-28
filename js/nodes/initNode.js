@@ -124,8 +124,8 @@ particleDataNode.prototype.onPropertyChanged = function(property)
 */
 particleDataNode.prototype.onExecute = function()
 {
-	var input_max_speed = this.getInputData(0);
-	var input_min_speed = this.getInputData(1);
+	var input_max_speed = this.getInputData(0).slice(0);
+	var input_min_speed = this.getInputData(1).slice(0);
 
 	var input_max_life_time = this.getInputData(2);
 	var input_min_life_time = this.getInputData(3);
