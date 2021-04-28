@@ -752,7 +752,7 @@ gl.ondraw = function()
 
 		if(system.origin == "Point")
 		{
-			particles_uniforms.u_model = system.model;
+			particles_uniforms.u_model = identity;//system.model;
 			system_uniforms.u_model    = system.model;
 		}
 		else if(system.origin == "Mesh")
