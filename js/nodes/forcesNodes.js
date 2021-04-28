@@ -477,7 +477,7 @@ function magnetNode() {
 
     this.prop_desc = {
     	position: "The origin of the magnet point",            
-        strength: "The strength that will displace the particles. If is positive will reppel and negative attract",
+        strength: "The strength that will displace the particles. If is positive will repel and negative attract",
         scale:    "The magnet point area of effect",
         color:    "The color of the magnet point origin"
     }

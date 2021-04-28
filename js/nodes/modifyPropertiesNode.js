@@ -32,7 +32,7 @@ function modifyPropertyNode() {
     	changed_property:     "What property will be changed",
     	application_mode:     "What operation will be done with the new value",
     	modification_mode:    "If the property will change along the particle lifetime or depending some times defined manually",
-    	user_defined_seconds: "How many seconds until achieve the new value",
+    	user_defined_seconds: "How many seconds until achieving the new value",
 		user_defined_start:   "How many seconds until start to make the changes",
 		new_value:            "The new value of the property"
     }

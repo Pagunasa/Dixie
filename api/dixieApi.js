@@ -1147,10 +1147,10 @@ class DixieParticleSystem {
 			let triangle = Math.floor(Math.random()*triangle_num) * div_value;
 			let points;
 
-			if(div_value == 9)
+			//if(div_value == 9)
 				points = o_mesh.object_vertices.slice(triangle, triangle + div_value);
-			else
-				points = o_mesh.object_vertices.slice(triangle == 0 ? 0 : 3, triangle == 0 ? 9 : 12);
+			//else
+			//	points = o_mesh.object_vertices.slice(triangle == 0 ? 0 : 3, triangle == 0 ? 9 : 12);
 
 			let random_point = [0,0,0];
 
