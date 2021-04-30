@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Three.js implementation</title>
+</head>
+<body>
+
+<script id="vertexShader" type="x-shader/x-vertex">
+	attribute vec3 vertices;
+	attribute vec2 coords;
+	attribute vec2 icoord;
+	attribute vec4 colors;
+	attribute vec2 size;
+	attribute float visible;
+
+	varying vec4 v_color;
+	varying vec3 v_pos;
+	varying vec2 v_coord;
+	varying float v_visible;
+	varying vec4 v_center;
+
+	uniform vec3 u_up;
+	uniform vec3 u_right;
+
+	void main() {
+		v_visible = visible;
+		v_coord = coords;
+		v_color = colors;
+		v_center = (modelMatrix * vec4( vertices, 1.0));
+		v_pos = v_center.xyz + u_right * icoord.x * size.x + u_up * icoord.y * size.y;
+		gl_Position = projectionMatrix * viewMatrix * vec4( v_pos, v_center.w );
+	}
+</script>
+
+<script id="flatFragmentShader" type="x-shader/x-fragment">
+	varying vec4 v_color;
+	varying float v_visible;
+
+	void main() {
+		if (v_visible == 0.0) discard;
+		pc_fragColor = v_color;
+	}
+</script>
+
+<script id="texturedFragmentShader" type="x-shader/x-fragment">
+	uniform sampler2D u_texture;
+
+	varying vec4 v_color;
+	varying vec2 v_coord;
+	varying float v_visible;
+
+	void main() {
+		if (v_visible == 0.0) discard;
+		vec4 color = v_color * texture(u_texture, v_coord);
+		if(color.a < 0.1) discard;
+		pc_fragColor = color;
+	}
+</script>
+
+</body>
+
+<script type="text/javascript" src="../dixieApi.js"></script>
+<!--<script type="text/javascript" src="three.js"></script>-->
+<script type="module">
+	import "/tfg-gmj/api/three.js%20Implementation/main.js";
+</script>
+<!--<script type="text/javascript" src="main.js"></script>-->
+
+</html>

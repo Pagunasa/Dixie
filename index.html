@@ -1,53 +1,423 @@
 <!DOCTYPE html>
 <html>
 	<head>
-		<meta charset="UTF-8">
-		<title>Particle Gestor Geckcle</title>
+		<meta charset="UTF-8" name="viewport" content="width=device-width, initial-scale=1.0">
+
+		<title>Dixie</title>
 		
 		<link rel="stylesheet" type="text/css" href="css/litegraph.css">
-		<script type="text/javascript" src="js/litegraph.js"></script>
-		<script type="text/javascript" src="js/gl-matrix.js"></script>
-		<script type="text/javascript" src="js/litegl.js"></script>
+		<script type="text/javascript" src="js/extern/litegraph.js"></script>
+		<script type="text/javascript" src="js/extern/gl-matrix.js"></script>
+		<script type="text/javascript" src="js/extern/wbin.js"></script>
+		<script type="text/javascript" src="js/extern/litegl.js"></script>
+		<script type="text/javascript" src="js/extern/jscolor.js"></script>
 
 		<!-- Bootstrap -->
 		<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
 
 		<link rel="stylesheet" type="text/css" href="css/style.css">
 
-		<script src="https://kit.fontawesome.com/231612722b.js" crossorigin="anonymous"></script>
+		<script src="https://kit.fontawesome.com/0a82971ca3.js" crossorigin="anonymous"></script>
 
 	</head>
 
 	<body>
-		<div class="root">	
-			<div id="graph-container" class="colorSecondary">
-				<nav id="menu" class="navbar colorPrimary justify-content-center"> 
-					<ul class="horitzList">
-						<li class="upload-btn-wrapper">
-							<input type="file" id="loadGraph" />
-							<button id="loadButton" class="buttonSecondary">Load</button>
-						</li>
-						<li><button id="saveGraph" class="buttonSecondary">Save</button></li>
-						<li><button id="loadDemos" class="buttonSecondary">Demos</button></li>
-						<li class="listDividor"><b>|</b></li>
-						<li><button id="play" class="buttonSecondary"><i class="fas fa-play iconMargin"></i>Play</button></li>
-						<li><button id="reset" class="buttonSecondary"><i class="fas fa-redo iconMargin"></i>Reset</button></li>
-						<li><button id="stop" class="buttonSecondary"><i class="fas fa-stop iconMargin"></i>Stop</button></li>
-						<li class="listDividor"><b>|</b></li>
-						<li><button id="showWebGL" class="buttonSecondary">WebGL</button></li>
-					</ul>
-				</nav>
+		<div id="root" class="secondary-color">
+			<nav id="menu" class="navbar primary-bg-color justify-content-center"> 
+				<ul class="horitz-list">
+					<li class="upload-btn-wrapper">
+						<input type="file" id="graphLoader"/>
+						<button id="load" class="button-secondary">Load</button>
+					</li>
+					<li><button id="exportMenu" class="button-secondary" data-toggle="modal" data-target="#exportModal">Export</button></li>
+					
+					<li class="list-divisor"><b>|</b></li>
+					<li><button id="play" class="button-secondary"><i class="fas fa-play icon-margin"></i>Play</button></li>
+					<li><button id="reset" class="button-secondary"><i class="fas fa-redo icon-margin"></i>Reset</button></li>
+					<li><button id="stop" class="button-secondary red_color"><i class="fas fa-stop icon-margin"></i>Stop</button></li>
+					
+					<li class="list-divisor"><b>|</b></li>
+					<li><button id="demos" class="button-secondary" data-toggle="modal" data-target="#demosModal">Demos</button></li>
+					<li><button id="help" class="button-secondary" data-toggle="modal" data-target="#helpModal">Help</button></li>
+				</ul>
+			</nav>
 
-				<canvas id='graphcanvas'></canvas>
-				<div id='particlecontainer'></div>
-			</div>
+			<ul id="graphAngWebGL" class="horitz-list horitz-list-canvas">
+				<li id="graphLi"><canvas id='graphCanvas' class="quinary-bg-color"></canvas></li>
+				<li id="particleLi">
+					<div class='icons-canvas'>
+						<div id='backgroundColorIcon' class='icon' style='background-image: url("images/bucket.png"); 
+							background-size: 20px 20px; background-repeat:no-repeat; background-position: center;'
+							title="Background color" 
+							data-jscolor="{ onChange: 'updateColorBack(this)', 
+			  					            value:'rgba(0,0,0)',
+			  						        previewElement:'#pr1',
+			  						        backgroundColor: '#37464F',
+			  						        borderColor: '#455A64',
+			  						        controlBorderColor: '#37464F'
+			  						    }">
+						</div>
+						<div id='pickerGrid' class='icon rigth' style='background-image: url("images/picker.png"); 
+							background-size: 20px 20px; background-repeat:no-repeat; background-position: center;' 
+							title="Grid color" 
+							data-jscolor="{ onChange: 'updateColorGrid(this)', 
+			  					            value:'rgba(255,255,255,0.5)',
+			  						        previewElement:'#pr1',
+			  						        backgroundColor: '#37464F',
+			  						        borderColor: '#455A64',
+			  						        controlBorderColor: '#37464F'
+			  						    }">
+						</div>
+						<div id="gridIcon" class='icon icon-selected' style='background-image: url("images/grid.png"); 
+							background-size: 20px 20px; background-repeat:no-repeat; background-position: center;'
+							title="Grid">
+						</div>
+						<div id='pickerLine' class='icon rigth' class='icon rigth' style='background-image: url("images/picker.png"); background-size: 20px 20px; background-repeat:no-repeat; background-position: center;' 
+							title="Line color" 
+							data-jscolor="{ onChange: 'updateColorLine(this)', 
+			  					            value:'rgba(255,255,255,0.5)',
+			  						        previewElement:'#pr1',
+			  						        backgroundColor: '#37464F',
+			  						        borderColor: '#455A64',
+			  						        controlBorderColor: '#37464F'
+			  						    }">
+						</div>
+						<div id="lineIcon" class='icon' style='background-image: url("images/lines.png"); 
+							background-size: 20px 20px; background-repeat:no-repeat; background-position: center;'
+							title="Particle lines">
+						</div>
+					</div>
+					<div id='particleContainer'></div>
+				</li>
+			</ul>
+
+			<button id="divisionButton" class="button-secondary rounded-circle"><i class="fas fa-arrows-alt-h"></i></button>
+			
+			<div id="nodeDisplay"></div>
+			<div id="pageMessages"></div>
 		</div>
 	</body>
+
+	<!----------------->
+	<!-- Demos modal -->
+	<!----------------->
+	<div class="modal fade" id="demosModal" tabindex="-1" role="dialog" aria-labelledby="demoModalLabel" aria-hidden="true">
+	  <div class="modal-dialog" role="document">
+	    <div class="modal-content">
+	      <div class="modal-header primary-bg-color">
+	        <h5 class="modal-title ternary-color" id="demoModalLabel">Demos</h5>
+	        <button type="button" class="close button-secondary" data-dismiss="modal" aria-label="Close">
+	          <span aria-hidden="true">&times;</span>
+	        </button>
+	      </div>
+	      <div class="modal-body quaternary-bg-color">
+	   		<ul class="list-group list-group-flush">
+			  <li id="defaultDemo" class="demoButton list-group-item quaternary-bg-color">Default start</li>
+			  <li id="conditonsPropertiesDemo" class="demoButton list-group-item quaternary-bg-color">Conditions and properties</li>
+			  <li id="merginConditionsDemo" class="demoButton list-group-item quaternary-bg-color">Mergin conditions</li>
+			  <li id="forcesDemo" class="demoButton list-group-item quaternary-bg-color">Forces showcase</li>
+			  <li id="fireDemo" class="demoButton list-group-item quaternary-bg-color">Fire</li>
+			  <li id="animatedDemo" class="demoButton list-group-item quaternary-bg-color">Animated explosion</li>
+			</ul>
+	      </div>
+	    </div>
+	  </div>
+	</div>
+
+	<!------------------>
+	<!-- Export modal -->
+	<!------------------>
+	<div class="modal fade" id="exportModal" tabindex="-1" role="dialog" aria-labelledby="demoModalLabel" aria-hidden="true">
+	  <div class="modal-dialog" role="document">
+	    <div class="modal-content">
+	      <div class="modal-header primary-bg-color">
+	        <h5 class="modal-title ternary-color" id="demoModalLabel">Export</h5>
+	        <button type="button" class="close button-secondary" data-dismiss="modal" aria-label="Close">
+	          <span aria-hidden="true">&times;</span>
+	        </button>
+	      </div>
+	      <div class="text-center modal-body quaternary-bg-color">
+	   		
+			<button id="save" class="button-secondary">
+				<i class="fas fa-save icon-margin-2"></i>Save to DX file
+			</button>
+
+			<button id="export" class="mt-3 button-secondary">
+				<i class="fas fa-file-export icon-margin-2"></i>Export for external usage
+			</button>
+
+	      </div>
+	    </div>
+	  </div>
+	</div>
+
+
+	<!-------------------------->
+	<!--  Message  exporting  -->
+	<!-------------------------->
+	<div class="modal fade" id="exportingMessage" tabindex="-1" role="dialog" aria-labelledby="exportingMessage" aria-hidden="true" data-backdrop="static">
+	  <div class="modal-dialog modal-dialog-centered modal-sm" role="document">
+	    <div class="modal-content">
+	      <div class="modal-header text-center rounded-3 primary-bg-color ternary-color">
+	        <h5 class="modal-title w-100 " id="exportingMessageTitle">
+	        	Exporting file... 
+	        	<div class="spinner-border ml-3" role="status">
+  					<span class="sr-only">Loading...</span>
+				</div>
+			</h5>
+	      </div>
+	    </div>
+	  </div>
+	</div>
+
+
+	<!------------------------------->
+	<!--  Message loading texture  -->
+	<!------------------------------->
+	<div class="modal fade" id="loadingTexture" tabindex="-1" role="dialog" aria-labelledby="loadingTexture" aria-hidden="true" data-backdrop="static">
+	  <div class="modal-dialog modal-dialog-centered modal-sm" role="document">
+	    <div class="modal-content">
+	      <div class="modal-header text-center rounded-3 primary-bg-color ternary-color">
+	        <h5 class="modal-title w-100 " id="loadingTextureTitle">
+	        	Loading Texture... 
+	        	<div class="spinner-border ml-3" role="status">
+  					<span class="sr-only">Loading...</span>
+				</div>
+			</h5>
+	      </div>
+	    </div>
+	  </div>
+	</div>
+
+
+
+	<!-------------------------->
+	<!-- Select Texture modal -->
+	<!-------------------------->
+	<div class="modal fade" id="texturesModal" tabindex="-1" role="dialog" aria-labelledby="demoModalLabel" aria-hidden="true">
+	  <div class="modal-dialog" role="document">
+	    <div class="modal-content">
+	      <div class="modal-header primary-bg-color">
+	        <h5 class="modal-title ternary-color" id="demoModalLabel">Select Texture</h5>
+	        <button type="button" class="close button-secondary" data-dismiss="modal" aria-label="Close">
+	          <span aria-hidden="true">&times;</span>
+	        </button>
+	      </div>
+	      <div class="container modal-body quaternary-bg-color">
+	      	  	<div class="row">
+  					<div class="col-sm pr-0">
+  						<ul class="list-group list-group-flush">
+						  <li id="def_texture1" class="demoButton list-group-item quaternary-bg-color">
+						  	<img src="default_textures/particles/smoke.png" class="img-max rounded mx-auto d-block" alt="Texture 1">
+						  	<p class="mb-0 text-center"> Smoke 1 </p>
+						  </li>
+						  <li id="def_texture2" class="demoButton list-group-item quaternary-bg-color">
+						  	<img src="default_textures/particles/smoke2.png" class="img-max rounded mx-auto d-block" alt="Texture 2">
+						  	<p class="mb-0 text-center"> Smoke 2 </p>
+						  </li>
+						</ul>
+  					</div>
+
+  					<div class="col-sm pl-0">
+  						<ul class="list-group list-group-flush">
+						  <li id="def_texture3" class="demoButton list-group-item quaternary-bg-color">
+						  	<img src="default_textures/particles/fire.png" class="img-max rounded mx-auto d-block" alt="Texture 3">
+						  	<p class="mb-0 text-center"> Fire </p>
+						  </li>
+						  <li id="def_texture4" class="demoButton list-group-item quaternary-bg-color">
+							<img src="default_textures/particles/light.png" class="img-max rounded mx-auto d-block" alt="Texture 4">
+							<p class="mb-0 text-center"> Light </p>
+						  </li>
+						</ul>
+  					</div>
+  				</div>
+
+				<div class="col-sm pl-0">
+					<ul class="list-group list-group-flush">
+					  <li id="def_texture5" class="demoButton list-group-item quaternary-bg-color">
+					  	<img src="default_textures/particles/AnimatedExplosion.png" class="img-max rounded mx-auto d-block" alt="Texture 5">
+					  	<p class="mb-0 text-center"> Animated explosion </p>
+					  </li>
+					</ul>
+				</div>
+
+  				<div class = "text-center mt-2">
+	   			  <button id="texture_local" class="button-secondary">
+	   			  	<i class="fas fa-upload icon-margin"></i>Upload a custom texture
+	   			  </button>
+	   			</div>
+	      </div>
+	    </div>
+	  </div>
+	</div>
+
+
+	<!-------------------------->
+	<!-- Select Mesh modal -->
+	<!-------------------------->
+	<div class="modal fade" id="meshesModal" tabindex="-1" role="dialog" aria-labelledby="demoModalLabel" aria-hidden="true">
+	  <div class="modal-dialog" role="document">
+	    <div class="modal-content">
+	      <div class="modal-header primary-bg-color">
+	        <h5 class="modal-title ternary-color" id="demoModalLabel">Select Mesh</h5>
+	        <button type="button" class="close button-secondary" data-dismiss="modal" aria-label="Close">
+	          <span aria-hidden="true">&times;</span>
+	        </button>
+	    	</div>
+	    	<div class="container modal-body quaternary-bg-color">
+  				<div class="row">
+  					<div class="col-sm pr-0">
+				      	<ul class="list-group list-group-flush">
+						  <li id="def_mesh1" class="demoButton list-group-item quaternary-bg-color">
+						  	<p class="mb-0 text-center"> Pangolin </p>
+						  </li>
+						  <li id="def_mesh2" class="demoButton list-group-item quaternary-bg-color">
+						  	<p class="mb-0 text-center"> Cylinder </p>
+						  </li>
+						  <li id="def_mesh3" class="demoButton list-group-item quaternary-bg-color">
+							<p class="mb-0 text-center"> Plane </p>
+						  </li>
+						</ul>
+				    </div>
+				    <div class="col-sm pr-0 pl-0">
+				    	<ul class="list-group list-group-flush">
+				      	  <li id="def_mesh4" class="demoButton list-group-item quaternary-bg-color">
+						  	<p class="mb-0 text-center"> Dodo </p>
+						  </li>
+						  <li id="def_mesh5" class="demoButton list-group-item quaternary-bg-color">
+							<p class="mb-0 text-center"> Cube </p>
+						  </li>
+						  <li id="def_mesh6" class="demoButton list-group-item quaternary-bg-color">
+							<p class="mb-0 text-center"> Cone </p>
+						  </li>
+				    	</ul>
+				    </div>
+				    <div class="col-sm pl-0">
+				    	<ul class="list-group list-group-flush">
+				      	  <li id="def_mesh7" class="demoButton list-group-item quaternary-bg-color">
+						  	<p class="mb-0 text-center"> Pi </p>
+						  </li>
+						  <li id="def_mesh8" class="demoButton list-group-item quaternary-bg-color">
+							<p class="mb-0 text-center"> Sphere </p>
+						  </li>
+						  <li id="def_mesh9" class="demoButton list-group-item quaternary-bg-color">
+							<p class="mb-0 text-center"> Icosahedron </p>
+						  </li>
+				     	</ul>
+				    </div>
+  				</div>
+
+  				<div class = "text-center mt-2">
+  					<div class="row">
+  						<div class="col-sm-8">
+		  					<input id ="mesh_url" class="form-control" type="text" 
+		  					placeholder="Enter the url of the mesh">
+						</div>
+						<div class="col-sm">
+							<button id="mesh_custom" class="button-secondary">
+								<i class="fas fa-upload icon-margin"></i>Upload
+							</button>
+						</div>
+					</div>
+				</div>
+	      </div>
+	    </div>
+	  </div>
+	</div>
+
+	<!-------------------------->
+	<!------- Help modal ------->
+	<!-------------------------->
+	<div class="modal fade" id="helpModal" tabindex="-1" role="dialog" aria-labelledby="demoModalLabel" aria-hidden="true">
+	  <div class="modal-dialog" role="document">
+	    <div class="modal-content">
+	      <div class="modal-header primary-bg-color">
+	        <h5 class="modal-title ternary-color" id="demoModalLabel">Help</h5>
+	        <button type="button" class="close button-secondary" data-dismiss="modal" aria-label="Close">
+	          <span aria-hidden="true">&times;</span>
+	        </button>
+	      </div>
+	      <div class="container modal-body quaternary-bg-color">
+	        <p class="h6">
+	        	How to displace the camera:
+	    	</p>
+
+	    	<div class="row">
+	    		<div class="col-6 col-sm-6">
+	    		 	<img src="images/wasd_help.png" class="mb-0 rounded mx-auto d-block" alt="How to move the camera">
+	    		</div>
+	    		<div class="col-6 col-sm-6">
+	    		 	<p class="mb-0">
+						<ul class="pl-0 mb-1"> w <i class="fas fa-arrow-right"></i> forward   </ul>
+					  	<ul class="pl-0 mb-1"> s <i class="fas fa-arrow-right"></i> backwards </ul>
+					  	<ul class="pl-0 mb-1"> a <i class="fas fa-arrow-right"></i> left      </ul>
+					  	<ul class="pl-0 mb-1"> d <i class="fas fa-arrow-right"></i> right     </ul>
+					</p>
+	    		</div>
+
+	    		<div class="col-6 col-sm-6">
+	    		 	<img src="images/qe_help.png" class="mb-0 rounded mx-auto d-block" alt="How to move the camera">
+	    		</div>
+	    		<div class="col-6 col-sm-6">
+	    		 	<p class="mt-1 mb-0">
+						<ul class="pl-0 mb-1"> q <i class="fas fa-arrow-right"></i> up   </ul>
+					  	<ul class="pl-0 mb-1"> e <i class="fas fa-arrow-right"></i> down </ul>
+					</p>
+	    		</div>
+
+	    		<div class="col-12 col-sm-12">
+	    			For rotating the camera, you can use the mouse dragging and the wheel to zoom in and zoom out.
+	    		</div>
+  			</div>
+		 	
+  			<p class="h6 mt-3">
+	        	How to search for nodes:
+	    	</p>
+			
+			<div>
+	 			You can make right-click on the left canvas and a list will appear. 
+	 			Or make a double click and a search bar will be displayed.
+			</div>
+
+  			<p class="h6 mt-3">
+	        	How to find node information:
+	    	</p>
+			
+			<div>
+	 			If you make a double click on the node, a panel will appear with a description and information about his properties.
+			</div>
+
+	 		<div class = "text-center mt-4">
+	 			<a class = "btn button-secondary"  target="_blank" href="https://github.com/Pagunasa/tfg-gmj">
+	 				<i class="fab fa-github icon-margin"></i>Go to github for more help
+	 			</a>
+   			</div>
+
+  			</div>
+	      </div>
+	  </div>
+	</div>
 
 	<script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
 	<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
 	<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
 
-	<script type="text/javascript" src="js/init.js"></script>
+	<script type="text/javascript" src="js/extern/alerts.js"></script>
+	<script type="text/javascript" src="js/extern/TextureMerger.js"></script>
+	<script type="text/javascript" src="js/extern/jszip.min.js"></script>
+	<script type="text/javascript" src="js/exporter.js"></script>
 
+	<script type="text/javascript" src="js/nodes/nodeGlobals.js"></script>
+	<script type="text/javascript" src="js/nodes/basicNodes.js"></script>
+	<script type="text/javascript" src="js/nodes/spawnNode.js"></script>
+	<script type="text/javascript" src="js/nodes/initNode.js"></script>
+	<script type="text/javascript" src="js/nodes/forcesNodes.js"></script>
+	<script type="text/javascript" src="js/nodes/conditionNodes.js"></script>
+	<script type="text/javascript" src="js/nodes/modifyPropertiesNode.js"></script>
+	
+	<script type="text/javascript" src="js/shaders.js"></script>
+	<script type="text/javascript" src="js/camera.js"></script>
+	<script type="text/javascript" src="js/main.js"></script>
+
+	<script type="text/javascript" src="api/dixieApi.js"></script>
 </html>

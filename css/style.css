@@ -5,75 +5,112 @@ html,body {
 	padding: 0;
 }
 
-.colorPrimary{
-	background-color: #37464f;
+/**************************************/
+/* Interface color palette definition */
+/**************************************/
+:root {
+	--primary-color: #37464F;
+	--secondary-color: #455A64;
+	--ternary-color: #ECEFF1;
+	--quaternary-color: #BABDBE;
+	--quinary-color: #353535;
 }
 
-.colorSecondary{
-	position: absolute;
-	background-color: #babdbe;
-	height: 100%;
-	width: 100%;
+.primary-bg-color {
+	background-color: var(--primary-color);
 }
 
-.buttonSecondary{
-	background-color: #455a64;
-	color: #eceff1; 
-	border-style: none;
-	font-size: 30px;
+.primary-color {
+	color: var(--primary-color);
 }
 
-.buttonSecondary:hover{
-	background-color: #eceff1;
-	color: #455a64; 
+.secondary-bg-color {
+	background-color: var(--secondary-color);
 }
 
-.horitzList{
+.secondary-color {
+	color: var(--secondary-color);
+}
+
+.ternary-bg-color {
+	background-color: var(--ternary-color);
+}
+
+.ternary-color {
+	color: var(--ternary-color);
+}
+
+.quaternary-bg-color {
+	background-color: var(--quaternary-color);
+}
+
+.quaternary-color {
+	color: var(--quaternary-color);
+}
+
+.quinary-bg-color {
+	background-color: var(--quinary-color);
+}
+
+.quinary-color {
+	color: var(--quinary-color);
+}
+/**************************************/
+/**************************************/
+/**************************************/
+
+/**************************************/
+/******Horitzontal list definition*****/
+/**************************************/
+.horitz-list{
 	list-style-type: none;
 	padding: 0px;
 	margin: 0px;
 	overflow: hidden;
 }
 
-.horitzList li{
+.horitz-list li{
 	float: left; 
 }
 
-.listDividor{
-	color: #eceff1;
-	font-size: 30px;
+.horitz-list-canvas{
+	height: 100%;
+	width: 100%;
+}
+
+.horitz-list-canvas li{
+	float: left; 
+	width: 50%;
+	height: 100%;
+}
+
+.list-divisor{
+	color: var(--ternary-color);
+	font-size: 20px;
 	margin-left: 20px;
 	margin-right: 20px;
 }
+/**************************************/
+/**************************************/
+/**************************************/
 
-.iconMargin{
-	margin-right: 5px;
+/**************************************/
+/***********Buttons definition*********/
+/**************************************/
+.button-secondary{
+	background-color: var(--secondary-color);
+	color: var(--ternary-color); 
+	border-style: none;
+	font-size: 20px;
 }
 
-#main{
-	width: 100%;
- 	height: 100%;
+.red_color{
+	color: #b00404;
 }
 
-.root{
-	width: 100%;
- 	height: 100%;
- 	margin: 0;
- 	padding: 0;
- 	position: relative;
-}
-
-#graph-container{
-	position: absolute;
-	min-width: 500px;
-	overflow: hidden;
-}
-
-#particlecontainer{
-	position: absolute;
-	display: none;
-	top: 63px;
-	right: 0px;
+.button-secondary:hover{
+	background-color: var(--ternary-color);
+	color: var(--secondary-color); 
 }
 
 .upload-btn-wrapper {
@@ -89,3 +126,566 @@ html,body {
   top: 0;
   opacity: 0;
 }
+
+#divisionButton{
+	position: absolute;
+	top: 50%;
+	width: 32px; /*This is because the size of the icon inside it*/
+  	font-size: 20px !important;
+}
+/**************************************/
+/**************************************/
+/**************************************/
+
+
+
+/**************************************/
+/*********Buttons Media Querys*********/
+/**************************************/
+@media only screen and (max-width: 1050px) {
+  .button-secondary{
+  	font-size: 20px;
+  }
+
+  .list-divisor{
+	font-size: 20px;
+	margin-left: 15px;
+	margin-right: 15px;
+  }
+}
+
+@media only screen and (max-width: 750px) {
+  .button-secondary{
+  	font-size: 15px;
+  }
+
+  .list-divisor{
+	font-size: 15px;
+	margin-left: 10px;
+	margin-right: 10px;
+  }
+
+  #divisionButton{
+  	font-size: 20px !important;
+  }
+}
+
+@media only screen and (max-width: 598px) {
+  .list-divisor{
+	margin-left:  5px;
+	margin-right: 5px;
+  }
+}
+
+/**************************************/
+/**************************************/
+/**************************************/
+
+
+
+/**************************************/
+/**************Containers**************/
+/**************************************/
+#root{
+	overflow: hidden;
+	position: absolute;
+	height: 100%;
+	width: 100%;
+	margin: 0;
+ 	padding: 0;
+}
+
+.gl-canvas{
+	width: 100%;
+	height: 100%;
+}
+
+#particleContainer{
+	height: 100%;
+	width: 100%;
+}
+/**************************************/
+/**************************************/
+/**************************************/
+
+/**************************************/
+/****************Utils*****************/
+/**************************************/
+.icon-margin{
+	margin-right: 5px;
+}
+
+.icon-margin-2{
+	margin-right: 10px;
+}
+
+.no-padding {
+	padding: 0px !important;
+}
+
+.no-padding-right {
+	padding-right: 0px !important;
+}
+/**************************************/
+/**************************************/
+/**************************************/
+
+/**************************************/
+/****************Demos*****************/
+/**************************************/
+.demoButton:hover{
+	background-color: var(--ternary-color);
+	color: var(--secondary-color); 
+}
+/**************************************/
+/**************************************/
+/**************************************/
+
+/**************************************/
+/****************Alerts****************/
+/**************************************/
+#pageMessages {
+  position: fixed;
+  bottom: 10px;
+  padding-right: 20px;
+  padding-left: 20px;
+  width: 100%;
+}
+
+.alert {
+  position: relative;
+}
+
+.alert .close {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  font-size: 1em;
+}
+
+.alert .fa {
+  margin-right:.3em;
+}
+
+.alert p {
+	margin-bottom: 0;
+	margin-top: 0;
+}
+/**************************************/
+/**************************************/
+/**************************************/
+
+/**************************************/
+/****************Dialog****************/
+/**************************************/
+.dialog {
+    position: absolute;
+    bottom: 20px;
+    left: 20px;
+
+    background-color: #2A2A2A;
+
+    min-width: 200px;
+    min-height: 200px;
+    max-width: 80%;
+	
+	box-shadow: 0 0 4px #111;
+    border-radius: 6px;
+}
+
+.dialog .settings {
+	left: 10px;
+	top: 10px;
+	height: calc( 100% - 20px );
+	margin: auto;
+}
+
+.dialog .close {
+    float: right;
+	margin: 4px;
+	margin-right: 10px;
+	cursor: pointer;
+	font-size: 1.4em;
+}
+
+.dialog .close:hover {
+	color: white;
+}
+
+.dialog .dialog-header {
+	color: #AAA;
+	border-bottom: 1px solid #161616;
+}
+
+.dialog .dialog-header { height: 40px; }
+.dialog .dialog-footer { height: 50px; padding: 10px; border-top: 1px solid #1a1a1a;}
+
+.dialog .dialog-header .dialog-title {
+    font: 20px "Arial";
+    margin: 4px;
+    padding: 4px 10px;
+    display: inline-block;
+}
+
+.dialog .dialog-content {
+    height: calc(100% - 90px);
+    width: 100%;
+	min-height: 100px;
+    display: inline-block;
+	color: #AAA;
+    /*background-color: black;*/
+}
+
+.dialog .dialog-content h3 {
+	margin: 10px;
+}
+
+.dialog .dialog-content .connections {
+	flex-direction: row;
+}
+
+.dialog .dialog-content .connections .connections_side {
+	width: calc(50% - 5px);
+	min-height: 100px;
+	background-color: black;
+	display: flex;
+}
+
+.dialog .node_type {
+	font-size: 1.2em;
+	display: block;
+	margin: 10px;
+}
+
+.dialog .node_desc {
+	opacity: 0.5;
+	display: block;
+	margin: 10px;
+	max-width: 800px;
+}
+
+.dialog .separator {
+	display: block;
+	width: calc( 100% - 4px );
+	height: 1px;
+	border-top: 1px solid #000;
+	border-bottom: 1px solid #333;
+	margin: 10px 2px;
+	padding: 0;
+}
+
+.dialog .property {
+	margin-bottom: 2px;
+	padding: 4px;
+}
+
+.dialog .property_name {
+	color: #737373;
+    display: inline-block;
+    text-align: left;
+    vertical-align: top;
+    width: 155px;
+	padding-left: 4px;
+	overflow: hidden;
+}
+
+.dialog .property_value {
+    display: inline-block;
+    text-align: right;
+	color: #AAA;
+	background-color: #1A1A1A;
+    width: calc( 100% - 155px );
+	max-height: 300px;
+    padding: 4px;
+	padding-right: 12px;
+	overflow: hidden;
+	cursor: pointer;
+	border-radius: 3px;
+}
+
+.dialog .property_value:hover {
+	color: white;
+}
+
+.dialog .inner_div {
+    display: inline-block;
+    text-align: right;
+    width: calc( 100% - 155px );
+	cursor: pointer;
+	padding-bottom: 4px;
+}
+
+.dialog .inner_div .property_value {
+    display: inline-block;
+    text-align: right;
+	color: #AAA;
+	background-color: #1A1A1A;
+    width: 100%;
+	max-height: 300px;
+    padding: 4px;
+	padding-right: 12px;
+	overflow: hidden;
+	cursor: pointer;
+	border-radius: 3px;
+	margin-top: 4px;
+	margin-bottom: 6px;
+}
+
+.dialog .inner_div .property_value:hover {
+	color: white;
+}
+
+.dialog .property.boolean .property_value {
+	padding-right: 30px;
+}
+
+.dialog .btn {
+	border-radius: 4px;
+    padding: 4px 20px;
+    margin-left: 0px;
+    background-color: #060606;
+    color: #8e8e8e;
+}
+
+.dialog .btn:hover {
+    background-color: #111;
+    color: #FFF;
+}
+
+.dialog .btn.delete:hover {
+    background-color: #F33;
+    color: black;
+}
+/**************************************/
+/**************************************/
+/**************************************/
+
+/**************************************/
+/**********Display of the node*********/
+/**************************************/
+#nodeDisplay {
+	max-width: 80%;
+}
+
+.node_properties {
+	max-height: 900px;
+	overflow: auto;
+}
+
+@media only screen and (max-height: 1050px) {
+	.node_properties {
+		max-height: 700px;
+		overflow: auto;
+	}
+}
+
+@media only screen and (max-height: 800px) {
+	.node_properties {
+		max-height: 450px;
+		overflow: auto;
+	}
+}
+
+@media only screen and (max-height: 750px) {
+	.node_properties {
+		max-height: 450px;
+		overflow: auto;
+	}
+}
+
+@media only screen and (max-height: 722px) {
+	.node_properties {
+		max-height: 400px;
+		overflow: auto;
+	}
+}
+
+@media only screen and (max-height: 689px) {
+	.node_properties {
+		max-height: 389px;
+		overflow: auto;
+	}
+}
+
+@media only screen and (max-height: 664px) {
+	.node_properties {
+		max-height: 340px;
+		overflow: auto;
+	}
+}
+
+@media only screen and (max-height: 616px) {
+	.node_properties {
+		max-height: 300px;
+		overflow: auto;
+	}
+}
+
+@media only screen and (max-height: 571px) {
+	.node_properties {
+		max-height: 250px;
+		overflow: auto;
+	}
+}
+
+@media only screen and (max-height: 522px) {
+	.node_properties {
+		max-height: 200px;
+		overflow: auto;
+	}
+}
+
+@media only screen and (max-height: 478px) {
+	.node_properties {
+		max-height: 100px;
+		overflow: auto;
+	}
+}
+
+@media only screen and (max-height: 371px) {
+	.node_properties {
+		max-height: 50px;
+		overflow: auto;
+	}
+}
+
+/* width */
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  background: var(--quinary-color); 
+}
+ 
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: var(--primary-color); 
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: var(--secondary-color); 
+}
+/**************************************/
+/**************************************/
+/**************************************/
+
+/**************************************/
+/***************Tooltips***************/
+/**************************************/
+.tooltiptext {
+  visibility: hidden;
+  width: 400px;
+  background-color: #2A2A2AAB;
+  color: #AAA;
+  text-align: center;
+  border-radius: 6px;
+  padding: 5px 0;
+  
+  /* Position the tooltip */
+  position: absolute;
+  z-index: 1;
+  left: 13%;
+  margin-left: -60px;
+}
+
+.property:hover .tooltiptext {
+  visibility: visible;
+}
+
+/**************************************/
+/**************************************/
+/**************************************/
+
+/**************************************/
+/*************Modals stuff*************/
+/**************************************/
+.img-max {
+	max-width:  100px;
+	max-height: 80px;
+}
+
+#mesh_custom {
+	margin-top: 16px;
+}
+
+#mesh_url {
+	margin-top: 16px;
+}
+
+#stoppedDisplay {
+	width:        40px;
+	height:       40px;
+	margin-left:  10px;
+	margin-right: 20px;
+	margin-top:   10px;
+	font-size:    40px;
+	color:        white;
+}
+/**************************************/
+/**************************************/
+/**************************************/
+
+/**************************************/
+/*************Canvas icons*************/
+/**************************************/
+.icons-canvas {
+	margin-left: 10px;
+	margin-top: 5px;
+	position: absolute;
+}
+
+.icons-canvas .icon:hover {
+	background-color: var(--quaternary-color);
+}
+
+.icons-canvas .icon {
+	width:  26px;
+	height: 26px;
+	background-color: var(--primary-color);
+	padding: 3px;
+	border-radius: 2px;
+	margin-bottom: 5px;
+}
+
+.icons-canvas .rigth {
+	width:  26px;
+	height: 26px;
+	background-color: var(--primary-color);
+	padding: 3px;
+	border-radius: 2px;
+	margin-left: 29px;
+	position: absolute;
+}
+
+.icons-canvas .icon-size {
+	width:  20px;
+	height: 20px;
+	user-select: none;
+}
+
+.icon-selected {
+	background-color: var(--quaternary-color) !important;
+}
+
+#backgroundColorIcon{
+	background-image: url("images/bucket.png");
+	background-repeat:no-repeat;
+    background-size:contain;
+}
+/**************************************/
+/**************************************/
+/**************************************/
+
+/**************************************/
+/**********Exporting Message***********/
+/**************************************/
+.rounded-3{
+	border-radius: 3.8px !important;
+	border-color : var(--primary-color);
+}
+/**************************************/
+/**************************************/
+/**************************************/
