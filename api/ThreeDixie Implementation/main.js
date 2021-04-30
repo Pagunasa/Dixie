@@ -14,11 +14,11 @@ let secToMs = 1/1000;
 init();
 
 function init() {
-    //Inicialize the up and right vectors
+    //Initialize the up and right vectors
     right = new THREE.Vector3();
     up = new THREE.Vector3();
 
-    //Inicialize and start the clock
+    //Initialize and start the clock
     clock = new THREE.Clock();
     clock.start();
 

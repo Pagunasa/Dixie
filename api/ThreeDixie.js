@@ -254,7 +254,7 @@ export class ThreeDixie {
 		this.systems.resetTransforms(name_, this.updateRotationScale.bind(this));
 	}
 
-	resetMove ( name_ ) {
+	resetMove ( name_ = undefined ) {
 		this.systems.resetMove(name_);
 	}
 

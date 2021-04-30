@@ -124,8 +124,8 @@ particleDataNode.prototype.onPropertyChanged = function(property)
 */
 particleDataNode.prototype.onExecute = function()
 {
-	var input_max_speed = this.getInputData(0).slice(0);
-	var input_min_speed = this.getInputData(1).slice(0);
+	var input_max_speed = this.getInputData(0);
+	var input_min_speed = this.getInputData(1);
 
 	var input_max_life_time = this.getInputData(2);
 	var input_min_life_time = this.getInputData(3);
@@ -140,8 +140,8 @@ particleDataNode.prototype.onExecute = function()
 	var properties = this.properties;
 
 	//When is executed the inputs are gotten and if they are undefined a default value is setted
-	properties.max_speed = input_max_speed || properties.max_speed;
-	properties.min_speed = input_min_speed || properties.min_speed;
+	properties.max_speed = input_max_speed == undefined ? properties.max_speed : input_max_speed.slice(0);
+	properties.min_speed = input_min_speed == undefined ? properties.min_speed : input_min_speed.slice(0);
 
 	properties.max_life_time = input_max_life_time || properties.max_life_time;
 	properties.min_life_time = input_min_life_time || properties.min_life_time;
