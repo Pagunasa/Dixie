@@ -41,16 +41,19 @@ _A demo._
 * [Create my own particle system :stars::stars:](https://github.com/Pagunasa/tfg-gmj/wiki/The-editor)
 
 <img src="https://github.com/Pagunasa/tfg-gmj/blob/master/wiki_media/Home/images/create_particles.png" alt="Showcase of a graph" width="450"/>  
+
 _A basic graph._  
 
 * [Use the API :computer:](https://github.com/Pagunasa/tfg-gmj/wiki/Dixie-API)
 
 <img src="https://github.com/Pagunasa/tfg-gmj/blob/master/wiki_media/Home/images/use_API.png" alt="API code" width="450"/>  
+
 _A pice of the API code._  
 
 * [Use ThreeDixie :evergreen_tree::mouse2:](https://github.com/Pagunasa/tfg-gmj/wiki/ThreeDixie)
 
 <img src="https://github.com/Pagunasa/tfg-gmj/blob/master/wiki_media/Home/images/use_threeDixie.png" alt="Showcase ThreeDixie demo" width="200"/>  
+
 _A ThreeDixie demo._  
 
 <br/>
