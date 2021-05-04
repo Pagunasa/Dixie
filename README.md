@@ -19,7 +19,7 @@ Both libraries were made by [Javi Agenjo](https://github.com/jagenjo) and are us
 |--|--|
 | ![Alt Text](https://github.com/Pagunasa/tfg-gmj/blob/master/wiki_media/Home/gif/fireg.gif) | ![Alt Text](https://github.com/Pagunasa/tfg-gmj/blob/master/wiki_media/Home/gif/explosions.gif) |
 
-#### All the demos are available in the editor, if you want to give it a try just click [here!!](https://pagunasa.github.io/tfg-gmj/)
+#### All the demos are available in the editor, if you want to give it a try just [click here!!](https://pagunasa.github.io/tfg-gmj/)
 
 <br/>
 
@@ -34,7 +34,7 @@ Both libraries were made by [Javi Agenjo](https://github.com/jagenjo) and are us
 * [See the demos!! :eye:](https://pagunasa.github.io/tfg-gmj/)
 * [Create my own particle system :stars::stars:](https://github.com/Pagunasa/tfg-gmj/wiki/The-editor)
 * [Use the API :computer:](https://github.com/Pagunasa/tfg-gmj/wiki/Dixie-API)
-* [Use ThreeDixie :evergreen_tree: :mouse2:](https://github.com/Pagunasa/tfg-gmj/wiki/ThreeDixie)
+* [Use ThreeDixie :evergreen_tree::mouse2:](https://github.com/Pagunasa/tfg-gmj/wiki/ThreeDixie)
 
 <br/>
 
@@ -55,7 +55,7 @@ With Dixie you're able to:
 	 * Magnet point
 	 * Vortex
 
-[Learn more about how the nodes work here :books:]() 
+[Learn more about how the nodes work here :books:](https://github.com/Pagunasa/tfg-gmj/wiki/The-nodes) 
 
 <br/>
 
@@ -74,3 +74,8 @@ With Dixie you're able to:
 * [Matrix invert](http://blog.acipo.com/matrix-inversion-in-javascript/)
 
 **Media used**
+* [Fire texture]()
+* [Smoke1 texture]()
+* [Smoke2 texture]()
+* [Light texture]()
+* [Animated explosion texture]() 
