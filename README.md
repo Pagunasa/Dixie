@@ -74,8 +74,8 @@ With Dixie you're able to:
 * [Matrix invert](http://blog.acipo.com/matrix-inversion-in-javascript/)
 
 **Media used**
-* [Fire texture]()
-* [Smoke1 texture]()
-* [Smoke2 texture]()
-* [Light texture]()
-* [Animated explosion texture]() 
+* [Fire texture](https://toppng.com/fire-particle-effect-decal-roblox-fire-decal-PNG-free-PNG-Images_191764)
+* [Smoke1 texture](https://toppng.com/smoke-particle-texture-PNG-free-PNG-Images_70935)
+* [Smoke2 texture](https://toppng.com/smoke-clipart-png-tumblr-smoke-gif-animation-PNG-free-PNG-Images_170070)
+* [Light texture](https://toppng.com/coolest-pink-galaxy-background-blue-light-star-particle-light-particle-PNG-free-PNG-Images_169844)
+* [Animated explosion texture](https://opengameart.org/content/pixel-art-explosion-animation) 
