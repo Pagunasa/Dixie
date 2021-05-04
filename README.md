@@ -33,8 +33,10 @@ Both libraries were made by [Javi Agenjo](https://github.com/jagenjo) and are us
 
 * [See the demos!! :eye:](https://pagunasa.github.io/tfg-gmj/)
 
-<img src="https://github.com/Pagunasa/tfg-gmj/blob/master/wiki_media/Home/images/see_demos.png" alt="Showcase of a demo" width="200"/>  
-_A demo._  
+<img src="https://github.com/Pagunasa/tfg-gmj/blob/master/wiki_media/Home/images/see_demos.png" alt="Showcase of a demo" width="200"/>    
+
+_A demo._    
+
 
 * [Create my own particle system :stars::stars:](https://github.com/Pagunasa/tfg-gmj/wiki/The-editor)
 
