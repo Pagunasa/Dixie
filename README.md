@@ -6,11 +6,10 @@ Dixie is the result of my final degree project, an online graph-oriented particl
 
 Both libraries were made by [Javi Agenjo](https://github.com/jagenjo) and are used in [webglstudio](https://github.com/jagenjo/webglstudio.js) a full open-source 3D graphics editor in the browser.
 
-[Learn more about the online editor here :books:](https://github.com/Pagunasa/tfg-gmj/wiki/The-editor)
-
 **Fell the interoperability!** &rarr; Use the API to import the work done to your environment. [Learn more here :books:](https://github.com/Pagunasa/tfg-gmj/wiki/Dixie-API)  
 **ThreeDixie** &rarr; The official support for Three.js allows a cleanly and easily way to import your particles. [Learn more here :books:](https://github.com/Pagunasa/tfg-gmj/wiki/ThreeDixie) 
 
+[Learn more about the online editor here :books:](https://github.com/Pagunasa/tfg-gmj/wiki/The-editor)  
 [If you have questions about the nodes come here :books:](https://github.com/Pagunasa/tfg-gmj/wiki/The-nodes)
 
 <br/>
