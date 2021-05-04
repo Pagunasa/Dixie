@@ -1,4 +1,4 @@
-# Wellcome to Dixie
+# Welcome to Dixie
 
 Dixie is the result of my final degree project, an online graph-oriented particle motor. Just connecting and editing the provided nodes you'll be able to create complex behaviours for the particles.  The main libraries used in the project are:
 * **[Litegl.js](https://github.com/jagenjo/litegl.js?files=1)**  &rarr; A library that simplifies working with WebGL without the low-level calls but without losing any freedom.
