@@ -81,6 +81,14 @@ With Dixie you're able to:
 
 <br/>
 
+## Wiki table of content
+* [:art: The editor](https://github.com/Pagunasa/tfg-gmj/wiki/The-editor)
+* [:package: The Nodes](https://github.com/Pagunasa/tfg-gmj/wiki/The-nodes)
+* [:computer: Dixie API](https://github.com/Pagunasa/tfg-gmj/wiki/Dixie-API)
+* [:evergreen_tree::mouse2: ThreeDixie](https://github.com/Pagunasa/tfg-gmj/wiki/ThreeDixie)
+
+<br/>
+
 ## Other libraries used
 * [JsColor.js](https://jscolor.com/)
 * [JQuery.js](https://jquery.com/)
@@ -103,3 +111,6 @@ With Dixie you're able to:
 * [Smoke2 texture](https://toppng.com/smoke-clipart-png-tumblr-smoke-gif-animation-PNG-free-PNG-Images_170070)
 * [Light texture](https://toppng.com/coolest-pink-galaxy-background-blue-light-star-particle-light-particle-PNG-free-PNG-Images_169844)
 * [Animated explosion texture](https://opengameart.org/content/pixel-art-explosion-animation) 
+* [Pangolin mesh](https://sketchfab.com/3d-models/low-poly-crystal-pangolin-8cc9e96faeee487db9a71c890722b268)
+* [Pi mesh](https://sketchfab.com/3d-models/letra-pi-da97ddbdc6d64ed8a16fecd52816021b)
+* [Dodo mesh](https://sketchfab.com/3d-models/letra-pi-da97ddbdc6d64ed8a16fecd52816021b)
