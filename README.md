@@ -35,6 +35,8 @@ Both libraries were made by [Javi Agenjo](https://github.com/jagenjo) and are us
 |:--:|:--:| 
 | <a href="https://github.com/Pagunasa/tfg-gmj/wiki/Dixie-API" rel="The API"><img src="https://github.com/Pagunasa/tfg-gmj/blob/master/wiki_media/Home/images/use_API.png" alt="API code"  height="207"/></a> <br/> [**Use the API :computer:**](https://github.com/Pagunasa/tfg-gmj/wiki/Dixie-API) | <a href="https://github.com/Pagunasa/tfg-gmj/wiki/ThreeDixie" rel="ThreeDixie"><img src="https://github.com/Pagunasa/tfg-gmj/blob/master/wiki_media/Home/images/use_threeDixie.png" alt="Showcase ThreeDixie demo" width="207"/></a> <br/> [**Use ThreeDixie :evergreen_tree::mouse2:**](https://github.com/Pagunasa/tfg-gmj/wiki/ThreeDixie) |
 
+<br/>
+
 ## Functionalities
 With Dixie you're able to:
  * Create a set of particle emitters
