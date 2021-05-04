@@ -14,18 +14,18 @@ Both libraries were made by [Javi Agenjo](https://github.com/jagenjo) and are us
 
 <br/>
 
+## Why you should use Dixie?
+
+:stars::stars::stars: Because it's free, open-source, highly interoperable and fully customizable!  :stars::stars::stars:
+
+<br/>
+
 ## Examples 
 | A Fire | Sub emitters explosions |
 |--|--|
 | ![Alt Text](https://github.com/Pagunasa/tfg-gmj/blob/master/wiki_media/Home/gif/fireg.gif) | ![Alt Text](https://github.com/Pagunasa/tfg-gmj/blob/master/wiki_media/Home/gif/explosions.gif) |
 
 #### All the demos are available in the editor, if you want to give it a try just [click here!!](https://pagunasa.github.io/tfg-gmj/)
-
-<br/>
-
-## Why you should use Dixie?
-
-:stars::stars::stars: Because it's free, open-source, highly interoperable and fully customizable!  :stars::stars::stars:
 
 <br/>
 
