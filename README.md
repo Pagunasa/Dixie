@@ -31,34 +31,9 @@ Both libraries were made by [Javi Agenjo](https://github.com/jagenjo) and are us
 
 ## What do you want to do with Dixie?
 
-* [See the demos!! :eye:](https://pagunasa.github.io/tfg-gmj/)
-
-<img src="https://github.com/Pagunasa/tfg-gmj/blob/master/wiki_media/Home/images/see_demos.png" alt="Showcase of a demo" width="200"/>    
-
-_A demo._    
-<br/>
-
-* [Create my own particle system :stars::stars:](https://github.com/Pagunasa/tfg-gmj/wiki/The-editor)
-
-<img src="https://github.com/Pagunasa/tfg-gmj/blob/master/wiki_media/Home/images/create_particles.png" alt="Showcase of a graph" width="450"/>  
-
-_A basic graph._  
-<br/>
-
-* [Use the API :computer:](https://github.com/Pagunasa/tfg-gmj/wiki/Dixie-API)
-
-<img src="https://github.com/Pagunasa/tfg-gmj/blob/master/wiki_media/Home/images/use_API.png" alt="API code" width="450"/>  
-
-_A pice of the API code._  
-<br/>
-
-* [Use ThreeDixie :evergreen_tree::mouse2:](https://github.com/Pagunasa/tfg-gmj/wiki/ThreeDixie)
-
-<img src="https://github.com/Pagunasa/tfg-gmj/blob/master/wiki_media/Home/images/use_threeDixie.png" alt="Showcase ThreeDixie demo" width="200"/>  
-
-_A ThreeDixie demo._  
-
-<br/>
+| <a href="https://pagunasa.github.io/tfg-gmj/" rel="Demo link"><img src="https://github.com/Pagunasa/tfg-gmj/blob/master/wiki_media/Home/images/see_demos.png" alt="Showcase of a demo" width="207"/></a> <br/> [See the demos!! :eye:](https://pagunasa.github.io/tfg-gmj/)|<img src="https://github.com/Pagunasa/tfg-gmj/blob/master/wiki_media/Home/images/create_particles.png" alt="Showcase of a graph"  height="207"/> <br/> [Create my own particle system :stars::stars:](https://github.com/Pagunasa/tfg-gmj/wiki/The-editor) | 
+|:--:|:--:| 
+| <img src="https://github.com/Pagunasa/tfg-gmj/blob/master/wiki_media/Home/images/use_API.png" alt="API code"  height="207"/> <br/> [**Use the API :computer:**](https://github.com/Pagunasa/tfg-gmj/wiki/Dixie-API) | <img src="https://github.com/Pagunasa/tfg-gmj/blob/master/wiki_media/Home/images/use_threeDixie.png" alt="Showcase ThreeDixie demo" width="207"/> <br/> [**Use ThreeDixie :evergreen_tree::mouse2:**](https://github.com/Pagunasa/tfg-gmj/wiki/ThreeDixie) |
 
 ## Functionalities
 With Dixie you're able to:
