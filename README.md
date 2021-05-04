@@ -44,7 +44,7 @@ With Dixie you're able to:
  * Define the origin of the particles as:
 	 * A point in the space
 	 * The surface of a mesh
- * Define particle subemitters
+ * Define particle sub emitters
  * Modify the particle properties directly or using equations
  * Set your own textures as:
 	 * One texture
