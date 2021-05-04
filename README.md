@@ -72,6 +72,8 @@ With Dixie you're able to:
 **Special mentions**
 * [Alerts](https://codepen.io/codysechelski/pen/dYVwjb)
 * [Matrix invert](http://blog.acipo.com/matrix-inversion-in-javascript/)
+* This [billboard tutorial](http://www.opengl-tutorial.org/intermediate-tutorials/billboards-particles/billboards/) was really helpful to me.
+* Javi Agenjo has incredible well-explained slides on [his homepage.](https://tamats.com/upf/)
 
 **Media used**
 * [Fire texture](https://toppng.com/fire-particle-effect-decal-roblox-fire-decal-PNG-free-PNG-Images_191764)
