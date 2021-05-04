@@ -689,3 +689,64 @@ html,body {
 /**************************************/
 /**************************************/
 /**************************************/
+
+/**************************************/
+/*************Help  Screen*************/
+/**************************************/
+
+.p-wasd-img {
+	padding-left: 60px;
+}
+
+.p-wasd-text {
+	padding-left: 140px;
+}
+
+.p-qe-text {
+	padding-left: 55px;
+}
+
+
+@media only screen and (min-width: 576px) and (max-width: 992px) {
+	.p-wasd-img {
+		padding-left: 0px;
+	}
+
+	.p-wasd-text {
+		padding-left: 0px;
+		margin-left: 90px;
+	}
+
+	.p-qe-text {
+		padding-left: 79px;
+	}
+
+	.p-qe-img {
+		margin-left: -95px;
+	}
+}
+
+@media only screen and (max-width: 575px) {
+	.p-wasd-img {
+		padding-left: 0px;
+	}
+
+	.p-wasd-text {
+		padding-left: 0px;
+		margin-left: 0px;
+	}
+
+	.p-qe-text {
+		padding-left: 0px;
+	}
+
+	.p-qe-img {
+		margin-left: 0px;
+	}
+}
+
+
+
+/**************************************/
+/**************************************/
+/**************************************/

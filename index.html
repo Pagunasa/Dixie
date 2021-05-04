@@ -328,8 +328,8 @@
 	<!-------------------------->
 	<!------- Help modal ------->
 	<!-------------------------->
-	<div class="modal fade" id="helpModal" tabindex="-1" role="dialog" aria-labelledby="demoModalLabel" aria-hidden="true">
-	  <div class="modal-dialog" role="document">
+		<div class="modal fade" id="helpModal" tabindex="-1" role="dialog" aria-labelledby="demoModalLabel" aria-hidden="true">
+	  <div class="modal-dialog modal-lg" role="document">
 	    <div class="modal-content">
 	      <div class="modal-header primary-bg-color">
 	        <h5 class="modal-title ternary-color" id="demoModalLabel">Help</h5>
@@ -341,12 +341,11 @@
 	        <p class="h6">
 	        	How to displace the camera:
 	    	</p>
-
-	    	<div class="row">
-	    		<div class="col-6 col-sm-6">
+			<div class="row">
+	    		<div class="col-6 col-sm-2 p-wasd-img">
 	    		 	<img src="images/wasd_help.png" class="mb-0 rounded mx-auto d-block" alt="How to move the camera">
 	    		</div>
-	    		<div class="col-6 col-sm-6">
+	    		<div class="col-6 col-sm-4 p-wasd-text">
 	    		 	<p class="mb-0">
 						<ul class="pl-0 mb-1"> w <i class="fas fa-arrow-right"></i> forward   </ul>
 					  	<ul class="pl-0 mb-1"> s <i class="fas fa-arrow-right"></i> backwards </ul>
@@ -355,22 +354,22 @@
 					</p>
 	    		</div>
 
-	    		<div class="col-6 col-sm-6">
+	    		<div class="col-6 col-sm-2 p-qe-img align-self-center">
 	    		 	<img src="images/qe_help.png" class="mb-0 rounded mx-auto d-block" alt="How to move the camera">
 	    		</div>
-	    		<div class="col-6 col-sm-6">
+	    		<div class="col-6 col-sm-4 align-self-center p-qe-text">
 	    		 	<p class="mt-1 mb-0">
 						<ul class="pl-0 mb-1"> q <i class="fas fa-arrow-right"></i> up   </ul>
 					  	<ul class="pl-0 mb-1"> e <i class="fas fa-arrow-right"></i> down </ul>
 					</p>
 	    		</div>
+		 		
+		 		<div class="col-12 col-sm-12">
+			 		For rotating the camera, you can use the mouse dragging and the wheel to zoom in and zoom out.
+		 		</div> 
 
-	    		<div class="col-12 col-sm-12">
-	    			For rotating the camera, you can use the mouse dragging and the wheel to zoom in and zoom out.
-	    		</div>
-  			</div>
-		 	
-  			<p class="h6 mt-3">
+		 	</div>
+  			<p class="h6 mt-4">
 	        	How to search for nodes:
 	    	</p>
 			
@@ -379,7 +378,7 @@
 	 			Or make a double click and a search bar will be displayed.
 			</div>
 
-  			<p class="h6 mt-3">
+  			<p class="h6 mt-4">
 	        	How to find node information:
 	    	</p>
 			
