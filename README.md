@@ -16,7 +16,7 @@ Dixie is the result of my final degree project, an online graph-oriented particl
         <tr>
             <th>
 		<a href="https://pagunasa.github.io/tfg-gmj/" rel="Demo link">
-			<img src="https://github.com/Pagunasa/tfg-gmj/blob/master/wiki_media/Home/images/see_demos.png" alt="Showcase of a demo" width="207"/>
+			<img src="https://github.com/Pagunasa/tfg-gmj/blob/master/wiki_media/Home/images/see_demos.png" alt="Showcase of a demo" width="223.91"/>
 		</a> 
 		<br/>
 		<a href="https://pagunasa.github.io/tfg-gmj/"> :eye: See the demos!! :eye: </a>
@@ -39,7 +39,7 @@ Dixie is the result of my final degree project, an online graph-oriented particl
 	    </th>
             <th>
  	        <a href="https://github.com/Pagunasa/tfg-gmj/wiki/ThreeDixie" rel="ThreeDixie">
-			<img src="https://github.com/Pagunasa/tfg-gmj/blob/master/wiki_media/Home/images/use_threeDixie.png" alt="Showcase ThreeDixie demo" width="207"/>
+			<img src="https://github.com/Pagunasa/tfg-gmj/blob/master/wiki_media/Home/images/use_threeDixie.png" alt="Showcase ThreeDixie demo" width="223.92"/>
 		</a> 
 		<br/> 
 		<a href="https://github.com/Pagunasa/tfg-gmj/wiki/ThreeDixie"> :mouse2::evergreen_tree: Use ThreeDixie :evergreen_tree::mouse2: </a> 	    
@@ -50,7 +50,7 @@ Dixie is the result of my final degree project, an online graph-oriented particl
         <tr>
             <th colspan=2>
 	        <a href="https://github.com/Pagunasa/tfg-gmj/wiki/The-nodes" rel="The nodes">
-			<img src="https://github.com/Pagunasa/tfg-gmj/blob/master/wiki_media/Home/images/use_threeDixie.png" alt="Nodes demo" />
+			<img src="https://github.com/Pagunasa/tfg-gmj/blob/master/wiki_media/Home/images/know_nodes.png" alt="Nodes demo" height="223.92"/>
 		</a> 
 		<br/> 
 		<a href="https://github.com/Pagunasa/tfg-gmj/wiki/The-nodes"> :package: Know more about the nodes :package: </a>
@@ -78,11 +78,9 @@ With Dixie you're able to:
 <br/>
 
 ## Resources
-The main libraries used in the project are:
-* **[Litegl.js](https://github.com/jagenjo/litegl.js?files=1)**  &rarr; A library that simplifies working with WebGL without the low-level calls but without losing any freedom.
-* **[Litegraph.js](https://github.com/jagenjo/litegl.js?files=1)**  &rarr; A library to create graphs in the browser similar to Unreal Blueprints.
+**The main libraries** used in the project are **[Litegl.js](https://github.com/jagenjo/litegl.js?files=1)** (simplifies working with WebGL without the low-level calls but without losing any freedom), and **[Litegraph.js](https://github.com/jagenjo/litegl.js?files=1)** (creation of graphs in the browser similar to Unreal Blueprints). Both libraries were made by [Javi Agenjo](https://github.com/jagenjo) and are used in [webglstudio](https://github.com/jagenjo/webglstudio.js) a full open-source 3D graphics editor in the browser.
 
-Both libraries were made by [Javi Agenjo](https://github.com/jagenjo) and are used in [webglstudio](https://github.com/jagenjo/webglstudio.js) a full open-source 3D graphics editor in the browser.
+Besides:
 
 * [JsColor.js](https://jscolor.com/)
 * [JQuery.js](https://jquery.com/)
@@ -93,18 +91,6 @@ Both libraries were made by [Javi Agenjo](https://github.com/jagenjo) and are us
 * [Boostrap](https://getbootstrap.com/)
 * [Font Awesome](https://fontawesome.com/)
 
-**Special mentions**
-* [Alerts](https://codepen.io/codysechelski/pen/dYVwjb)
-* [Matrix invert](http://blog.acipo.com/matrix-inversion-in-javascript/)
-* This [billboard tutorial](http://www.opengl-tutorial.org/intermediate-tutorials/billboards-particles/billboards/) was really helpful to me.
-* Javi Agenjo has incredible well-explained slides on [his homepage.](https://tamats.com/upf/)
+**Special mentions** to [Generate Bootstrap Alerts with Javascript](https://codepen.io/codysechelski/pen/dYVwjb), [Matrix invert](http://blog.acipo.com/matrix-inversion-in-javascript/), this [billboard tutorial](http://www.opengl-tutorial.org/intermediate-tutorials/billboards-particles/billboards/) (really helpful) and Javi Agenjo and his [incredible well-explained slides](https://tamats.com/upf/).
 
-**Media used**
-* [Fire texture](https://toppng.com/fire-particle-effect-decal-roblox-fire-decal-PNG-free-PNG-Images_191764)
-* [Smoke1 texture](https://toppng.com/smoke-particle-texture-PNG-free-PNG-Images_70935)
-* [Smoke2 texture](https://toppng.com/smoke-clipart-png-tumblr-smoke-gif-animation-PNG-free-PNG-Images_170070)
-* [Light texture](https://toppng.com/coolest-pink-galaxy-background-blue-light-star-particle-light-particle-PNG-free-PNG-Images_169844)
-* [Animated explosion texture](https://opengameart.org/content/pixel-art-explosion-animation) 
-* [Pangolin mesh](https://sketchfab.com/3d-models/low-poly-crystal-pangolin-8cc9e96faeee487db9a71c890722b268)
-* [Pi mesh](https://sketchfab.com/3d-models/letra-pi-da97ddbdc6d64ed8a16fecd52816021b)
-* [Dodo mesh](https://sketchfab.com/3d-models/letra-pi-da97ddbdc6d64ed8a16fecd52816021b)
+**Media used:** [fire texture](https://toppng.com/fire-particle-effect-decal-roblox-fire-decal-PNG-free-PNG-Images_191764), [smoke1 texture](https://toppng.com/smoke-particle-texture-PNG-free-PNG-Images_70935), [smoke2 texture](https://toppng.com/smoke-clipart-png-tumblr-smoke-gif-animation-PNG-free-PNG-Images_170070), [light texture](https://toppng.com/coolest-pink-galaxy-background-blue-light-star-particle-light-particle-PNG-free-PNG-Images_169844), [animated explosion texture](https://opengameart.org/content/pixel-art-explosion-animation), this cute (and covid-free) [pangolin mesh :otter:](https://sketchfab.com/3d-models/low-poly-crystal-pangolin-8cc9e96faeee487db9a71c890722b268), [pi mesh](https://sketchfab.com/3d-models/letra-pi-da97ddbdc6d64ed8a16fecd52816021b), and this cool (and precipitable) [dodo mesh :baby_chick:](https://sketchfab.com/3d-models/letra-pi-da97ddbdc6d64ed8a16fecd52816021b).
