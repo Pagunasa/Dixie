@@ -23,7 +23,7 @@ Dixie is the result of my final degree project, an online graph-oriented particl
 	    </th>
             <th>
 		<a href="https://github.com/Pagunasa/tfg-gmj/wiki/The-editor" rel="The editor">
-			<img src="https://github.com/Pagunasa/tfg-gmj/blob/master/wiki_media/Home/images/create_particles.png" alt="Showcase of a graph" width="400"  height="207"/>
+			<img src="https://github.com/Pagunasa/tfg-gmj/blob/master/wiki_media/Home/images/create_particles.png" alt="Showcase of a graph"/>
 		</a> 
 		<br/> 
 		<a href="https://github.com/Pagunasa/tfg-gmj/wiki/The-editor"> :stars::stars: Create my own particle system :stars::stars: </a>
@@ -32,7 +32,7 @@ Dixie is the result of my final degree project, an online graph-oriented particl
         <tr>
             <th>
  	        <a href="https://github.com/Pagunasa/tfg-gmj/wiki/Dixie-API" rel="The API">
-			<img src="https://github.com/Pagunasa/tfg-gmj/blob/master/wiki_media/Home/images/use_API.png" alt="API code" width="400" height="207"/>
+			<img src="https://github.com/Pagunasa/tfg-gmj/blob/master/wiki_media/Home/images/use_API.png" alt="API code"/>
 		</a> 
 		<br/> 
 		<a href="https://github.com/Pagunasa/tfg-gmj/wiki/Dixie-API"> :computer: Use the API :computer: </a>
@@ -49,11 +49,11 @@ Dixie is the result of my final degree project, an online graph-oriented particl
     <tbody>
         <tr>
             <th colspan=2>
-	        <a href="https://github.com/Pagunasa/tfg-gmj/wiki/ThreeDixie" rel="ThreeDixie">
-			<img src="https://github.com/Pagunasa/tfg-gmj/blob/master/wiki_media/Home/images/use_threeDixie.png" alt="Showcase ThreeDixie demo" width="207"/>
+	        <a href="https://github.com/Pagunasa/tfg-gmj/wiki/The-nodes" rel="The nodes">
+			<img src="https://github.com/Pagunasa/tfg-gmj/blob/master/wiki_media/Home/images/use_threeDixie.png" alt="Nodes demo" />
 		</a> 
 		<br/> 
-		<a href="https://github.com/Pagunasa/tfg-gmj/wiki/ThreeDixie"> :package: Know more about the nodes :package: </a>
+		<a href="https://github.com/Pagunasa/tfg-gmj/wiki/The-nodes"> :package: Know more about the nodes :package: </a>
 	    </th>
         </tr>
     </tbody>
