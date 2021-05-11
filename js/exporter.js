@@ -388,19 +388,16 @@ var exporter = function()
 		return;
 	}
 
-
-		//To be sure that at least one step of the graph have been
-		$.when(graph.runStep()).then(function(){
-			try 
-			{
-				exportSystems()
-			}
-			catch (error)
-			{
-				export_modal_msg.modal('hide');
-		    	createAlert('Holy Guacamole!','Error exporting!!','Something goes wrong... Please save the file as DX and contact us via Github.','danger',true,false,'pageMessages')
-			}
-		});	
-	
-	
+	//To be sure that at least one step of the graph have been
+	$.when(graph.runStep()).then(function(){
+		try 
+		{
+			exportSystems()
+		}
+		catch (error)
+		{
+			export_modal_msg.modal('hide');
+	    	createAlert('Holy Guacamole!','Error exporting!!','Something goes wrong... Please save the file as DX and contact us via Github.','danger',true,false,'pageMessages')
+		}
+	});	
 }

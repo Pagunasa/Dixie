@@ -40,7 +40,7 @@ function gravityNode() {
 	this.addInput("Particle system", "particle_system");
 	this.addInput("Condition"      , "condition_list");
 	this.addInput("Direction"      , "vec3");
-	this.addInput("Stength"        , "number");
+	this.addInput("Strength"        , "number");
 
 	this.addOutput("Particle system", "particle_system");
 }
