@@ -1371,7 +1371,7 @@ function addVectorWidget(i, panel, node)
 		});
 
 		input.addEventListener("blur", function(){ 
-			node.properties[i][this.jsindex] = this.value;
+			node.properties[i][this.jsindex] = parseFloat(this.value);
 			node.onPropertyChanged(i);
 	        this.value = String(node.properties[i][this.jsindex]);
 		});   
