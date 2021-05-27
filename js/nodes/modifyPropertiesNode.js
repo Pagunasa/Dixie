@@ -339,12 +339,37 @@ modifyPropertyNode.prototype.onPropertyChanged = function(property)
 */
 modifyPropertyNode.prototype.computeChangeEquation = function(lifetime)
 {
-	var value = 0;
+	/*var value = 0;
 	var equation = this.change_equation;
 	var length = equation.length;
 
 	for (var i = 0; i < length; ++i)
 		value += equation[i]*Math.pow(lifetime, length-1-i);
+
+	if(value >= 0.99)
+		value = 1;
+	
+	return value;*/
+
+	var value = 0;
+	var equation = this.change_equation;
+	var length = equation.length;
+    var line, m, b;
+
+	for (var i = 0; i < length; ++i)
+	{
+		line = equation[i];
+
+		if(line[0] <= lifetime)
+        {
+        	m = line[1];
+        	b = line[2];
+        }
+        else
+           break;
+	}
+	
+    value = m*lifetime + b;
 
 	if(value >= 0.99)
 		value = 1;

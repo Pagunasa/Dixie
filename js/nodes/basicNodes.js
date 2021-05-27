@@ -122,7 +122,7 @@ function vector2Node() {
     	y: "The value of the y component"
     }
 
-	this.addInput("X", "number", {color_off: '#993300'});
+	this.addInput("X", "number");
 	this.addInput("Y", "number");
 
 	this.addOutput("Vec2", "vec2");
@@ -1131,7 +1131,7 @@ equationNode.prototype.onDrawBackground = function(ctx)
 */
 equationNode.prototype.generateFunction = function() 
 {
-	var y = [];
+	/*var y = [];
 	var x = [];
 	var coef = [];
 	var local_coef;
@@ -1159,6 +1159,27 @@ equationNode.prototype.generateFunction = function()
 			local_coef += y[j] * x[i][j];
 		}		
 		coef.push(local_coef);
+	}
+
+	this.coef = coef;*/
+
+	var y = [];
+	var x = [];
+	var coef = [];
+	var local_coef;
+	var local_x;
+	var points = this.curve_editor.points;
+	var p1, p2, m, b;
+
+	for(var i = 0; i < points.length -1; ++i)
+	{
+		p1 = points[i];
+		p2 = points[i+1]
+	
+	    m = (p2[1] - p1[1]) / (p2[0] - p1[0]); 
+        b = p1[1] - m * p1[0];
+
+        coef.push([p1[0], m, b]);
 	}
 
 	this.coef = coef;
