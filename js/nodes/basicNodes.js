@@ -529,6 +529,10 @@ textureLoadNode.prototype.changeTexturesY = function(v)
 */
 textureLoadNode.prototype.onDrawBackground = function(ctx)
 {
+	//If the node is colapse don't draw anything
+	if(this.flags.collapsed)
+		return;
+
 	//if the data is not loaded we don't have anithing to show
 	if (!this.data_loaded)
 		return;
@@ -1032,6 +1036,10 @@ meshLoadNode.prototype.onPropertyChanged = function(property)
 */
 meshLoadNode.prototype.onDrawBackground = function(ctx)
 {
+	//If the node is colapse don't draw anything
+	if(this.flags.collapsed)
+		return;
+
 	ctx.fillStyle = "rgb( 255 , 255 , 255)"; 
 	ctx.font = "normal " + LiteGraph.NODE_SUBTEXT_SIZE + "px Arial";
 	
