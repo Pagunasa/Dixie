@@ -122,7 +122,7 @@ function vector2Node() {
     	y: "The value of the y component"
     }
 
-	this.addInput("X", "number");
+	this.addInput("X", "number", {color_off: '#993300'});
 	this.addInput("Y", "number");
 
 	this.addOutput("Vec2", "vec2");
