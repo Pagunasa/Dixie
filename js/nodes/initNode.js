@@ -719,7 +719,11 @@ initParticlesNode.prototype.onConnectionsChange = function(type, slot, connected
 {
 	if(!connected && type == LiteGraph.INPUT && slot == 0)
 	{
-	    console.log("YAHOOO");	
+	    if(this.system_info != undefined)
+			if(this.internal.type != "sub_emitter")
+				resetSystem(this.system_info);
+			else
+				resetSubEmittor(this.system_info);	
 	}
 }
 
@@ -730,8 +734,11 @@ initParticlesNode.prototype.onConnectionsChange = function(type, slot, connected
 */
 initParticlesNode.prototype.onRemoved = function()
 {
-	if(this.system_info != undefined && this.internal.type != "sub_emitter")
-		resetSystem(this.system_info);
+	if(this.system_info != undefined)
+		if(this.internal.type != "sub_emitter")
+			resetSystem(this.system_info);
+		else
+			resetSubEmittor(this.system_info);
 }
 
 initParticlesNode.title = "Initialize Particles";

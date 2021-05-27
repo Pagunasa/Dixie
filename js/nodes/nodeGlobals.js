@@ -1278,20 +1278,29 @@ function resetSystem(system)
 	for (var j = 0; j < subEmittors.length; ++j) 
 	{
 		subEmitter = subEmittors[j];
-		ids = subEmitter.ids;
-
-		for (var k = 0; k < ids.length; ++k) 
-		{
-			particle = particles[ids[k].id];
-			particle.visibility = 0;
-
-			toReset.push(particle.id);
-		}
-
-		subEmitter.to_reset = toReset;
+		resetSubEmittor(subEmitter, toReset);
 	}
 }
 
+/*
+* 	This method is for reset all the particles of a system
+*	@method resetSubEmittor
+*	@params {SystemInfo} the information of the subemiter
+*/
+function resetSubEmittor(subEmitter, toReset = [])
+{
+	ids = subEmitter.ids;
+
+	for (var k = 0; k < ids.length; ++k) 
+	{
+		particle = particles[ids[k].id];
+		particle.visibility = 0;
+
+		toReset.push(particle.id);
+	}
+
+	subEmitter.to_reset = toReset;
+}
 
 function addColorWidget(i, panel, node)
 {
