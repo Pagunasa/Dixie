@@ -723,7 +723,7 @@ initParticlesNode.prototype.onConnectionsChange = function(type, slot, connected
 			if(this.internal.type != "sub_emitter")
 				resetSystem(this.system_info);
 			else
-				resetSubEmittor(this.system_info);	
+				resetSubEmittor(this.sub_emitter, this.system_info.particles_list);	
 	}
 }
 
@@ -738,7 +738,7 @@ initParticlesNode.prototype.onRemoved = function()
 		if(this.internal.type != "sub_emitter")
 			resetSystem(this.system_info);
 		else
-			resetSubEmittor(this.system_info);
+			resetSubEmittor(this.sub_emitter, this.system_info.particles_list);
 }
 
 initParticlesNode.title = "Initialize Particles";

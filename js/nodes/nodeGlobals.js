@@ -1278,7 +1278,7 @@ function resetSystem(system)
 	for (var j = 0; j < subEmittors.length; ++j) 
 	{
 		subEmitter = subEmittors[j];
-		resetSubEmittor(subEmitter, toReset);
+		resetSubEmittor(subEmitter, particles, toReset);
 	}
 }
 
@@ -1287,7 +1287,7 @@ function resetSystem(system)
 *	@method resetSubEmittor
 *	@params {SystemInfo} the information of the subemiter
 */
-function resetSubEmittor(subEmitter, toReset = [])
+function resetSubEmittor(subEmitter, particles, toReset = [])
 {
 	ids = subEmitter.ids;
 
