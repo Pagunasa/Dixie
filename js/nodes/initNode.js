@@ -711,10 +711,22 @@ initParticlesNode.prototype.onExecute = function()
 	}
 }
 
+/*
+*	The beaviour of the node when a connection changes
+*	@method onConnectionsChange
+*/
+initParticlesNode.prototype.onConnectionsChange = function(type, slot, connected)
+{
+	if(!connected && type == LiteGraph.INPUT && slot == 0)
+	{
+	    console.log("YAHOOO");	
+	}
+}
+
 
 /*
 * 	The behaviour of the node when is removed
-*	@method onExecute 
+*	@method onRemoved
 */
 initParticlesNode.prototype.onRemoved = function()
 {
