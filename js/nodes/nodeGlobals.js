@@ -10,6 +10,21 @@ var forcesNodeColor           = "#FF7070";
 var conditionsNodeColor       = "#FFAB5C";
 var modifyPropertiesNodeColor = "#DE85FF";
 var collisionsNodeColor       = "#A3B082";
+//All the colors for the conections
+var connection_colors = {
+	number : {color_off: '#928F94', color_on: '#C6C1C9' },
+	vec2   : {color_off: '#D466D4', color_on: '#CF40CF' },
+	vec3   : {color_off: '#F9B27F', color_on: '#FFA05C' },
+	vec4   : {color_off: '#F28F3B', color_on: '#F07B18' },
+	cond   : {color_off: '#66D46C', color_on: '#2CDB35' },
+	emit   : {color_off: '#667CD4', color_on: '#3B5AD4' },
+	p_sys  : {color_off: '#D4B366', color_on: '#DBA31F' },
+	p_data : {color_off: '#7A3C3C', color_on: '#7A0505' },
+	equat  : {color_off: '#33874A', color_on: '#048527' },
+	color  : {color_off: '#9466D4', color_on: '#7F42D4' },
+	text   : {color_off: '#D46666', color_on: '#D13636' },
+	mesh   : {color_off: '#66D4CF', color_on: '#7AFFF9' }
+}
 
 /********************************/
 /************Vectors*************/
@@ -1380,8 +1395,14 @@ function addVectorWidget(i, panel, node)
 		});
 
 		input.addEventListener("blur", function(){ 
-			node.properties[i][this.jsindex] = parseFloat(this.value);
-			node.onPropertyChanged(i);
+			var v = parseFloat(this.value);
+			
+			if(!Number.isNaN(v))
+			{
+				node.properties[i][this.jsindex] = v;
+				node.onPropertyChanged(i);
+			}
+
 	        this.value = String(node.properties[i][this.jsindex]);
 		});   
 
