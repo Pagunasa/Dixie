@@ -169,12 +169,12 @@ function mySpawnNode() {
 	/**************************************/
 	/***********Inputs & Outputs***********/
 	/**************************************/
-	this.addInput("Max particles", "number");
-	this.addInput("Spawn rate"   , "number");
-	this.addInput("Color"        , "color");
-	this.addInput("Position"     , "vec3");
+	this.addInput("Max particles", "number", connection_colors.number);
+	this.addInput("Spawn rate"   , "number", connection_colors.number);
+	this.addInput("Color"        , "color", connection_colors.color);
+	this.addInput("Position"     , "vec3", connection_colors.vec3);
 
-	this.addOutput("Emitter", "emitter");
+	this.addOutput("Emitter", "emitter",  connection_colors.emit);
 }
 
 mySpawnNode.prototype.onAddPropertyToPanel = function(i, panel)
@@ -192,9 +192,9 @@ mySpawnNode.prototype.onAddPropertyToPanel = function(i, panel)
 *	@method setParticleSpawnMode
 *	@params {String} The new mode of spawning the particles (Linear or Waves)
 */
-mySpawnNode.prototype.setParticleSpawnMode = function(v)
+mySpawnNode.prototype.setParticleSpawnMode = function(v, changed_by_widget = true)
 {
-	if(this.properties.spawn_mode == v)
+	if(this.properties.spawn_mode == v && changed_by_widget)
 		return;
 
 	if(!this.spawnModeValues.includes(v))
@@ -357,10 +357,10 @@ mySpawnNode.prototype.toogleOriginVisibility = function()
 *	@method setBlendFactors
 *	@params {String} The new origin type
 */
-mySpawnNode.prototype.setSpawnOrigin = function(v)
+mySpawnNode.prototype.setSpawnOrigin = function(v, changed_by_widget = true)
 {
 	//if there was no change in the origin then return
-	if (this.properties.origin == v)
+	if (this.properties.origin == v && changed_by_widget)
 		return;
 	
 	if(!this.originValues.includes(v))
@@ -444,7 +444,7 @@ mySpawnNode.prototype.onPropertyChanged = function(property)
 				m = "Point";
 
 			this.mode_widget.value = m;
-			this.setSpawnOrigin(m);	
+			this.setSpawnOrigin(m, false);	
 		break;
 
 		case "color":
@@ -481,7 +481,7 @@ mySpawnNode.prototype.onPropertyChanged = function(property)
 				m = "Linear";
 
 			this.spawnMode_w.value = m;
-			this.setParticleSpawnMode(m);
+			this.setParticleSpawnMode(m, false);
 
 			if(m == "Waves")	
 				this.last_status.particles_per_wave_index = 0;

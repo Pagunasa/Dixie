@@ -158,6 +158,11 @@ modifyPropertyNode.prototype.changeProperty = function(v)
 		this.inputs.splice(3,1);
 		this.internal.last_changed_property = v;
 	} 
+	else if(v == last_prop)
+	{
+		//If is the same return
+		return;
+	}
 	else if(last_prop == "Unknow")
 	{
 		this.internal.last_changed_property = v;
