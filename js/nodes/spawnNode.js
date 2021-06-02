@@ -36,7 +36,7 @@ function getCoords(system, texture, texture_id, frameX = 0, frameY = 0)
 	uvs       = system.uvs[texture_id];
 
 	//If there wasn't subtextures
-	if(sizeX == 0 && sizeY == 0 || !this.subTextures)
+	if(sizeX == 0 && sizeY == 0 || !texture.prop.subtextures)
 	{
 		minuv_x = uvs[0];
 		minuv_y = uvs[1];
@@ -480,7 +480,7 @@ function mySpawnNode() {
 	this.addInput("Particle data", "p_data", connection_colors.p_data)
 	this.addInput("Position"     , "vec3", connection_colors.vec3);
 
-	this.addOutput("Particle system", "particle_system",  connection_colors.emit);
+	this.addOutput("Particle system", "particle_system",  connection_colors.p_sys);
 }
 
 mySpawnNode.prototype.onAddPropertyToPanel = function(i, panel)
@@ -829,12 +829,12 @@ mySpawnNode.prototype.spawn = function(out_data, p_prop)
 	//Spawn in normal mode
 	if (system.spawn_mode == "Linear" && this.internal.init_time_pased >= this.internal.spawn_period)
 		addParticle(p_prop.data, particles_ids, particles, particles_to_reset, system.max_particles, system,
-		"Emitter", this.internal, this.texture, this.texture_id);
+		"emitter", this.internal, this.texture, this.texture_id);
 	//Spawn in waves mode
 	if (system.spawn_mode == "Waves" && this.internal.init_time_pased >= system.spawn_rate)
 		for (var i = 0; i < system.particles_per_wave; ++i)
 			addParticle(p_prop.data, particles_ids, particles, particles_to_reset, system.max_particles, system, 
-				"Emitter", this.internal, this.texture, this.texture_id);	
+				"emitter", this.internal, this.texture, this.texture_id);	
 
 	moveParticles(system, particles_ids, particles, particles_to_reset, this.texture, this.texture_id);
 	out_data.ids = particles_ids;
@@ -882,13 +882,6 @@ mySpawnNode.prototype.initParticles = function(out_data, p_prop)
 
 	this.texture = p_prop.texture;
     this.texture_id = system.texture.id;
-
-	if(this.texture.file != undefined)
-		this.subTextures  = this.texture.prop.subtextures;
-	else if(p_prop.texture.file != undefined)
-		this.subTextures  = p_prop.texture.prop.subtextures;
-	else
-		this.subTextures  = false;
 
 	var origin      = system.origin;
 	var origin_mesh = system.origin_mesh;
@@ -1034,6 +1027,12 @@ function subEmitterNode() {
     	index: -1
     };
 
+	this.internal = {
+		init_time_pased: 0.0,
+		spawn_period: 0.0,
+		last_texture: ""
+	}
+
     this.constructor.desc = "&nbsp;&nbsp;&nbsp;&nbsp; This node allows defining a customizable sub emitter given a system and a condition.\
     The particles will spawn when the condition is meted, by default is when a particle dies.";
 
@@ -1049,13 +1048,14 @@ function subEmitterNode() {
 	/**************************************/
 	/***********Inputs & Outputs***********/
 	/**************************************/
-	this.addInput("Particle system"    , "particle_system");
-	this.addInput("Max particles"      , "number");
-	this.addInput("Particles per wave" , "number");
+	this.addInput("Particle system"    , "particle_system", connection_colors.p_sys);
+	this.addInput("Max particles"      , "number", connection_colors.number);
+	this.addInput("Particles per wave" , "number", connection_colors.number);
 
-	this.addInput("Condition"      , "condition_list");
+	this.addInput("Condition"      , "condition_list", connection_colors.cond);
+	this.addInput("Particle data", "p_data", connection_colors.p_data)
 
-	this.addOutput("Emitter", "emitter");
+	this.addOutput("Particle system", "particle_system",  connection_colors.p_sys);
 }
 
 
@@ -1124,6 +1124,103 @@ subEmitterNode.prototype.onAdded = function()
 }
 
 
+subEmitterNode.prototype.initParticles = function(out_data, p_prop)
+{
+	var system = this.sub_emittor;
+	
+	system.particle_data = p_prop.data;
+
+	if(p_prop.texture == undefined)
+	{
+		system.texture.file = undefined;
+
+		if(this.internal.last_texture != "")
+		{
+			system.texture_change = true;
+			this.internal.last_texture = "";
+		}	
+	}
+	else if (p_prop.texture.file != "" && p_prop.texture.file != undefined)
+	{
+		system.texture.file = p_prop.texture.file;
+		system.texture.prop = p_prop.texture.prop;
+	
+		if(this.internal.last_texture != p_prop.texture.file.data.src)
+		{
+			system.texture_change = true;
+			this.internal.last_texture = p_prop.texture.file.data.src;
+		}	
+	}
+	else
+	{
+		system.texture.file = undefined;
+
+		if(this.internal.last_texture != "")
+		{
+			system.texture_change = true;
+			this.internal.last_texture = "";
+		}
+	}
+
+	this.texture = p_prop.texture;
+    this.texture_id = system.texture.id;
+
+	var origin      = system.origin;
+	var origin_mesh = system.origin_mesh;
+
+	this.internal.init_time_pased += time_interval;
+	//The inverse of the spawn rate is how many ms we have to wait until spawn the next particle
+	this.internal.spawn_period = 1.0 / system.spawn_rate; 
+
+	this.spawn(out_data, p_prop);
+}
+
+
+subEmitterNode.prototype.spawn = function(out_data, p_prop) 
+{
+	var system = this.system_info;
+
+	var particle;
+	var particles             = system.particles_list;
+	var sub_emittor           = this.sub_emittor;
+	var sub_emission_ids      = sub_emittor.ids;
+	var sub_emission_to_reset = sub_emittor.to_reset;
+
+	var condition             = system_input.condition;
+
+	//If there was no condition, then by default the emissions will spawn when the particle dies
+    if(condition == undefined)
+    {
+    	condition = [];
+      	var particles_ids = system.particles_ids;
+		var id, diff;
+		for (var i = 0; i < particles_ids.length; ++i)
+		{
+			id = particles_ids[i].id;
+			particle = particles[id];
+		    diff = particle.lifetime - particle.c_lifetime;
+		    if(diff <= time_interval && particle.visibility != 0)
+		        condition.push({id: id})
+		}
+    }
+
+    //For every particle that meets the condition spawn (if possible) the particles
+	for (var i = 0; i < condition.length; ++i)
+	{
+		particle = particles[condition[i].id];
+		p_prop.data.position = particle.position;
+
+		for (var j = 0; j < sub_emittor.particles_per_wave; ++j)
+			addParticle(p_prop.data, sub_emission_ids, particles, sub_emission_to_reset,
+			system.max_particles * sub_emittor.max_particles, system, "sub_emitter", 
+			this.internal, this.texture, this.texture_id);
+	}
+
+	moveParticles(system, sub_emission_ids, particles, sub_emission_to_reset);
+	sub_emittor.ids = sub_emission_ids;
+}
+
+
 /*
 * 	What the node does every frame
 *	@method onExecute 
@@ -1141,6 +1238,12 @@ subEmitterNode.prototype.onExecute = function()
 		
 	var input_max_particles 	 = Math.max(this.getInputData(1), 0) || this.properties.max_particles;
 	var input_particles_per_wave = Math.max(this.getInputData(2), 0) || this.properties.particles_per_wave;
+
+	//The particle data is retrieved
+	p_prop  = this.getInputData(4) || {
+		data : { max_speed: [1,1,1],min_speed: [-1,-1,-1],  max_size: 0.25,min_size: 0.10, max_life_time: 10,min_life_time: 5, color: [1,1,1,1] },
+		texture : { file: undefined }
+	};
 
 	var input_condition     = this.getInputData(3) || {id: -1, condition: undefined};
 	var system_info         = this.system_info;
