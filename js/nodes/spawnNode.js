@@ -184,7 +184,7 @@ function addParticle(particle_data, ids, particles, particles_to_reset, max_part
 	if( max_particles > ids.length )
 	{
 		
-		time_pased = 0.0;
+		time_pased.init_time_pased = 0.0;
 		
 		particle_info = generateParticleInfo(particle_data, system, texture, texture_id);
 
@@ -199,7 +199,7 @@ function addParticle(particle_data, ids, particles, particles_to_reset, max_part
 	}
 	else if (particles_to_reset.length > 0)
 	{
-		time_pased = 0.0;
+		time_pased.init_time_pased = 0.0;
 		
 		var id = particles_to_reset[0];
 					
@@ -211,7 +211,7 @@ function addParticle(particle_data, ids, particles, particles_to_reset, max_part
 
 		if(id != undefined)
         {
-			particle_info = generateParticleInfo(particle_data, system, texture);
+			particle_info = generateParticleInfo(particle_data, system, texture, texture_id);
 
         	particle = particles[id];
 			particle.fill(particle_info);
@@ -829,12 +829,12 @@ mySpawnNode.prototype.spawn = function(out_data, p_prop)
 	//Spawn in normal mode
 	if (system.spawn_mode == "Linear" && this.internal.init_time_pased >= this.internal.spawn_period)
 		addParticle(p_prop.data, particles_ids, particles, particles_to_reset, system.max_particles, system,
-		"Emitter", this.internal.init_time_pased, this.texture, this.texture_id);
+		"Emitter", this.internal, this.texture, this.texture_id);
 	//Spawn in waves mode
 	if (system.spawn_mode == "Waves" && this.internal.init_time_pased >= system.spawn_rate)
 		for (var i = 0; i < system.particles_per_wave; ++i)
 			addParticle(p_prop.data, particles_ids, particles, particles_to_reset, system.max_particles, system, 
-				"Emitter", this.internal.init_time_pased, this.texture, this.texture_id);	
+				"Emitter", this.internal, this.texture, this.texture_id);	
 
 	moveParticles(system, particles_ids, particles, particles_to_reset, this.texture, this.texture_id);
 	out_data.ids = particles_ids;
