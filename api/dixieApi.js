@@ -434,7 +434,7 @@ class DixieParticle {
 
 					//The distance factor uses a formula which is based on inverse square distance, avoiding singularity at the center
 					distance_factor = 1/(1+(distance[0]*distance[0]+distance[1]*distance[1]+distance[2]*distance[2])/force.scale);
-					distance_factor *= force.strength;
+					distance_factor *= -force.strength;
 
 					for(let j = 0; j < 3; ++j)
 						this.position[j] += distance[j] * distance_factor * dt_;

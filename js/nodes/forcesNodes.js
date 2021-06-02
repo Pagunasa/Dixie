@@ -126,18 +126,6 @@ gravityNode.prototype.onPropertyChanged = function(property)
 			}
 
 			this.normalizeDirection(properties.direction);
-
-			/*if(!vec3.equals(this.last_state.direction, properties.direction))
-			{
-				this.last_state.direction = properties.direction;
-
-				if(!vec3.equals(properties.direction, [0,0,0]))
-					vec3.normalize(this.last_state.direction_normalized, properties.direction);
-				else
-					this.last_state.direction_normalized = [0,0,0];		
-
-			 	force.direction = this.last_state.direction_normalized;
-			}*/
 		break;
 	}
 }
@@ -186,18 +174,6 @@ gravityNode.prototype.onExecute = function()
 		{	
 
 			this.normalizeDirection(properties.direction);
-
-			/*if(!vec3.equals(properties.direction, this.last_state.direction))
-			{
-				this.last_state.direction = properties.direction.slice(0);
-
-				if(!vec3.equals(properties.direction, [0,0,0]))
-					vec3.normalize(this.last_state.direction_normalized, properties.direction);
-				else
-					this.last_state.direction_normalized = [0,0,0];
-
-				this.force.direction = this.last_state.direction_normalized;
-			}*/
 
 			var particle;
 			var direction = this.last_state.direction_normalized.slice(0);
@@ -504,7 +480,7 @@ function magnetNode() {
 
     this.prop_desc = {
     	position: "The origin of the magnet point",            
-        strength: "The strength that will displace the particles. If is positive will repel and negative attract",
+        strength: "The strength that will displace the particles. If is positive will attract and negative repel",
         scale:    "The magnet point area of effect",
         color:    "The color of the magnet point origin"
     }
@@ -680,7 +656,7 @@ magnetNode.prototype.onExecute = function()
 
 				//Then the distance factor is computed
 				distance_factor = 1/(1+(distance[0]*distance[0]+distance[1]*distance[1]+distance[2]*distance[2])/scale);
-				distance_factor *= strength;
+				distance_factor *= -strength;
 
 				for(var j = 0; j < 3; j++)
 					particle.position[j] += (distance[j] * distance_factor * time_interval);
