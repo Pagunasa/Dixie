@@ -71,7 +71,6 @@ gravityNode.prototype.normalizeDirection = function(direction)
 		var newd =  this.last_state.direction_normalized;
 
 	 	this.force.direction = newd;
-	 	this.direction = newd.slice(0);
 	}
 }
 
@@ -122,7 +121,8 @@ gravityNode.prototype.onPropertyChanged = function(property)
 				var dir = properties.direction;
 
 				for(var i = 0; i < 3; ++i)
-					dir[i] = isNaN(dir[i]) ? 0 : dir[i];
+					dir[i] = isNaN(dir[i]) ? 0 : Math.abs(dir[i]);
+					
 			}
 
 			this.normalizeDirection(properties.direction);
