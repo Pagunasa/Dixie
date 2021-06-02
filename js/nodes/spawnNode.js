@@ -206,15 +206,16 @@ mySpawnNode.prototype.setParticleSpawnMode = function(v, changed_by_widget = tru
 		this.inputs.splice(2,1);
 
 		this.last_status.particles_per_wave_index = -1;
-		this.size[1] = 214;
+		this.size[1] = 194;
 	}
 
 	if (v == "Waves")
 	{
-		this.inputs.splice(2, 0, {name: "Particles per wave", type: "number", link: null});
+		this.inputs.splice(2, 0, {name: "Particles per wave", type: "number", link: null, 
+			color_off: connection_colors.number.color_off, color_on: connection_colors.number.color_on});
 
 		this.last_status.particles_per_wave_index = 0;
-		this.size[1] = 234;
+		this.size[1] = 214;
 	}
 		
 	this.properties.spawn_mode = v;
@@ -374,9 +375,9 @@ mySpawnNode.prototype.setSpawnOrigin = function(v, changed_by_widget = true)
 	this.inputs.splice(index,1);
 
 	if (v == "Point")
-		this.addInput("Position", "vec3"); //if the mode is point the new input must be a vector 3
+		this.addInput("Position", "vec3", connection_colors.vec3); //if the mode is point the new input must be a vector 3
 	else if (v == "Mesh")
-		this.addInput("Mesh", "mesh"); //if the mode is mesh the new input must be a mesh
+		this.addInput("Mesh", "mesh", connection_colors.mesh); //if the mode is mesh the new input must be a mesh
 	
 	this.size[0] = 389;
 }

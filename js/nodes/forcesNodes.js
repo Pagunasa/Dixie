@@ -17,13 +17,13 @@ function gravityNode() {
 	/***********Node properties************/
 	/**************************************/
 	this.properties = {
-		direction: Float32Array.from([0,-1,0]),
+		direction: Float32Array.from([0,1,0]),
 		strength: 1
 	};
 
 	this.last_state = {
-		direction: [0,-1,0],
-		direction_normalized: [0,-1,0]
+		direction: [0,1,0],
+		direction_normalized: [0,1,0]
 	}
 
     this.constructor.desc = "&nbsp;&nbsp;&nbsp;&nbsp; This node creates a global force that affects all the particles of a given system.\
@@ -52,6 +52,28 @@ gravityNode.prototype.onAddPropertyToPanel = function(i, panel)
 	else 
 		return false;
 } 
+
+/*
+* 	Normalize the direction of the gravity
+*	@method onAdded
+*/
+gravityNode.prototype.normalizeDirection = function(direction)
+{
+	if(!vec3.equals(this.last_state.direction, direction))
+	{
+		this.last_state.direction = direction.slice(0);
+
+		if(!vec3.equals(direction, [0,0,0]))
+			vec3.normalize(this.last_state.direction_normalized, direction);
+		else
+			this.last_state.direction_normalized = [0,0,0];		
+
+		var newd =  this.last_state.direction_normalized;
+
+	 	this.force.direction = newd;
+	 	this.direction = newd.slice(0);
+	}
+}
 
 /*
 * 	The behaviour done when the node is added
@@ -103,7 +125,9 @@ gravityNode.prototype.onPropertyChanged = function(property)
 					dir[i] = isNaN(dir[i]) ? 0 : dir[i];
 			}
 
-			if(!vec3.equals(this.last_state.direction, properties.direction))
+			normalizeDirection(properties.direction);
+
+			/*if(!vec3.equals(this.last_state.direction, properties.direction))
 			{
 				this.last_state.direction = properties.direction;
 
@@ -113,7 +137,7 @@ gravityNode.prototype.onPropertyChanged = function(property)
 					this.last_state.direction_normalized = [0,0,0];		
 
 			 	force.direction = this.last_state.direction_normalized;
-			}
+			}*/
 		break;
 	}
 }
@@ -160,7 +184,10 @@ gravityNode.prototype.onExecute = function()
 
 		if(ids.length > 0)
 		{	
-			if(!vec3.equals(properties.direction, this.last_state.direction))
+
+			normalizeDirection(properties.direction);
+
+			/*if(!vec3.equals(properties.direction, this.last_state.direction))
 			{
 				this.last_state.direction = properties.direction.slice(0);
 
@@ -170,7 +197,7 @@ gravityNode.prototype.onExecute = function()
 					this.last_state.direction_normalized = [0,0,0];
 
 				this.force.direction = this.last_state.direction_normalized;
-			}
+			}*/
 
 			var particle;
 			var direction = this.last_state.direction_normalized.slice(0);
