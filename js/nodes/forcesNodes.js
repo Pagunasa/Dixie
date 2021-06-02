@@ -125,7 +125,7 @@ gravityNode.prototype.onPropertyChanged = function(property)
 					dir[i] = isNaN(dir[i]) ? 0 : dir[i];
 			}
 
-			normalizeDirection(properties.direction);
+			this.normalizeDirection(properties.direction);
 
 			/*if(!vec3.equals(this.last_state.direction, properties.direction))
 			{
@@ -185,7 +185,7 @@ gravityNode.prototype.onExecute = function()
 		if(ids.length > 0)
 		{	
 
-			normalizeDirection(properties.direction);
+			this.normalizeDirection(properties.direction);
 
 			/*if(!vec3.equals(properties.direction, this.last_state.direction))
 			{
