@@ -1165,9 +1165,6 @@ subEmitterNode.prototype.initParticles = function(out_data, p_prop)
 	this.texture = p_prop.texture;
     this.texture_id = system.texture.id;
 
-	var origin      = system.origin;
-	var origin_mesh = system.origin_mesh;
-
 	this.internal.init_time_pased += time_interval;
 	//The inverse of the spawn rate is how many ms we have to wait until spawn the next particle
 	this.internal.spawn_period = 1.0 / system.spawn_rate; 
@@ -1294,6 +1291,8 @@ subEmitterNode.prototype.onExecute = function()
 		type                : "sub_emitter",
 		condition           : input_condition.condition
 	}
+
+	this.initParticles(out_data, p_prop);
 
 	this.setOutputData(0, out_data);
 }
