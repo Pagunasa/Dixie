@@ -476,11 +476,11 @@ function mySpawnNode() {
 	/**************************************/
 	this.addInput("Max particles", "number", connection_colors.number);
 	this.addInput("Spawn rate"   , "number", connection_colors.number);
-	this.addInput("Color"        , "color", connection_colors.color);
+	this.addInput("Emitter color", "color", connection_colors.color);
 	this.addInput("Particle data", "p_data", connection_colors.p_data)
 	this.addInput("Position"     , "vec3", connection_colors.vec3);
 
-	this.addOutput("Emitter", "emitter",  connection_colors.emit);
+	this.addOutput("Particle system", "particle_system",  connection_colors.emit);
 }
 
 mySpawnNode.prototype.onAddPropertyToPanel = function(i, panel)
@@ -512,7 +512,7 @@ mySpawnNode.prototype.setParticleSpawnMode = function(v, changed_by_widget = tru
 		this.inputs.splice(2,1);
 
 		this.last_status.particles_per_wave_index = -1;
-		this.size[1] = 194;
+		this.size[1] = 234;
 	}
 
 	if (v == "Waves")
@@ -521,7 +521,7 @@ mySpawnNode.prototype.setParticleSpawnMode = function(v, changed_by_widget = tru
 			color_off: connection_colors.number.color_off, color_on: connection_colors.number.color_on});
 
 		this.last_status.particles_per_wave_index = 0;
-		this.size[1] = 214;
+		this.size[1] = 254;
 	}
 		
 	this.properties.spawn_mode = v;
