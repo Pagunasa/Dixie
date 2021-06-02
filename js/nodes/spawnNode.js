@@ -4,12 +4,12 @@
 *   @params {Number} The particle frame in the X of the atlas
 *   @params {Number} The particle frame in the Y of the atlas
 */
-function getCoords(frameX = 0, frameY = 0)
+function getCoords(system, texture, texture_id, frameX = 0, frameY = 0)
 {
-	var system = this.system;
+	var system = system;
+	var texture    = texture;
+	var texture_id = texture_id;
 
-	var texture    = this.texture;
-	var texture_id = this.texture_id;
 	var atlas      = system.atlas;
  	var uvs, minuv_x, minuv_y, maxuv_x, maxuv_y;
     var minX, minY, maxX, maxY;
@@ -141,7 +141,7 @@ function generateRandomPoint(system)
 *   @params {Object} The properties of the particle
 *   @params {Object} The system of the particle
 */
-function generateParticleInfo(properties, system)
+function generateParticleInfo(properties, system, texture, texture_id)
 {
 	var max_life_time = Math.max(properties.min_life_time, properties.max_life_time);
 	var min_life_time = Math.min(properties.min_life_time, properties.max_life_time);
@@ -154,13 +154,13 @@ function generateParticleInfo(properties, system)
 				max_speed     : properties.max_speed,
 				min_life_time : min_life_time,
 				max_life_time : max_life_time,
-				position      : properties.position || generateRandomPoint(system).bind(this),
+				position      : properties.position || generateRandomPoint(system),
 				color         : properties.color,
 				min_size      : min_size,
 				max_size      : max_size,
 				origin_id     : properties.origin_id,
-				texture       : this.texture,
-				coords        : getCoords(0, this.texture != undefined ? (this.texture.prop != undefined ? this.texture.prop.textures_y-1 : 0) : 0).bind(this)
+				texture       : texture,
+				coords        : getCoords(system, texture, texture_id, 0, texture != undefined ? (texture.prop != undefined ? texture.prop.textures_y-1 : 0) : 0)
 			};
 }
 
@@ -177,16 +177,16 @@ function generateParticleInfo(properties, system)
 *   @params {Object} The system of the particle
 *   @params {String} The type of the particle "emitter" or "subemitter"
 */
-function addParticle(particle_data, ids, particles, particles_to_reset, max_particles, system, type)
+function addParticle(particle_data, ids, particles, particles_to_reset, max_particles, system, time_pased, texture, texture_id)
 {
 	var particle_info;
 
 	if( max_particles > ids.length )
 	{
 		
-		this.internal.init_time_pased = 0.0;
+		time_pased = 0.0;
 		
-		particle_info = generateParticleInfo(particle_data, system).bind(this);
+		particle_info = generateParticleInfo(particle_data, system, texture, texture_id);
 
 		particle = new Particle();
 		particle.fill(particle_info);
@@ -199,7 +199,7 @@ function addParticle(particle_data, ids, particles, particles_to_reset, max_part
 	}
 	else if (particles_to_reset.length > 0)
 	{
-		this.internal.init_time_pased = 0.0;
+		time_pased = 0.0;
 		
 		var id = particles_to_reset[0];
 					
@@ -211,7 +211,7 @@ function addParticle(particle_data, ids, particles, particles_to_reset, max_part
 
 		if(id != undefined)
         {
-			particle_info = generateParticleInfo(particle_data, system).bind(this);
+			particle_info = generateParticleInfo(particle_data, system, texture);
 
         	particle = particles[id];
 			particle.fill(particle_info);
@@ -230,7 +230,7 @@ function addParticle(particle_data, ids, particles, particles_to_reset, max_part
 *   @params {List}   The list of the particles
 *   @params {List}   The particles to be reseted
 */
-function moveParticles(system, ids, particles, to_reset)
+function moveParticles(system, ids, particles, to_reset, texture, texture_id)
 {
 	var id, particle;
 
@@ -245,7 +245,7 @@ function moveParticles(system, ids, particles, to_reset)
 
 		particle.c_lifetime += time_interval;
 		particle.c_frame += time_interval;
-		getNextFrame(particle).bind(this);
+		getNextFrame(particle, system, texture, texture_id);
 
 		if(particle.c_lifetime >= particle.lifetime && particle.visibility == 1)
 		{
@@ -270,7 +270,7 @@ function moveParticles(system, ids, particles, to_reset)
 *	@method getNextFrame
 *   @params {Object} The particle
 */
-function getNextFrame(particle)
+function getNextFrame(particle, system, texture, texture_id)
 {
 	var texture = this.texture;
 
@@ -295,7 +295,7 @@ function getNextFrame(particle)
 			particle.frameY = sizeY-1;
 	} 
 
-	particle.coords = getCoords(particle.frameX, particle.frameY).bind(this);
+	particle.coords = getCoords(system, texture, texture_id, particle.frameX, particle.frameY);
 }
 
 /*
@@ -829,13 +829,15 @@ mySpawnNode.prototype.spawn = function(out_data, p_prop)
 
 	//Spawn in normal mode
 	if (system.spawn_mode == "Linear" && this.internal.init_time_pased >= this.internal.spawn_period)
-		addParticle(p_prop.data, particles_ids, particles, particles_to_reset, system.max_particles, system, "emitter").bind(this);
+		addParticle(p_prop.data, particles_ids, particles, particles_to_reset, system.max_particles, system,
+			this.internal.init_time_pased, this.texture, this.texture_id);
 	//Spawn in waves mode
 	if (system.spawn_mode == "Waves" && this.internal.init_time_pased >= system.spawn_rate)
 		for (var i = 0; i < system.particles_per_wave; ++i)
-			addParticle(p_prop.data, particles_ids, particles, particles_to_reset, system.max_particles, system, "emitter").bind(this);	
+			addParticle(p_prop.data, particles_ids, particles, particles_to_reset, system.max_particles, system, 
+				this.internal.init_time_pased, this.texture, this.texture_id);	
 
-	moveParticles(system, particles_ids, particles, particles_to_reset).bind(this);
+	moveParticles(system, particles_ids, particles, particles_to_reset, this.texture, this.texture_id);
 	out_data.ids = particles_ids;
 	return;
 }
