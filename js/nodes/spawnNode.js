@@ -1,4 +1,304 @@
 /*
+*	Get the texture coordinates of the particle
+*	@method getCoords
+*   @params {Number} The particle frame in the X of the atlas
+*   @params {Number} The particle frame in the Y of the atlas
+*/
+function getCoords(frameX = 0, frameY = 0)
+{
+	var system = this.system;
+
+	var texture    = this.texture;
+	var texture_id = this.texture_id;
+	var atlas      = system.atlas;
+ 	var uvs, minuv_x, minuv_y, maxuv_x, maxuv_y;
+    var minX, minY, maxX, maxY;
+
+    //If there wasn't an atlas, the coordinates are the default ones
+	if(atlas == undefined)
+		return default_coords;
+
+	//If is undefined the id will always be 0, a white texture with Alpha 1
+	if(texture.file == undefined)
+	{
+		uvs = system.uvs[0];
+		minuv_x = uvs[0];
+		minuv_y = uvs[1];
+		maxuv_x = uvs[2];
+		maxuv_y = uvs[3];
+
+		return[maxuv_x,maxuv_y, minuv_x,maxuv_y, maxuv_x,minuv_y, minuv_x,minuv_y, maxuv_x,minuv_y, minuv_x,maxuv_y]; 
+	}
+
+	//Get the number of subtextures of the texture
+	var sizeX = texture.prop.textures_x;
+	var sizeY = texture.prop.textures_y; 
+	uvs       = system.uvs[texture_id];
+
+	//If there wasn't subtextures
+	if(sizeX == 0 && sizeY == 0 || !this.subTextures)
+	{
+		minuv_x = uvs[0];
+		minuv_y = uvs[1];
+		maxuv_x = uvs[2];
+		maxuv_y = uvs[3];
+
+		return[maxuv_x,maxuv_y, minuv_x,maxuv_y, maxuv_x,minuv_y, minuv_x,minuv_y, maxuv_x,minuv_y, minuv_x,maxuv_y]; 
+	}
+
+	//If the texture is animated then get the corresponding frame
+	if(texture.prop.animated)
+	{
+		var iSx = 1/sizeX;
+		var iSy = 1/sizeY;
+  
+		minX = sizeX != 1 ? frameX * iSx : 0; 
+		minY = sizeY != 1 ? frameY * iSy : 0; 
+
+		maxX = sizeX != 1 ? (frameX+1) * iSx : 1; 
+		maxY = sizeY != 1 ? (frameY+1) * iSy : 1; 
+
+		//Interpolation (in order to get the correct frame)
+		minX = lerp(uvs[0], uvs[2], minX);
+		minY = lerp(uvs[1], uvs[3], minY);
+		maxX = lerp(uvs[0], uvs[2], maxX);
+		maxY = lerp(uvs[1], uvs[3], maxY);
+
+		return [maxX,maxY, minX,maxY, maxX,minY, minX,minY, maxX,minY, minX,maxY];
+	}
+
+	//Get the Uvs in the case that the texture isn't animated and have subtextures
+	minX = sizeX != 1 ? Math.floor(Math.random() * sizeX)/sizeX : 0;
+	minY = sizeY != 1 ? Math.floor(Math.random() * sizeY)/sizeY : 0;
+
+	maxX = sizeX != 1 ? minX + (1/sizeX) : 1; 
+	maxY = sizeY != 1 ? minY + (1/sizeY) : 1; 
+
+	//Interpolation (in order to get the correct frame)
+	minX = lerp(uvs[0], uvs[2], minX);
+	minY = lerp(uvs[1], uvs[3], minY);
+	maxX = lerp(uvs[0], uvs[2], maxX);
+	maxY = lerp(uvs[1], uvs[3], maxY);
+
+	return [maxX,maxY, minX,maxY, maxX,minY, minX,minY, maxX,minY, minX,maxY];
+}
+
+/*
+*	Retuns a the origin of the particle, if is a mesh will return a random point
+*   of the surface and if not will return the origin point defined by the user
+*	@method generateRandomPoint
+*   @params {Object} The system of the particle
+*/
+function generateRandomPoint(system)
+{
+	var origin      = system.origin;
+	var position    = system.position;
+	var origin_mesh = system.origin_mesh;
+
+	if(origin == "Point" || origin_mesh == undefined || origin_mesh.vertices == undefined)
+		return position;
+
+	var triangle_num = origin_mesh.triangle_num;
+
+	//I generate a random ambdas
+	var ambda1 = Math.random();
+	var ambda2 = Math.random();
+	var ambda3;
+
+	if(ambda1 + ambda2 > 1)
+	{
+		ambda1 = 1 - ambda1;
+		ambda2 = 1 - ambda2;
+	}
+
+	ambda3 = 1 - ambda1 - ambda2;
+
+	//Then I pick a random triangle and his asigned points
+	var div_value = origin_mesh.name != "plane" ? 9 : 6;
+	var triangle = Math.floor(Math.random()*triangle_num) * div_value;
+	var points;
+
+	if(div_value == 9)
+		points = origin_mesh.vertices.slice(triangle, triangle + div_value);
+	else
+		points = origin_mesh.vertices.slice(triangle == 0 ? 0 : 3, triangle == 0 ? 9 : 12);
+
+	var random_point = [0,0,0];
+
+	//Apply the barycenter coordinate formula to get the point
+	for (var i = 0; i < 3; ++i)
+		random_point[i] = points[i] * ambda1 + points[i+3] * ambda2 + points[i+6] * ambda3;
+
+	//And finaly I multiply the new point by the mesh model 
+	mat4.multiplyVec3(random_point, system.external_model, random_point)
+
+	return random_point;
+}
+
+/*
+*	Creation of an object with all the properties of a particle for the fill method 
+*	@method generateParticleInfo
+*   @params {Object} The properties of the particle
+*   @params {Object} The system of the particle
+*/
+function generateParticleInfo(properties, system)
+{
+	var max_life_time = Math.max(properties.min_life_time, properties.max_life_time);
+	var min_life_time = Math.min(properties.min_life_time, properties.max_life_time);
+
+	var max_size = Math.abs(Math.max(properties.max_size, properties.min_size));
+	var min_size = Math.abs(Math.min(properties.max_size, properties.min_size));
+
+	return {
+				min_speed     : properties.min_speed,
+				max_speed     : properties.max_speed,
+				min_life_time : min_life_time,
+				max_life_time : max_life_time,
+				position      : properties.position || generateRandomPoint(system).bind(this),
+				color         : properties.color,
+				min_size      : min_size,
+				max_size      : max_size,
+				origin_id     : properties.origin_id,
+				texture       : this.texture,
+				coords        : getCoords(0, this.texture != undefined ? (this.texture.prop != undefined ? this.texture.prop.textures_y-1 : 0) : 0).bind(this)
+			};
+}
+
+/*
+*	Add new particles to the system, first will add particles until the maximum number 
+*   is archieved and then start to reuse the dead particles Return -1 if the particle 
+*   is added and his id is reused
+*	@method addParticle
+*   @params {Object} The properties of the particle
+*   @params {List}   The ids of the particles
+*   @params {List}   The list of the particles
+*   @params {List}   The ids of the particles
+*   @params {Number} The maximum number of particles
+*   @params {Object} The system of the particle
+*   @params {String} The type of the particle "emitter" or "subemitter"
+*/
+function addParticle(particle_data, ids, particles, particles_to_reset, max_particles, system, type)
+{
+	var particle_info;
+
+	if( max_particles > ids.length )
+	{
+		
+		this.internal.init_time_pased = 0.0;
+		
+		particle_info = generateParticleInfo(particle_data, system).bind(this);
+
+		particle = new Particle();
+		particle.fill(particle_info);
+		particle.id   = particles.length;
+		particle.type = type;
+		ids.push({id : particles.length, distance_to_camera : 0.0});
+		particles.push(particle);
+
+		return -1;
+	}
+	else if (particles_to_reset.length > 0)
+	{
+		this.internal.init_time_pased = 0.0;
+		
+		var id = particles_to_reset[0];
+					
+		while(particles_to_reset[0] > particles.length - 1)
+		{
+			particles_to_reset.splice(0,1);
+			id = particles_to_reset[0];
+		}
+
+		if(id != undefined)
+        {
+			particle_info = generateParticleInfo(particle_data, system).bind(this);
+
+        	particle = particles[id];
+			particle.fill(particle_info);
+			particles_to_reset.splice(0,1);
+
+			return id;
+		}
+	}
+}
+
+/*
+*	Apply a default movement for all the particles
+*	@method moveParticles
+*   @params {Object} The particle system
+*   @params {List}   The ids of the particles
+*   @params {List}   The list of the particles
+*   @params {List}   The particles to be reseted
+*/
+function moveParticles(system, ids, particles, to_reset)
+{
+	var id, particle;
+
+	//Default movement of the particles
+	for (var i = 0; i < ids.length; i++)
+	{
+		id       = ids[i].id;
+		particle = particles[id];
+
+		if(particle.visibility == 0)
+			continue;
+
+		particle.c_lifetime += time_interval;
+		particle.c_frame += time_interval;
+		getNextFrame(particle).bind(this);
+
+		if(particle.c_lifetime >= particle.lifetime && particle.visibility == 1)
+		{
+			particle.visibility = 0;
+			to_reset.push(id);
+		}
+		else
+		{
+			particle.aSpeed = [0,0,0];
+
+			for(var j = 0; j < 3; j++)
+			{
+				particle.position[j] += particle.speed[j] * time_interval;
+				particle.aSpeed[j]   += particle.speed[j];
+			}
+		}
+	}
+}
+
+/*
+*	In the case that the particle is animated, this method allows to get the next frame
+*	@method getNextFrame
+*   @params {Object} The particle
+*/
+function getNextFrame(particle)
+{
+	var texture = this.texture;
+
+	if(texture.file == undefined)
+		return;
+
+	if(!texture.prop.animated || particle.c_frame < particle.frameRate)
+		return;
+
+	var sizeX = texture.prop.textures_x;
+	var sizeY = texture.prop.textures_y; 
+
+ 	particle.c_frame = 0;
+	particle.frameX++;
+
+	if(particle.frameX == sizeX)
+	{
+		particle.frameY--;
+		particle.frameX = 0;
+
+		if(particle.frameY < 0)
+			particle.frameY = sizeY-1;
+	} 
+
+	particle.coords = getCoords(particle.frameX, particle.frameY).bind(this);
+}
+
+/*
 * 	Resize the mesh
 *	@method resizeMesh
 *	@params {Object} The system we want to edit
@@ -128,6 +428,12 @@ function mySpawnNode() {
         spawn_mode: "Linear",
     };
    
+	this.internal = {
+		init_time_pased: 0.0,
+		spawn_period: 0.0,
+		last_texture: ""
+	}
+
     this.constructor.desc = "&nbsp;&nbsp;&nbsp;&nbsp; This node allows defining some default values for the particle system.";
 
     this.prop_desc = {
@@ -173,6 +479,7 @@ function mySpawnNode() {
 	this.addInput("Spawn rate"   , "number", connection_colors.number);
 	this.addInput("Color"        , "color", connection_colors.color);
 	this.addInput("Position"     , "vec3", connection_colors.vec3);
+	this.addInput("Particle data", "p_data", connection_colors.p_data)
 
 	this.addOutput("Emitter", "emitter",  connection_colors.emit);
 }
@@ -510,6 +817,93 @@ mySpawnNode.prototype.onAdded = function()
 }
 
 
+mySpawnNode.prototype.spawn = function(out_data, p_prop) 
+{
+	var system = this.system;
+
+	var particle;
+	var particles             = system.particles_list;
+	var particles_ids         = system.particles_ids;
+	var particles_to_reset    = system.particles_to_reset;
+	var sub_emission_to_reset = system.sub_emission_to_reset;
+
+	//Spawn in normal mode
+	if (system.spawn_mode == "Linear" && this.internal.init_time_pased >= this.internal.spawn_period)
+		addParticle(p_prop.data, particles_ids, particles, particles_to_reset, system.max_particles, system, "emitter").bind(this);
+	//Spawn in waves mode
+	if (system.spawn_mode == "Waves" && this.internal.init_time_pased >= system.spawn_rate)
+		for (var i = 0; i < system.particles_per_wave; ++i)
+			addParticle(p_prop.data, particles_ids, particles, particles_to_reset, system.max_particles, system, "emitter").bind(this);	
+
+	moveParticles(system, particles_ids, particles, particles_to_reset).bind(this);
+	out_data.ids = particles_ids;
+	return;
+}
+
+
+mySpawnNode.prototype.initParticles = function(p_prop)
+{
+	var system = this.system;
+	
+	system.particle_data = p_prop.data;
+
+	if(p_prop.texture == undefined)
+	{
+		system.texture.file = undefined;
+
+		if(this.internal.last_texture != "")
+		{
+			system.texture_change = true;
+			this.internal.last_texture = "";
+		}	
+	}
+	else if (p_prop.texture.file != "" && p_prop.texture.file != undefined)
+	{
+		system.texture.file = p_prop.texture.file;
+		system.texture.prop = p_prop.texture.prop;
+	
+		if(this.internal.last_texture != p_prop.texture.file.data.src)
+		{
+			system.texture_change = true;
+			this.internal.last_texture = p_prop.texture.file.data.src;
+		}	
+	}
+	else
+	{
+		system.texture.file = undefined;
+
+		if(this.internal.last_texture != "")
+		{
+			system.texture_change = true;
+			this.internal.last_texture = "";
+		}
+	}
+
+	this.texture = p_prop.texture;
+    this.texture_id = system.texture.id;
+
+	if(this.texture.file != undefined)
+		this.subTextures  = this.texture.prop.subtextures;
+	else if(p_prop.texture.file != undefined)
+		this.subTextures  = p_prop.texture.prop.subtextures;
+	else
+		this.subTextures  = false;
+
+	var origin      = system.origin;
+	var origin_mesh = system.origin_mesh;
+
+	if (origin == "Point"	|| origin_mesh == undefined ? true : origin_mesh.vertices == undefined)
+		system.external_model = undefined;		
+	else 
+		system.external_model = origin_mesh.model;
+	
+	this.internal.init_time_pased += time_interval;
+	//The inverse of the spawn rate is how many ms we have to wait until spawn the next particle
+	this.internal.spawn_period = 1.0 / system.spawn_rate; 
+
+	this.spawn(out_data, p_data);
+}
+
 /*
 * 	What the node does every frame
 *	@method onExecute 
@@ -530,17 +924,30 @@ mySpawnNode.prototype.onExecute = function()
 	var input_max_particles   = this.getInputData(0);
 	var input_spawn_rate      = this.getInputData(1);
 	var input_color, input_origin, input_per_wave;
+	var p_prop;
 	
 	if (this.last_status.particles_per_wave_index != -1)
 	{
 		input_per_wave        = this.getInputData(2);
 		input_color           = this.getInputData(3);
 		input_origin          = this.getInputData(4);
+
+		//The particle data is retrieved
+		p_prop  = this.getInputData(5) || {
+			data : { max_speed: [1,1,1],min_speed: [-1,-1,-1],  max_size: 0.25,min_size: 0.10, max_life_time: 10,min_life_time: 5, color: [1,1,1,1] },
+			texture : { file: undefined }
+		};
 	}
 	else
 	{
 		input_color           = this.getInputData(2);
 		input_origin          = this.getInputData(3);
+
+		//The particle data is retrieved
+		p_prop  = this.getInputData(4) || {
+			data : { max_speed: [1,1,1],min_speed: [-1,-1,-1],  max_size: 0.25,min_size: 0.10, max_life_time: 10,min_life_time: 5, color: [1,1,1,1] },
+			texture : { file: undefined }
+		};
 	}
 
 	//and if they are undefined a default value is setted
@@ -580,6 +987,11 @@ mySpawnNode.prototype.onExecute = function()
 		data : this.system,
 		type : "emitter"
 	}
+
+	//Then starts the default logic for the particles
+	//First to all, they are spawned
+
+
 
 	this.setOutputData(0, out_data);
 }

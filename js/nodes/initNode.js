@@ -700,7 +700,7 @@ initParticlesNode.prototype.onExecute = function()
 		//The inverse of the spawn rate is how many ms we have to wait until spawn the next particle
 		this.internal.spawn_period = 1.0 / system.spawn_rate; 
 
-		//If it was an emitter then the particles have to spawn normaly 
+		//If it was an emitter then the particles have to spawn normally 
 		if( system_input.type == "emitter" )
 			this.spawnEmitter(system, system_input, p_prop);
 		else if ( system_input.type == "sub_emitter")
