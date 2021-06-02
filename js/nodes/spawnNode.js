@@ -843,7 +843,7 @@ mySpawnNode.prototype.spawn = function(out_data, p_prop)
 }
 
 
-mySpawnNode.prototype.initParticles = function(p_prop)
+mySpawnNode.prototype.initParticles = function(out_data, p_prop)
 {
 	var system = this.system;
 	
@@ -992,7 +992,7 @@ mySpawnNode.prototype.onExecute = function()
 
 	//Then starts the default logic for the particles
 	//First to all, they are spawned
-
+	initParticles(out_data, p_prop);
 
 
 	this.setOutputData(0, out_data);
