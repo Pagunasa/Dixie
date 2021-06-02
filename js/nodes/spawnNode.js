@@ -177,7 +177,7 @@ function generateParticleInfo(properties, system, texture, texture_id)
 *   @params {Object} The system of the particle
 *   @params {String} The type of the particle "emitter" or "subemitter"
 */
-function addParticle(particle_data, ids, particles, particles_to_reset, max_particles, system, time_pased, texture, texture_id)
+function addParticle(particle_data, ids, particles, particles_to_reset, max_particles, system, type, time_pased, texture, texture_id)
 {
 	var particle_info;
 
@@ -272,7 +272,6 @@ function moveParticles(system, ids, particles, to_reset, texture, texture_id)
 */
 function getNextFrame(particle, system, texture, texture_id)
 {
-	var texture = this.texture;
 
 	if(texture.file == undefined)
 		return;
@@ -478,8 +477,8 @@ function mySpawnNode() {
 	this.addInput("Max particles", "number", connection_colors.number);
 	this.addInput("Spawn rate"   , "number", connection_colors.number);
 	this.addInput("Color"        , "color", connection_colors.color);
-	this.addInput("Position"     , "vec3", connection_colors.vec3);
 	this.addInput("Particle data", "p_data", connection_colors.p_data)
+	this.addInput("Position"     , "vec3", connection_colors.vec3);
 
 	this.addOutput("Emitter", "emitter",  connection_colors.emit);
 }
@@ -830,12 +829,12 @@ mySpawnNode.prototype.spawn = function(out_data, p_prop)
 	//Spawn in normal mode
 	if (system.spawn_mode == "Linear" && this.internal.init_time_pased >= this.internal.spawn_period)
 		addParticle(p_prop.data, particles_ids, particles, particles_to_reset, system.max_particles, system,
-			this.internal.init_time_pased, this.texture, this.texture_id);
+		"Emitter", this.internal.init_time_pased, this.texture, this.texture_id);
 	//Spawn in waves mode
 	if (system.spawn_mode == "Waves" && this.internal.init_time_pased >= system.spawn_rate)
 		for (var i = 0; i < system.particles_per_wave; ++i)
 			addParticle(p_prop.data, particles_ids, particles, particles_to_reset, system.max_particles, system, 
-				this.internal.init_time_pased, this.texture, this.texture_id);	
+				"Emitter", this.internal.init_time_pased, this.texture, this.texture_id);	
 
 	moveParticles(system, particles_ids, particles, particles_to_reset, this.texture, this.texture_id);
 	out_data.ids = particles_ids;
@@ -903,7 +902,7 @@ mySpawnNode.prototype.initParticles = function(out_data, p_prop)
 	//The inverse of the spawn rate is how many ms we have to wait until spawn the next particle
 	this.internal.spawn_period = 1.0 / system.spawn_rate; 
 
-	this.spawn(out_data, p_data);
+	this.spawn(out_data, p_prop);
 }
 
 /*
@@ -932,10 +931,10 @@ mySpawnNode.prototype.onExecute = function()
 	{
 		input_per_wave        = this.getInputData(2);
 		input_color           = this.getInputData(3);
-		input_origin          = this.getInputData(4);
+		input_origin          = this.getInputData(5);
 
 		//The particle data is retrieved
-		p_prop  = this.getInputData(5) || {
+		p_prop  = this.getInputData(4) || {
 			data : { max_speed: [1,1,1],min_speed: [-1,-1,-1],  max_size: 0.25,min_size: 0.10, max_life_time: 10,min_life_time: 5, color: [1,1,1,1] },
 			texture : { file: undefined }
 		};
@@ -943,10 +942,10 @@ mySpawnNode.prototype.onExecute = function()
 	else
 	{
 		input_color           = this.getInputData(2);
-		input_origin          = this.getInputData(3);
+		input_origin          = this.getInputData(4);
 
 		//The particle data is retrieved
-		p_prop  = this.getInputData(4) || {
+		p_prop  = this.getInputData(3) || {
 			data : { max_speed: [1,1,1],min_speed: [-1,-1,-1],  max_size: 0.25,min_size: 0.10, max_life_time: 10,min_life_time: 5, color: [1,1,1,1] },
 			texture : { file: undefined }
 		};
@@ -992,7 +991,7 @@ mySpawnNode.prototype.onExecute = function()
 
 	//Then starts the default logic for the particles
 	//First to all, they are spawned
-	initParticles(out_data, p_prop);
+	this.initParticles(out_data, p_prop);
 
 
 	this.setOutputData(0, out_data);
