@@ -653,9 +653,6 @@ textureLoadNode.prototype.onPropertyChanged = function(property)
 			{
 				this.animlW = this.addWidget("toggle", "Animation loop", properties.anim_loop, this.changeAnimLoop.bind(this));
 				this.size[0] = 260;
-
-				//if(this.data_loaded)
-				//    this.size[1] += 112;
 			}
 			
 			this.changeAnimLoop(properties.anim_loop, true);
@@ -674,9 +671,6 @@ textureLoadNode.prototype.onPropertyChanged = function(property)
 			{
 				this.animdW = this.addWidget("number", "Animation time", properties.anim_duration, this.changeAnimDuration.bind(this), {min: 0, max: Number.MAX_SAFE_INTEGER, step:0.01});
 				this.size[0] = 260;
-
-				//if(this.data_loaded)
-				//    this.size[1] += 112;
 			}
 			
 			this.animdW.value = properties.anim_duration;
@@ -790,7 +784,7 @@ meshLoadNode.prototype.toogleVisibility = function(v)
 * 	The behaviour done when the mesh is finally loaded
 *	@method onMeshLoaded
 *	@params {Mesh} The loaded mesh
-*	@params {Bool} If the texture is a plane
+*	@params {Bool} If the mesh is a plane
 */
 meshLoadNode.prototype.onMeshLoaded = function(loaded_mesh, plane = false)
 {
