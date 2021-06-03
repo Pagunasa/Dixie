@@ -1136,7 +1136,7 @@ subEmitterNode.prototype.initParticles = function(out_data, p_prop)
 
 		if(this.internal.last_texture != "")
 		{
-			system.texture_change = true;
+			out_data.data.texture_change = true;
 			this.internal.last_texture = "";
 		}	
 	}
