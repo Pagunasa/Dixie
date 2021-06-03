@@ -870,6 +870,9 @@ SystemInfo.prototype.resizeBufferArray = function(particles)
 function onShowNodePanel(node)
 {
 	window.SELECTED_NODE = node;
+
+    panel_focus = true;
+
     var panel = document.querySelector("#node-panel");
     if(panel)
         panel.close();
@@ -1017,6 +1020,7 @@ function onShowNodePanel(node)
     inner_refresh();
 
     document.getElementById("nodeDisplay").appendChild( panel );
+    setTimeout(() => { panel_focus = false; }, 500);
 }
 
 

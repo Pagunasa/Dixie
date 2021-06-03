@@ -1237,7 +1237,7 @@ subEmitterNode.prototype.onExecute = function()
 	if(system.type != "emitter")
 	{
 		this.disconnectInput(0);
-		createAlert("Holy Guacamole!", "You can't create a sub emitter for a sub emitter", "Please connect this node to a emitter", "danger", true, true, "pageMessages");
+		createAlert("Holy Guacamole!", "Sub emission particles can't create sub emissions", "Please connect this node to a emitter", "danger", true, true, "pageMessages");
 		return;
 	}
 		

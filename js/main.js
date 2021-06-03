@@ -10,6 +10,7 @@
 */
 var graph;
 var graphCanvas;
+var graphHTML;
 var gl;
 var playButton, resetButton, stopButton;
 
@@ -578,6 +579,21 @@ function init ()
 	  		child.remove();
 	  	}
 	  }
+	});
+
+	//Get the html of the graph canvas
+	graphHTML = document.querySelector("#graphCanvas");
+
+	//Listener for closing the node panel if is enabled and someone clicks into the graph canvas
+	window.addEventListener('click', function(e){
+		if(panel_focus != true)
+		{
+			var p = document.querySelector("#node-panel");
+
+			if(p != null)
+				if (!graphHTML.contains(e.target))
+					p.close();
+		}
 	});
 
 	//Alert in chase of window close
