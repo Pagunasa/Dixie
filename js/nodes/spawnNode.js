@@ -904,14 +904,14 @@ mySpawnNode.prototype.initParticles = function(out_data, p_prop)
 */
 mySpawnNode.prototype.onExecute = function()
 {
-	var properties    = this.properties;
+	var properties = this.properties;
 	var max_particles = properties.max_particles;
-	var spawn_rate    = properties.spawn_rate;
-	var color         = properties.color;
-	var position      = properties.position;
-	var origin        = properties.origin;
-	var per_wave      = properties.particles_per_wave;
-	var system        = this.system;
+	var spawn_rate = properties.spawn_rate;
+	var color = properties.color;
+	var position = properties.position;
+	var origin = properties.origin;
+	var per_wave = properties.particles_per_wave;
+	var system = this.system;
 	var origin_mesh;
 
 	//When is executed the inputs are gotten 
@@ -1147,7 +1147,7 @@ subEmitterNode.prototype.initParticles = function(out_data, p_prop)
 	
 		if(this.internal.last_texture != p_prop.texture.file.data.src)
 		{
-			system.texture_change = true;
+			out_data.data.texture_change = true;
 			this.internal.last_texture = p_prop.texture.file.data.src;
 		}	
 	}
@@ -1157,7 +1157,7 @@ subEmitterNode.prototype.initParticles = function(out_data, p_prop)
 
 		if(this.internal.last_texture != "")
 		{
-			system.texture_change = true;
+			out_data.data.texture_change = true;
 			this.internal.last_texture = "";
 		}
 	}
@@ -1231,6 +1231,13 @@ subEmitterNode.prototype.onExecute = function()
 	{
 		this.sub_emittor.ids = [];
 		this.setOutputData(0, {type : "sub_emitter", id: -1});
+		return;
+	}
+
+	if(system.type != "emitter")
+	{
+		this.disconnectInput(0);
+		createAlert("Holy Guacamole!", "You can't create a sub emitter for a sub emitter", "Please connect this node to a emitter", "danger", true, true, "pageMessages");
 		return;
 	}
 		
