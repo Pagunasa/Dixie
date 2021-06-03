@@ -1183,7 +1183,7 @@ subEmitterNode.prototype.spawn = function(out_data, p_prop)
 	var sub_emission_ids = sub_emittor.ids;
 	var sub_emission_to_reset = sub_emittor.to_reset;
 
-	var condition = system.condition;
+	var condition = out_data.condition;
 	var position;
 
 	//If there was no condition, then by default the emissions will spawn when the particle dies
