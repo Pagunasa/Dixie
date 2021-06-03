@@ -591,7 +591,7 @@ function init ()
 			var p = document.querySelector("#node-panel");
 
 			if(p != null)
-				if (!graphHTML.contains(e.target))
+				if (graphHTML.contains(e.target))
 					p.close();
 		}
 	});
