@@ -13,7 +13,7 @@ function constantNumberNode() {
 
 	this.widget = this.addWidget("number", "Number", this.properties.number, this.setValue.bind(this), {step: 0.01});
 
-	this.addOutput("Number", "number");
+	this.addOutput("Number", "number", connection_colors.number);
 }
 
 /*
@@ -68,10 +68,10 @@ function randomNumberNode() {
     	max: "The maximum value of the number"
     }
 
-	this.addInput("Min value", "number");
-	this.addInput("Max value", "number");
+	this.addInput("Min value", "number", connection_colors.number);
+	this.addInput("Max value", "number", connection_colors.number);
 
-	this.addOutput("Number", "number");
+	this.addOutput("Number", "number", connection_colors.number);
 }
 
 /*
@@ -122,10 +122,10 @@ function vector2Node() {
     	y: "The value of the y component"
     }
 
-	this.addInput("X", "number");
-	this.addInput("Y", "number");
+	this.addInput("X", "number", connection_colors.number);
+	this.addInput("Y", "number", connection_colors.number);
 
-	this.addOutput("Vec2", "vec2");
+	this.addOutput("Vec2", "vec2", connection_colors.vec2);
 }
 
 /*
@@ -180,11 +180,11 @@ function vector3Node() {
     	z: "The value of the z component"
     }
 
-	this.addInput("X", "number");
-	this.addInput("Y", "number");
-	this.addInput("Z", "number");
+	this.addInput("X", "number", connection_colors.number);
+	this.addInput("Y", "number", connection_colors.number);
+	this.addInput("Z", "number", connection_colors.number);
 
-	this.addOutput("Vec3", "vec3");
+	this.addOutput("Vec3", "vec3", connection_colors.vec3);
 }
 
 /*
@@ -244,12 +244,12 @@ function vector4Node() {
     	w: "The value of the w component"
     }
 
-	this.addInput("X", "number");
-	this.addInput("Y", "number");
-	this.addInput("Z", "number");
-	this.addInput("W", "number");
+	this.addInput("X", "number", connection_colors.number);
+	this.addInput("Y", "number", connection_colors.number);
+	this.addInput("Z", "number", connection_colors.number);
+	this.addInput("W", "number", connection_colors.number);
 
-	this.addOutput("Vec4", "vec4");
+	this.addOutput("Vec4", "vec4", connection_colors.vec4);
 }
 
 /*
@@ -336,7 +336,7 @@ function textureLoadNode() {
 
 	this.addWidget("toggle", "Sub textures", false, this.changeSubTexture.bind(this));
 
-	this.addOutput("Texture", "texture");
+	this.addOutput("Texture", "texture", connection_colors.text);
 };
 
 /*
@@ -748,12 +748,12 @@ function meshLoadNode() {
 	//This widget allows to enable/disable the visibility of the mesh
 	this.show_widget  = this.addWidget("toggle", "Show mesh", true, this.toogleVisibility.bind(this));
 
-	this.addInput("Position", "vec3");
-	this.addInput("Scale"   , "vec3");
-	this.addInput("Rotation", "vec3");
-	this.addInput("Color", "color");
+	this.addInput("Position", "vec3", connection_colors.vec3);
+	this.addInput("Scale", "vec3", connection_colors.vec3);
+	this.addInput("Rotation", "vec3", connection_colors.vec3);
+	this.addInput("Color", "color", connection_colors.color);
 	
-	this.addOutput("Mesh"  , "mesh");
+	this.addOutput("Mesh", "mesh", connection_colors.mesh);
 }
 
 meshLoadNode.prototype.onAddPropertyToPanel = function(i, panel)
@@ -1111,7 +1111,7 @@ function equationNode() {
     	curve_points:     "The points of the equation"
     }
 
-	this.addOutput("Equation", "equation");
+	this.addOutput("Equation", "equation", connection_colors.equat);
 }
 
 /*
@@ -1336,7 +1336,7 @@ function colorPickerNode()
 	this.bw = this.addWidget("number", "Blue",  1, this.setGreen.bind(this), {min: 0, max: 1, step: 0.1});
 	this.aw = this.addWidget("number", "Alpha", 1, this.setAlpha.bind(this), {min: 0, max: 1, step: 0.1});
 
-	this.addOutput("Color", "color");
+	this.addOutput("Color", "color", connection_colors.color);
 }
 
 /*
