@@ -141,7 +141,7 @@ function generateRandomPoint(system)
 *   @params {Object} The properties of the particle
 *   @params {Object} The system of the particle
 */
-function generateParticleInfo(properties, system, texture, texture_id)
+function generateParticleInfo(properties, system, texture, texture_id, position)
 {
 	var max_life_time = Math.max(properties.min_life_time, properties.max_life_time);
 	var min_life_time = Math.min(properties.min_life_time, properties.max_life_time);
@@ -154,7 +154,7 @@ function generateParticleInfo(properties, system, texture, texture_id)
 				max_speed     : properties.max_speed,
 				min_life_time : min_life_time,
 				max_life_time : max_life_time,
-				position      : properties.position || generateRandomPoint(system),
+				position      : position || generateRandomPoint(system),
 				color         : properties.color,
 				min_size      : min_size,
 				max_size      : max_size,
@@ -177,7 +177,7 @@ function generateParticleInfo(properties, system, texture, texture_id)
 *   @params {Object} The system of the particle
 *   @params {String} The type of the particle "emitter" or "subemitter"
 */
-function addParticle(particle_data, ids, particles, particles_to_reset, max_particles, system, type, time_pased, texture, texture_id)
+function addParticle(particle_data, ids, particles, particles_to_reset, max_particles, system, type, time_pased, texture, texture_id, position)
 {
 	var particle_info;
 
@@ -186,7 +186,7 @@ function addParticle(particle_data, ids, particles, particles_to_reset, max_part
 		
 		time_pased.init_time_pased = 0.0;
 		
-		particle_info = generateParticleInfo(particle_data, system, texture, texture_id);
+		particle_info = generateParticleInfo(particle_data, system, texture, texture_id, position);
 
 		particle = new Particle();
 		particle.fill(particle_info);
@@ -211,7 +211,7 @@ function addParticle(particle_data, ids, particles, particles_to_reset, max_part
 
 		if(id != undefined)
         {
-			particle_info = generateParticleInfo(particle_data, system, texture, texture_id);
+			particle_info = generateParticleInfo(particle_data, system, texture, texture_id, position);
 
         	particle = particles[id];
 			particle.fill(particle_info);
@@ -1178,12 +1178,13 @@ subEmitterNode.prototype.spawn = function(out_data, p_prop)
 	var system = this.system_info;
 
 	var particle;
-	var particles             = system.particles_list;
-	var sub_emittor           = this.sub_emittor;
-	var sub_emission_ids      = sub_emittor.ids;
+	var particles = system.particles_list;
+	var sub_emittor = this.sub_emittor;
+	var sub_emission_ids = sub_emittor.ids;
 	var sub_emission_to_reset = sub_emittor.to_reset;
 
-	var condition             = system_input.condition;
+	var condition = system.condition;
+	var position;
 
 	//If there was no condition, then by default the emissions will spawn when the particle dies
     if(condition == undefined)
@@ -1205,15 +1206,15 @@ subEmitterNode.prototype.spawn = function(out_data, p_prop)
 	for (var i = 0; i < condition.length; ++i)
 	{
 		particle = particles[condition[i].id];
-		p_prop.data.position = particle.position;
+		position = particle.position;
 
 		for (var j = 0; j < sub_emittor.particles_per_wave; ++j)
 			addParticle(p_prop.data, sub_emission_ids, particles, sub_emission_to_reset,
 			system.max_particles * sub_emittor.max_particles, system, "sub_emitter", 
-			this.internal, this.texture, this.texture_id);
+			this.internal, this.texture, this.texture_id, position);
 	}
 
-	moveParticles(system, sub_emission_ids, particles, sub_emission_to_reset);
+	moveParticles(system, sub_emission_ids, particles, sub_emission_to_reset,  this.texture, this.texture_id);
 	sub_emittor.ids = sub_emission_ids;
 }
 
@@ -1237,7 +1238,7 @@ subEmitterNode.prototype.onExecute = function()
 	var input_particles_per_wave = Math.max(this.getInputData(2), 0) || this.properties.particles_per_wave;
 
 	//The particle data is retrieved
-	p_prop  = this.getInputData(4) || {
+	var p_prop  = this.getInputData(4) || {
 		data : { max_speed: [1,1,1],min_speed: [-1,-1,-1],  max_size: 0.25,min_size: 0.10, max_life_time: 10,min_life_time: 5, color: [1,1,1,1] },
 		texture : { file: undefined }
 	};
