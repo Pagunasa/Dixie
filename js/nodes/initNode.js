@@ -47,7 +47,7 @@ function particleDataNode() {
 	this.addInput("Min size", "number", connection_colors.number);
 	
 	this.addInput("Color", "color", connection_colors.color);
-	this.addInput("Texture", "texture", connection_colors.texture);
+	this.addInput("Texture", "texture", connection_colors.text);
 
 	this.addOutput("Particle data", "p_data", connection_colors.p_data);
 }
@@ -742,6 +742,6 @@ initParticlesNode.prototype.onRemoved = function()
 }
 
 initParticlesNode.title = "Initialize Particles";
-initParticlesNode.title_color = spawnNodeColor;
-initParticlesNode.title_text_color = collisionsNodeColor;
+initParticlesNode.title_color = initNodeColor;
+initParticlesNode.title_text_color = basicTitleColor;
 initParticlesNode.title_selected_color = basicSelectedTitleColor;
