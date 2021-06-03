@@ -51,12 +51,12 @@ function modifyPropertyNode() {
 	/**************************************/
 	/***********Inputs & Outputs***********/
 	/**************************************/
-	this.addInput("Particle system", "particle_system");
-	this.addInput("Condition"      , "condition_list");
-	this.addInput("Change equation", "equation");
-	this.addInput("New speed"      , "vec3");
+	this.addInput("Particle system", "particle_system", connection_colors.p_sys);
+	this.addInput("Condition", "condition_list", connection_colors.cond);
+	this.addInput("Change equation", "equation", connection_colors.equat);
+	this.addInput("New speed", "vec3", connection_colors.vec3);
 	
-	this.addOutput("Particle system", "particle_system");
+	this.addOutput("Particle system", "particle_system", connection_colors.p_sys);
 }
 
 
@@ -199,22 +199,22 @@ modifyPropertyNode.prototype.changeProperty = function(v)
 
 	if(v == "Speed")
 	{
-		this.addInput("New speed", "vec3");
+		this.addInput("New speed", "vec3", connection_colors.vec3);
 		properties.new_value = Float32Array.from([0,0,0]);
 	}
 	else if (v == "Size")
 	{
-		this.addInput("New size", "number");
+		this.addInput("New size", "number", connection_colors.number);
 		properties.new_value = 5;
 	}
 	else if (v == "Color")
 	{
-		this.addInput("New color", "color");
+		this.addInput("New color", "color", connection_colors.color);
 		properties.new_value = [1,1,1,1];
 	}
 	else if (v == "Life time")
 	{
-		this.addInput("New life time", "number");
+		this.addInput("New life time", "number", connection_colors.number);
 		properties.new_value = 0;
 	}
 

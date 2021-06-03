@@ -37,19 +37,19 @@ function particleDataNode() {
 	/**************************************/
 	/***********Inputs & Outputs***********/
 	/**************************************/	
-	this.addInput("Max speed"     , "vec3");
-	this.addInput("Min speed"     , "vec3");
+	this.addInput("Max speed", "vec3", connection_colors.vec3);
+	this.addInput("Min speed", "vec3", connection_colors.vec3);
 	
-	this.addInput("Max life time" , "number");
-	this.addInput("Min life time" , "number");
+	this.addInput("Max life time", "number", connection_colors.number);
+	this.addInput("Min life time", "number", connection_colors.number);
 
-	this.addInput("Max size"      , "number");
-	this.addInput("Min size"      , "number");
+	this.addInput("Max size", "number", connection_colors.number);
+	this.addInput("Min size", "number", connection_colors.number);
 	
-	this.addInput("Color"         , "color");
-	this.addInput("Texture"       , "texture");
+	this.addInput("Color", "color", connection_colors.color);
+	this.addInput("Texture", "texture", connection_colors.texture);
 
-	this.addOutput("Particle data", "p_data");
+	this.addOutput("Particle data", "p_data", connection_colors.p_data);
 }
 
 particleDataNode.prototype.onAddPropertyToPanel = function(i, panel)
@@ -743,5 +743,5 @@ initParticlesNode.prototype.onRemoved = function()
 
 initParticlesNode.title = "Initialize Particles";
 initParticlesNode.title_color = spawnNodeColor;
-initParticlesNode.title_text_color = basicTitleColor;
+initParticlesNode.title_text_color = collisionsNodeColor;
 initParticlesNode.title_selected_color = basicSelectedTitleColor;

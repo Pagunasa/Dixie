@@ -469,7 +469,7 @@ function addNodes ()
 	
 	LiteGraph.registerNodeType("spawn/emitter"        , mySpawnNode);
 	LiteGraph.registerNodeType("spawn/sub emitter"    , subEmitterNode);
-	LiteGraph.registerNodeType("init/init"            , initParticlesNode);
+	//LiteGraph.registerNodeType("init/init"            , initParticlesNode);
 	LiteGraph.registerNodeType("init/particle data"   , particleDataNode);
 
 	LiteGraph.registerNodeType("forces/gravity"       , gravityNode);
@@ -592,7 +592,11 @@ function init ()
 
 			if(p != null)
 				if (graphHTML.contains(e.target))
-					p.close();
+				{
+					if(picker)
+					    picker.hide();
+					p.close();	
+				}
 		}
 	});
 

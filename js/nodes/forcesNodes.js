@@ -37,12 +37,12 @@ function gravityNode() {
 	/**************************************/
 	/***********Inputs & Outputs***********/
 	/**************************************/
-	this.addInput("Particle system", "particle_system");
-	this.addInput("Condition"      , "condition_list");
-	this.addInput("Direction"      , "vec3");
-	this.addInput("Strength"        , "number");
+	this.addInput("Particle system", "particle_system", connection_colors.p_sys);
+	this.addInput("Condition", "condition_list", connection_colors.cond);
+	this.addInput("Direction", "vec3", connection_colors.vec3);
+	this.addInput("Strength", "number", connection_colors.number);
 
-	this.addOutput("Particle system", "particle_system");
+	this.addOutput("Particle system", "particle_system", connection_colors.p_sys);
 }
 
 gravityNode.prototype.onAddPropertyToPanel = function(i, panel)
@@ -253,14 +253,14 @@ function vortexNode() {
 	/**************************************/
 	/***********Inputs & Outputs***********/
 	/**************************************/
-	this.addInput("Particle system", "particle_system");
-	this.addInput("Condition"      , "condition_list");
-	this.addInput("Position"       , "vec3");
-	this.addInput("Angular speed"  , "vec3");
-	this.addInput("Scale"          , "number");
-	this.addInput("Color"          , "color");
+	this.addInput("Particle system", "particle_system", connection_colors.p_sys);
+	this.addInput("Condition", "condition_list", connection_colors.condition);
+	this.addInput("Position", "vec3", connection_colors.vec3);
+	this.addInput("Angular speed", "vec3", connection_colors.vec3);
+	this.addInput("Scale", "number", connection_colors.number);
+	this.addInput("Color", "color", connection_colors.color);
 
-	this.addOutput("Particle system", "particle_system");
+	this.addOutput("Particle system", "particle_system", connection_colors.p_sys);
 }
 
 vortexNode.prototype.onAddPropertyToPanel = function(i, panel)
@@ -494,14 +494,14 @@ function magnetNode() {
 	/**************************************/
 	/***********Inputs & Outputs***********/
 	/**************************************/
-	this.addInput("Particle system", "particle_system");
-	this.addInput("Condition"      , "condition_list");
-	this.addInput("Position"       , "vec3");
-	this.addInput("Strength"       , "number");
-	this.addInput("Scale"          , "number");
-	this.addInput("Color"          , "color");
+	this.addInput("Particle system", "particle_system", connection_colors.p_sys);
+	this.addInput("Condition", "condition_list", connection_colors.cond);
+	this.addInput("Position", "vec3", connection_colors.vec3);
+	this.addInput("Strength", "number", connection_colors.number);
+	this.addInput("Scale", "number", connection_colors.number);
+	this.addInput("Color", "color", connection_colors.color);
 
-	this.addOutput("Particle system", "particle_system");
+	this.addOutput("Particle system", "particle_system", connection_colors.p_sys);
 }
 
 

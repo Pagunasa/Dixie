@@ -40,10 +40,10 @@ function createConditionNode() {
 	/**************************************/
 	/***********Inputs & Outputs***********/
 	/**************************************/
-	this.addInput("Particle system", "particle_system");
-	this.addInput("Speed", "vec3");
+	this.addInput("Particle system", "particle_system", connection_colors.p_sys);
+	this.addInput("Speed", "vec3", connection_colors.vec3);
 
-	this.addOutput("Condition", "condition_list");
+	this.addOutput("Condition", "condition_list", connection_colors.cond);
 }
 
 createConditionNode.prototype.onAddPropertyToPanel = function(i, panel)
@@ -166,23 +166,23 @@ createConditionNode.prototype.changeProperty = function(v)
 
 	if(v == "Speed")
 	{
-		this.addInput("Speed", "vec3");
+		this.addInput("Speed", "vec3", connection_colors.vec3);
 		properties.value = Float32Array.from([0,0,0]);
 	}
 	else if (v == "Size")
 	{
-		this.addInput("Size", "number");
+		this.addInput("Size", "number", connection_colors.number);
 		properties.value = 5;
 	}
 	else if (v == "Colision number")
 	{
-		this.addInput("Colision number", "number");
+		this.addInput("Colision number", "number", connection_colors.number);
 		properties.value = 0;
 		this.size[0] = 250;
 	}
 	else if (v == "Life time")
 	{
-		this.addInput("Life time", "number");
+		this.addInput("Life time", "number", connection_colors.number);
 		properties.value = 0;
 	}
 
@@ -380,10 +380,10 @@ function mergeConditionsNode() {
 	/**************************************/
 	/***********Inputs & Outputs***********/
 	/**************************************/
-	this.addInput("Condition 1", "condition_list");
-	this.addInput("condition 2", "condition_list");
+	this.addInput("Condition 1", "condition_list", connection_colors.cond);
+	this.addInput("condition 2", "condition_list", connection_colors.cond);
 
-	this.addOutput("Condition", "condition_list");
+	this.addOutput("Condition", "condition_list", connection_colors.cond);
 }
 
 

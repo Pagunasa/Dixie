@@ -22,7 +22,7 @@ var connection_colors = {
 	p_data : {color_off: '#7A3C3C', color_on: '#7A0505' },
 	equat  : {color_off: '#33874A', color_on: '#048527' },
 	color  : {color_off: '#9466D4', color_on: '#7F42D4' },
-	text   : {color: '#D13636', color_off: '#D46666', color_on: '#D13636' },
+	text   : {color_off: '#D46666', color_on: '#D13636' },
 	mesh   : {color_off: '#66D4CF', color_on: '#7AFFF9' }
 }
 
@@ -59,6 +59,7 @@ var default_forces_mesh;
 /********************************/
 var panel_focus = false;
 var nodePanel;
+var picker;
 
 /*
 * 	Make a linear interpolation between two vectors of the same component
@@ -1335,7 +1336,7 @@ function addColorWidget(i, panel, node)
 	value.style.border = "none";
 
 	var color = node.properties[i];
-	var picker = new jscolor(value, {
+	picker = new jscolor(value, {
 		value: 'rgba('+color[0]*255+', '+color[1]*255+', '+color[2]*255+', '+color[3]+')',
 		backgroundColor: '#37464F',
 		borderColor: '#455A64',
