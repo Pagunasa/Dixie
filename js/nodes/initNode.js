@@ -156,7 +156,7 @@ particleDataNode.prototype.onExecute = function()
 }
 
 particleDataNode.title = "Particle Data";
-particleDataNode.title_color = spawnNodeColor;
+particleDataNode.title_color = initNodeColor;
 particleDataNode.title_text_color = basicTitleColor;
 particleDataNode.title_selected_color = basicSelectedTitleColor;
 
