@@ -34,7 +34,7 @@ var connection_colors = {
 	equat  : {color_off: '#CC008F', color_on: '#FF85DA' },
 	color  : {color_off: '#B8A800', color_on: '#FFF585' },
 	text   : {color_off: '#CC7A00', color_on: '#FFC670' },
-	mesh   : {color_off: '#800000', color_on: '#FF7070' }
+	mesh   : {color_off: '#B370FF', color_on: '#DEC2FF' }
 }
 
 /********************************/
