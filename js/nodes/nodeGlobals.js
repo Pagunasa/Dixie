@@ -33,7 +33,7 @@ var connection_colors = {
 	equat  : {color_off: '#CC008B', color_on: '#FF99DF' },
 	color  : {color_off: '#B8A800', color_on: '#FFF585' },
 	text   : {color_off: '#CC7A00', color_on: '#FFC670' },
-	mesh   : {color_off: '#B370FF', color_on: '#DEC2FF' },
+	mesh   : {color_off: '#7ACC00', color_on: '#B6FF47' },
 	p_sys  : {color_off: '#CC0E00', color_on: '#FF8D85' }
 }
 
