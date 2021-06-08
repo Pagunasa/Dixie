@@ -26,15 +26,15 @@ var collisionsNodeColor       = "#A3B082";
 	mesh   : {color_off: '#66D4CF', color_on: '#7AFFF9' }
 }*/
 var connection_colors = {
+	p_data : {color_off: '#00B806', color_on: '#5CFF61' },
 	number : {color_off: '#00AEB8', color_on: '#85F9FF' },
 	vec3   : {color_off: '#0044CC', color_on: '#85ADFF' },
-	cond   : {color_off: '#9900CC', color_on: '#E085FF' },
-	p_sys  : {color_off: '#CC0E00', color_on: '#FF8D85' },
-	p_data : {color_off: '#00B806', color_on: '#5CFF61' },
-	equat  : {color_off: '#CC008F', color_on: '#FF85DA' },
+	cond   : {color_off: '#7700CC', color_on: '#D499FF' },
+	equat  : {color_off: '#CC008B', color_on: '#FF99DF' },
 	color  : {color_off: '#B8A800', color_on: '#FFF585' },
 	text   : {color_off: '#CC7A00', color_on: '#FFC670' },
-	mesh   : {color_off: '#B370FF', color_on: '#DEC2FF' }
+	mesh   : {color_off: '#B370FF', color_on: '#DEC2FF' },
+	p_sys  : {color_off: '#CC0E00', color_on: '#FF8D85' }
 }
 
 /********************************/
