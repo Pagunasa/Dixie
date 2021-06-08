@@ -506,7 +506,7 @@ mySpawnNode.prototype.setParticleSpawnMode = function(v, changed_by_widget = tru
 	if(!this.spawnModeValues.includes(v))
 		v = "Linear";
 
-	if (v == "Linear")
+	if (v == "Linear" && this.last_status.particles_per_wave_index == 0)
 	{
 		this.disconnectInput(2);
 		this.inputs.splice(2,1);
@@ -517,8 +517,9 @@ mySpawnNode.prototype.setParticleSpawnMode = function(v, changed_by_widget = tru
 
 	if (v == "Waves")
 	{
-		this.inputs.splice(2, 0, {name: "Particles per wave", type: "number", link: null, 
-			color_off: connection_colors.number.color_off, color_on: connection_colors.number.color_on});
+		if(this.inputs.length != 6)
+			this.inputs.splice(2, 0, {name: "Particles per wave", type: "number", link: null, 
+				color_off: connection_colors.number.color_off, color_on: connection_colors.number.color_on});
 
 		this.last_status.particles_per_wave_index = 0;
 		this.size[1] = 254;
