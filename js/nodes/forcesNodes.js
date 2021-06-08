@@ -254,7 +254,7 @@ function vortexNode() {
 	/***********Inputs & Outputs***********/
 	/**************************************/
 	this.addInput("Particle system", "particle_system", connection_colors.p_sys);
-	this.addInput("Condition", "condition_list", connection_colors.condition);
+	this.addInput("Condition", "condition_list", connection_colors.cond);
 	this.addInput("Position", "vec3", connection_colors.vec3);
 	this.addInput("Angular speed", "vec3", connection_colors.vec3);
 	this.addInput("Scale", "number", connection_colors.number);
