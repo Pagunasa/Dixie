@@ -11,19 +11,30 @@ var conditionsNodeColor       = "#FFAB5C";
 var modifyPropertiesNodeColor = "#DE85FF";
 var collisionsNodeColor       = "#A3B082";
 //All the colors for the conections
-var connection_colors = {
+/*var connection_colors = {
 	number : {color_off: '#928F94', color_on: '#C6C1C9' },
 	vec2   : {color_off: '#D466D4', color_on: '#CF40CF' },
-	vec3   : {color_off: '#F9B27F', color_on: '#FFA05C' },
-	vec4   : {color_off: '#F28F3B', color_on: '#F07B18' },
+	vec3   : {color_off: '#F9B27F', color_on: '#FFA05C' }, //DELETE
+	vec4   : {color_off: '#F28F3B', color_on: '#F07B18' }, //DELETE
 	cond   : {color_off: '#66D46C', color_on: '#2CDB35' },
-	emit   : {color_off: '#667CD4', color_on: '#3B5AD4' },
+	emit   : {color_off: '#667CD4', color_on: '#3B5AD4' }, //DELETE
 	p_sys  : {color_off: '#D4B366', color_on: '#DBA31F' },
 	p_data : {color_off: '#7A3C3C', color_on: '#7A0505' },
 	equat  : {color_off: '#33874A', color_on: '#048527' },
 	color  : {color_off: '#9466D4', color_on: '#7F42D4' },
 	text   : {color_off: '#D46666', color_on: '#D13636' },
 	mesh   : {color_off: '#66D4CF', color_on: '#7AFFF9' }
+}*/
+var connection_colors = {
+	number : {color_off: '#00AEB8', color_on: '#85F9FF' },
+	vec3   : {color_off: '#0044CC', color_on: '#85ADFF' },
+	cond   : {color_off: '#9900CC', color_on: '#E085FF' },
+	p_sys  : {color_off: '#CC0E00', color_on: '#FF8D85' },
+	p_data : {color_off: '#00B806', color_on: '#5CFF61' },
+	equat  : {color_off: '#CC008F', color_on: '#FF85DA' },
+	color  : {color_off: '#B8A800', color_on: '#FFF585' },
+	text   : {color_off: '#CC7A00', color_on: '#FFC670' },
+	mesh   : {color_off: '#800000', color_on: '#FF7070' }
 }
 
 /********************************/
