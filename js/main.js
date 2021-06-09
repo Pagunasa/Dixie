@@ -979,9 +979,11 @@ gl.onupdate = function( dt ) {
 	fps = (curr_t - last_t) * 0.001; //ms to seconds
 	last_t = curr_t;
 
-	fps = 1/fps;
-	fps_display.textContent = "FPS: " + fps;
-
+	if(fps > 0.01)
+	{
+		fps = 1/fps;
+		fps_display.textContent = "FPS: " + fps.to_string().slice(0,4);
+	}
 
 	//If time interval is greater than 5 seconds, then the systems goes very slow and is better to stop it
 	if(time_interval >= 0.4 && !emergency_stop)
