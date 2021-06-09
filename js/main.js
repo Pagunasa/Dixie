@@ -39,7 +39,7 @@ var times_clicked   = 0; //How many times the user clicks in the canvas div
 
 //FPS
 var fps_display;
-var fps;
+var fps, l_fps;
 var last_t;
 var curr_t;
 var frames_until_display_update = 5;
@@ -976,18 +976,14 @@ gl.onupdate = function( dt ) {
 	time_interval = dt;
 	camera.update();
 
-	
 	curr_t = LiteGraph.getTime();
-	fps = (curr_t - last_t) * 0.001; //ms to seconds
+	l_fps = 1 / ((curr_t - last_t) * 0.001); //ms to seconds
 	last_t = curr_t;
 
-	c_f++;
-
-	if(c_f == frames_until_display_update)
+	if(Math.abs(l_fps - fps) > 0.5)
 	{
-		c_f = 0;
-		fps = 1/fps;
-		fps_display.textContent = "FPS: " + fps.toString().slice(0,4);
+		fps = l_fps;
+		fps_display.textContent = "FPS: " + l_fps.toString().slice(0,4);
 	}
 
 	//If time interval is greater than 5 seconds, then the systems goes very slow and is better to stop it
