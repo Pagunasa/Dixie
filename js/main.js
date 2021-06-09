@@ -42,7 +42,7 @@ var fps_display;
 var fps;
 var last_t;
 var curr_t;
-var frames_until_display_update = 10;
+var frames_until_display_update = 5;
 var c_f = 0;
 
 /* Demos */
@@ -982,7 +982,7 @@ gl.onupdate = function( dt ) {
 	last_t = curr_t;
 
 	c_f++;
-	
+
 	if(c_f == frames_until_display_update)
 	{
 		c_f = 0;
