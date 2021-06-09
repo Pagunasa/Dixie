@@ -37,6 +37,12 @@ var gridColor       = [1,1,1,0.25];
 var linesColor      = [1,1,1,0.5];
 var times_clicked   = 0; //How many times the user clicks in the canvas div
 
+//FPS
+var fps_display;
+var fps;
+var last_t;
+var curr_t;
+
 /* Demos */
 //Default start
 var demo1 = {"last_node_id":3,"last_link_id":2,"nodes":[{"id":3,"type":"init/particle data","pos":[310,400],"size":[228.39999389648438,166],"flags":{},"order":1,"mode":0,"inputs":[{"name":"Max speed","type":"vec3","link":null},{"name":"Min speed","type":"vec3","link":null},{"name":"Max life time","type":"number","link":null},{"name":"Min life time","type":"number","link":null},{"name":"Max size","type":"number","link":null},{"name":"Min size","type":"number","link":null},{"name":"Color","type":"color","link":null},{"name":"Texture","type":"texture","link":null}],"outputs":[{"name":"Particle data","type":"p_data","links":[2]}],"properties":{"max_speed":[1,1,1],"min_speed":[-1,-1,-1],"max_size":0.25,"min_size":0.1,"max_life_time":10,"min_life_time":5,"color":[1,1,1,1]}},{"id":2,"type":"init/init","pos":[649,237],"size":[245.1999969482422,46],"flags":{},"order":2,"mode":0,"inputs":[{"name":"Emitter","type":"emitter","link":1},{"name":"Particle data","type":"p_data","link":2}],"outputs":[{"name":"Particle system","type":"particle_system","links":null}],"properties":{}},{"id":1,"type":"spawn/emitter","pos":[66,81],"size":[389,214],"flags":{},"order":0,"mode":0,"inputs":[{"name":"Max particles","type":"number","link":null},{"name":"Spawn rate","type":"number","link":null},{"name":"Color","type":"color","link":null},{"name":"Position","type":"vec3","link":null}],"outputs":[{"name":"Emitter","type":"emitter","links":[1]}],"properties":{"max_particles":100,"spawn_rate":10,"particles_per_wave":10,"origin":"Point","position":[0,0,0],"color":[1,1,1,1],"show_origin":true,"src_bfact":"Source alpha","dst_bfact":"One","spawn_mode":"Linear"}}],"links":[[1,1,0,2,0,"emitter"],[2,3,0,2,1,"p_data"]],"groups":[{"title":"In the emitter, the basic information of the system is defined","bounding":[-63,7,646,296],"color":"#3f789e"},{"title":"Make a double click on the node to see more information","bounding":[172,-92,612,82],"color":"#b06634"},{"title":"In particle data, the default values of every particle are defined","bounding":[-90,314,672,269],"color":"#3f789e"},{"title":"The particles are spawned and a default movement is applied","bounding":[589,153,668,146],"color":"#3f789e"}],"config":{},"extra":{},"version":0.4};
@@ -462,9 +468,9 @@ function addNodes ()
 	LiteGraph.registerNodeType("basic/load texture"   , textureLoadNode);
 	LiteGraph.registerNodeType("basic/load mesh"      , meshLoadNode);
 	LiteGraph.registerNodeType("basic/equation"       , equationNode);
-	LiteGraph.registerNodeType("basic/vector 2"       , vector2Node);
+	//LiteGraph.registerNodeType("basic/vector 2"       , vector2Node);
 	LiteGraph.registerNodeType("basic/vector 3"       , vector3Node);
-	LiteGraph.registerNodeType("basic/vector 4"       , vector4Node);
+	//LiteGraph.registerNodeType("basic/vector 4"       , vector4Node);
 	LiteGraph.registerNodeType("basic/color picker"   , colorPickerNode);
 	
 	LiteGraph.registerNodeType("spawn/emitter"        , mySpawnNode);
@@ -604,6 +610,12 @@ function init ()
 	window.onbeforeunload = function() {
 	    return "Did you save your work?"
 	}
+
+	//Get the fps display
+	fps_display = document.querySelector("#fps");
+	fps = 0.0;
+	last_t = 0.0;
+	curr_t = 0.0;
 }
 
 
@@ -961,6 +973,15 @@ function mergeSubEmittorsIds(system, sub_emittors)
 gl.onupdate = function( dt ) {
 	time_interval = dt;
 	camera.update();
+
+	
+	curr_t = LiteGraph.getTime();
+	fps = (curr_t - last_t) * 0.001; //ms to seconds
+	last_t = curr_t;
+
+	fps = 1/fps;
+	fps_display.textContent = "FPS: " + fps;
+
 
 	//If time interval is greater than 5 seconds, then the systems goes very slow and is better to stop it
 	if(time_interval >= 0.4 && !emergency_stop)
