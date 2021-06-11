@@ -667,6 +667,9 @@ mySpawnNode.prototype.toogleOriginVisibility = function()
 */
 mySpawnNode.prototype.setSpawnOrigin = function(v, changed_by_widget = true)
 {
+	if(!this.originValues.includes(v))
+		v = "Point";
+
 	//if there was no change in the origin then return
 	if (this.properties.origin == v && changed_by_widget)
 		return;
@@ -676,11 +679,9 @@ mySpawnNode.prototype.setSpawnOrigin = function(v, changed_by_widget = true)
 		if (this.properties.origin == this.mode_widget.value)
 			return;
 		else
-			this.mode_widget.value = m;
+			this.mode_widget.value = v;
 	}
 	
-	if(!this.originValues.includes(v))
-		v = "Point";
 
 	this.properties.origin = v;
 	var index = getInputIndex(v == "Point" ? "Mesh" : "Point", this.inputs);
@@ -754,12 +755,7 @@ mySpawnNode.prototype.onPropertyChanged = function(property)
 		break;
 
 		case "origin":
-			var m = properties.origin;
-
-			if(!this.originValues.includes(m))
-				m = "Point";
-
-			this.setSpawnOrigin(m, false);	
+			this.setSpawnOrigin(properties.origin, false);	
 		break;
 
 		case "color":
