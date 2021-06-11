@@ -667,34 +667,28 @@ mySpawnNode.prototype.toogleOriginVisibility = function()
 */
 mySpawnNode.prototype.setSpawnOrigin = function(v, changed_by_widget = true)
 {
-	if(!this.originValues.includes(v))
-		v = "Point";
-
 	//if there was no change in the origin then return
 	if (this.properties.origin == v && changed_by_widget)
 		return;
-
-	if(!changed_by_widget)
-	{
-		if (this.properties.origin == this.mode_widget.value)
-			return;
-		else
-			this.mode_widget.value = v;
-	}
 	
+	if(!this.originValues.includes(v))
+		v = "Point";
 
 	this.properties.origin = v;
 	var index = getInputIndex(v == "Point" ? "Mesh" : "Point", this.inputs);
 
-	//The first two inputs will be always the same, so we have to disconect and delete the third
-	this.disconnectInput(index);
-	this.inputs.splice(index,1);
-
-	if (v == "Point")
-		this.addInput("Position", "vec3", connection_colors.vec3); //if the mode is point the new input must be a vector 3
-	else if (v == "Mesh")
-		this.addInput("Mesh", "mesh", connection_colors.mesh); //if the mode is mesh the new input must be a mesh
+	if(index > 0)
+	{
+		//The first two inputs will be always the same, so we have to disconect and delete the third
+		this.disconnectInput(index);
+		this.inputs.splice(index,1);
 	
+		if (v == "Point")
+			this.addInput("Position", "vec3", connection_colors.vec3); //if the mode is point the new input must be a vector 3
+		else if (v == "Mesh")
+			this.addInput("Mesh", "mesh", connection_colors.mesh); //if the mode is mesh the new input must be a mesh
+	}
+
 	this.size[0] = 389;
 }
 
@@ -755,7 +749,13 @@ mySpawnNode.prototype.onPropertyChanged = function(property)
 		break;
 
 		case "origin":
-			this.setSpawnOrigin(properties.origin, false);	
+			var m = properties.origin;
+
+			if(!this.originValues.includes(m))
+				m = "Point";
+
+			this.mode_widget.value = m;
+			this.setSpawnOrigin(m, false);	
 		break;
 
 		case "color":
