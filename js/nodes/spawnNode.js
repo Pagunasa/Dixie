@@ -670,6 +670,14 @@ mySpawnNode.prototype.setSpawnOrigin = function(v, changed_by_widget = true)
 	//if there was no change in the origin then return
 	if (this.properties.origin == v && changed_by_widget)
 		return;
+
+	if(!changed_by_widget)
+	{
+		if (this.properties.origin == this.mode_widget.value)
+			return;
+		else
+			this.mode_widget.value = m;
+	}
 	
 	if(!this.originValues.includes(v))
 		v = "Point";
@@ -751,7 +759,6 @@ mySpawnNode.prototype.onPropertyChanged = function(property)
 			if(!this.originValues.includes(m))
 				m = "Point";
 
-			this.mode_widget.value = m;
 			this.setSpawnOrigin(m, false);	
 		break;
 
