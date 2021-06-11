@@ -675,7 +675,7 @@ mySpawnNode.prototype.setSpawnOrigin = function(v, changed_by_widget = true)
 		v = "Point";
 
 	this.properties.origin = v;
-	var index = getInputIndex(v == "Point" ? "Mesh" : "Point", this.inputs);
+	var index = getInputIndex(v == "Point" ? "Mesh" : "Position", this.inputs);
 
 	if(index > 0)
 	{
