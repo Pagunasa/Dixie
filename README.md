@@ -16,44 +16,44 @@ Dixie is the result of my final degree project, an online graph-oriented particl
         <tr>
             <th>
 		<a href="https://pagunasa.github.io/tfg-gmj/" rel="Demo link">
-			<img src="https://github.com/Pagunasa/tfg-gmj/blob/master/wiki_media/Home/images/see_demos.png" alt="Showcase of a demo" width="223.91"/>
+			<img src="https://github.com/Pagunasa/Dixie/blob/master/wiki_media/Home/images/see_demos.png" alt="Showcase of a demo" width="223.91"/>
 		</a> 
 		<br/>
-		<a href="https://pagunasa.github.io/tfg-gmj/"> :eye: See the demos!! :eye: </a>
+		<a href="https://pagunasa.github.io/Dixie/"> :eye: See the demos!! :eye: </a>
 	    </th>
             <th>
-		<a href="https://github.com/Pagunasa/tfg-gmj/wiki/The-editor" rel="The editor">
-			<img src="https://github.com/Pagunasa/tfg-gmj/blob/master/wiki_media/Home/images/create_particles.png" alt="Showcase of a graph"/>
+		<a href="https://github.com/Pagunasa/Dixie/wiki/The-editor" rel="The editor">
+			<img src="https://github.com/Pagunasa/Dixie/blob/master/wiki_media/Home/images/create_particles.png" alt="Showcase of a graph"/>
 		</a> 
 		<br/> 
-		<a href="https://github.com/Pagunasa/tfg-gmj/wiki/The-editor"> :stars::stars: Create my own particle system :stars::stars: </a>
+		<a href="https://github.com/Pagunasa/Dixie/wiki/The-editor"> :stars::stars: Create my own particle system :stars::stars: </a>
 	    </th>
         </tr>
         <tr>
             <th>
- 	        <a href="https://github.com/Pagunasa/tfg-gmj/wiki/Dixie-API" rel="The API">
-			<img src="https://github.com/Pagunasa/tfg-gmj/blob/master/wiki_media/Home/images/use_API.png" alt="API code"/>
+ 	        <a href="https://github.com/Pagunasa/Dixie/wiki/Dixie-API" rel="The API">
+			<img src="https://github.com/Pagunasa/Dixie/blob/master/wiki_media/Home/images/use_API.png" alt="API code"/>
 		</a> 
 		<br/> 
-		<a href="https://github.com/Pagunasa/tfg-gmj/wiki/Dixie-API"> :computer: Use the API :computer: </a>
+		<a href="https://github.com/Pagunasa/Dixie/wiki/Dixie-API"> :computer: Use the API :computer: </a>
 	    </th>
             <th>
- 	        <a href="https://github.com/Pagunasa/tfg-gmj/wiki/ThreeDixie" rel="ThreeDixie">
-			<img src="https://github.com/Pagunasa/tfg-gmj/blob/master/wiki_media/Home/images/use_threeDixie.png" alt="Showcase ThreeDixie demo" width="223.92"/>
+ 	        <a href="https://github.com/Pagunasa/Dixie/wiki/ThreeDixie" rel="ThreeDixie">
+			<img src="https://github.com/Pagunasa/Dixie/blob/master/wiki_media/Home/images/use_threeDixie.png" alt="Showcase ThreeDixie demo" width="223.92"/>
 		</a> 
 		<br/> 
-		<a href="https://github.com/Pagunasa/tfg-gmj/wiki/ThreeDixie"> :mouse2::evergreen_tree: Use ThreeDixie :evergreen_tree::mouse2: </a> 	    
+		<a href="https://github.com/Pagunasa/Dixie/wiki/ThreeDixie"> :mouse2::evergreen_tree: Use ThreeDixie :evergreen_tree::mouse2: </a> 	    
 	    </th>
         </tr>
     </thead>
     <tbody>
         <tr>
             <th colspan=2>
-	        <a href="https://github.com/Pagunasa/tfg-gmj/wiki/The-nodes" rel="The nodes">
-			<img src="https://github.com/Pagunasa/tfg-gmj/blob/master/wiki_media/Home/images/know_nodes.png" alt="Nodes demo" height="223.92"/>
+	        <a href="https://github.com/Pagunasa/Dixie/wiki/The-nodes" rel="The nodes">
+			<img src="https://github.com/Pagunasa/Dixie/blob/master/wiki_media/Home/images/know_nodes.png" alt="Nodes demo" height="223.92"/>
 		</a> 
 		<br/> 
-		<a href="https://github.com/Pagunasa/tfg-gmj/wiki/The-nodes"> :package: Know more about the nodes :package: </a>
+		<a href="https://github.com/Pagunasa/Dixie/wiki/The-nodes"> :package: Know more about the nodes :package: </a>
 	    </th>
         </tr>
     </tbody>
@@ -62,11 +62,11 @@ Dixie is the result of my final degree project, an online graph-oriented particl
 <br/>
 
 ## Examples 
-All the demos are available in the editor, if you want to give it a try just [click here!!](https://pagunasa.github.io/tfg-gmj/)
+All the demos are available in the editor, if you want to give it a try just [click here!!](https://pagunasa.github.io/Dixie/)
 
 | A Fire | Sub emitters explosions |
 |--|--|
-| ![Alt Text](https://github.com/Pagunasa/tfg-gmj/blob/master/wiki_media/Home/gif/fireg.gif) | ![Alt Text](https://github.com/Pagunasa/tfg-gmj/blob/master/wiki_media/Home/gif/explosions.gif) |
+| ![Alt Text](https://github.com/Pagunasa/Dixie/blob/master/wiki_media/Home/gif/fireg.gif) | ![Alt Text](https://github.com/Pagunasa/Dixie/blob/master/wiki_media/Home/gif/explosions.gif) |
 
 With Dixie you're able to:
  * Create particle emitters and sub emitters
