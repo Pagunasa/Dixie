@@ -15,7 +15,7 @@ Dixie is the result of my final degree project, an online graph-oriented particl
     <thead>
         <tr>
             <th>
-		<a href="https://pagunasa.github.io/tfg-gmj/" rel="Demo link">
+		<a href="https://pagunasa.github.io/Dixie/" rel="Demo link">
 			<img src="https://github.com/Pagunasa/Dixie/blob/master/wiki_media/Home/images/see_demos.png" alt="Showcase of a demo" width="223.91"/>
 		</a> 
 		<br/>
